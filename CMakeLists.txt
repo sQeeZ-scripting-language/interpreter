@@ -42,6 +42,11 @@ file(GLOB_RECURSE HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
 )
 
+# Include the Lexer
+set(SQEEZ_LEXER_LIB_PATH ${CMAKE_SOURCE_DIR}/lexer/libsQeeZ-Lexer-Lib.a)
+add_library(sQeeZ-Lexer-Lib STATIC IMPORTED)
+set_target_properties(sQeeZ-Lexer-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_LEXER_LIB_PATH})
+
 # Create the Library
 add_library(
   sQeeZ-Interpreter-Lib 
@@ -58,6 +63,7 @@ add_executable(
 target_link_libraries(
   sQeeZ-Interpreter-Exe 
   sQeeZ-Interpreter-Lib
+  sQeeZ-Lexer-Lib
 )
 
 # Interpreter Test
@@ -69,5 +75,6 @@ target_link_libraries(
   interpreter_test 
   GTest::gtest_main
   sQeeZ-Interpreter-Lib
+  sQeeZ-Lexer-Lib
 )
 gtest_discover_tests(interpreter_test)
