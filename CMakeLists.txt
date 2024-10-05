@@ -44,6 +44,8 @@ file(GLOB_RECURSE HEADERS
 
 # Include the Lexer
 set(SQEEZ_LEXER_LIB_PATH ${CMAKE_SOURCE_DIR}/lexer/libsQeeZ-Lexer-Lib.a)
+set(SQEEZ_LEXER_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/lexer)
+include_directories(${SQEEZ_LEXER_INCLUDE_DIR})
 add_library(sQeeZ-Lexer-Lib STATIC IMPORTED)
 set_target_properties(sQeeZ-Lexer-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_LEXER_LIB_PATH})
 
