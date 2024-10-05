@@ -1,6 +1,0 @@
-#ifndef OBJECT_TOKEN_HPP
-#define OBJECT_TOKEN_HPP
-
-enum class ObjectToken { ENTRIES, KEYS, VALUES, HAS_OWN_PROPERTY, DELETE, TYPE_OF };
-
-#endif
