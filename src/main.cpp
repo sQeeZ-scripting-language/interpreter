@@ -59,10 +59,12 @@ int main(int argc, char* argv[]) {
   Lexer lexer(code);
   std::vector<Token> tokens = lexer.tokenize(devLexer);
 
-  Parser parser(tokens);
+  Parser parser(tokens); 
   std::unique_ptr<Program> ast = parser.parse(devParser);
+  std::string astOutput = ast->toString();
 
   Interpreter interpreter(std::move(ast));
+  interpreter.interpret(dev);
 
   if (outputLexer || outputParser) {
     std::ofstream outputFile("output.log");
@@ -76,7 +78,7 @@ int main(int argc, char* argv[]) {
       }
       if (outputParser) {
         outputFile << "##### Parser #####" << std::endl;
-        outputFile << ast->toString() << std::endl;
+        outputFile << astOutput << std::endl;
         std::cout << "AST exported to output.log" << std::endl;
       }
       outputFile.close();

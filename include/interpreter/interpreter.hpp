@@ -3,12 +3,14 @@
 
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
+#include "interpreter/statements/statement.hpp"
 
 class Interpreter {
     std::unique_ptr<Program> ast;
-    
+
 public:
-    Interpreter(std::unique_ptr<Program>&& ast) : ast(std::move(ast)) {}
+    Interpreter(std::unique_ptr<Program>&& ast);
+    void interpret(bool devMode);
 };
 
 
