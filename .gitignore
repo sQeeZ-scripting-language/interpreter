@@ -3,3 +3,5 @@
 .DS_Store
 /include/lexer
 /lexer-lib
+/include/parser
+/parser-lib
