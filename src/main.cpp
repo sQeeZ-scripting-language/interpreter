@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   bool dev = false;
   bool devLexer = false;
   bool outputLexer = false;
@@ -9,19 +9,23 @@ int main(int argc, char* argv[]) {
   std::string filename;
 
   if (argc < 2) {
-    std::cerr << "Run \"" << argv[0] << " <filename>.sqz --help\" for more information" << std::endl;
+    std::cerr << "Run \"" << argv[0]
+              << " <filename>.sqz --help\" for more information" << std::endl;
     return 1;
   }
 
   for (int i = 1; i < argc; ++i) {
     if (std::strcmp(argv[i], "--help") == 0) {
-      std::cout << "Usage: " << argv[0] << " <filename>.sqz [--flag]" << std::endl;
+      std::cout << "Usage: " << argv[0] << " <filename>.sqz [--flag]"
+                << std::endl;
       std::cout << "Flags:" << std::endl;
       std::cout << "  --help: Display this information" << std::endl;
       std::cout << "  --dev: Enable developer mode" << std::endl;
-      std::cout << "  --dev-lexer: Enable developer mode for the lexer" << std::endl;
+      std::cout << "  --dev-lexer: Enable developer mode for the lexer"
+                << std::endl;
       std::cout << "  --output-lexer: Export tokens to output.log" << std::endl;
-      std::cout << "  --dev-parser: Enable developer mode for the parser" << std::endl;
+      std::cout << "  --dev-parser: Enable developer mode for the parser"
+                << std::endl;
       std::cout << "  --output--parser: Export AST to output.log" << std::endl;
       return 0;
     } else if (std::strcmp(argv[i], "--dev") == 0) {
@@ -59,7 +63,7 @@ int main(int argc, char* argv[]) {
   Lexer lexer(code);
   std::vector<Token> tokens = lexer.tokenize(devLexer);
 
-  Parser parser(tokens); 
+  Parser parser(tokens);
   std::unique_ptr<Program> ast = parser.parse(devParser);
   std::string astOutput = ast->toString();
 
@@ -71,7 +75,7 @@ int main(int argc, char* argv[]) {
     if (outputFile.is_open()) {
       if (outputLexer) {
         outputFile << "##### Lexer #####" << std::endl;
-        for (const auto& token : tokens) {
+        for (const auto &token : tokens) {
           outputFile << token.toString() << "\n" << std::endl;
         }
         std::cout << "Tokens exported to output.log" << std::endl;

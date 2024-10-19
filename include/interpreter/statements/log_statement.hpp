@@ -5,13 +5,13 @@
 
 class LogStatement {
 public:
-    LogStatement(LogStmt* logNode);
-    void execute();
+  LogStatement(LogStmt *logNode);
+  void execute();
 
 private:
-    LogStmt* logNode;
-    auto getMessage();
-    void hexToRGB(const std::string& hex, int& r, int& g, int& b);
+  LogStmt *logNode;
+  auto getMessage();
+  void hexToRGB(const std::string &hex, int &r, int &g, int &b);
 };
 
 #endif
