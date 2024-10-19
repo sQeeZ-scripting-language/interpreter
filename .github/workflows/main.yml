@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest,macos-latest,windows-latest]
+        os: [ubuntu-latest,macos-latest]
 
     steps:
     - name: Checkout repository
@@ -146,7 +146,6 @@ jobs:
 
         echo "Latest files have been downloaded and extracted to $REPO_DIR."
         
-
     - name: Download and extract sQeeZ Lexer (Windows)
       if: matrix.os == 'windows-latest'
       shell: bash
@@ -182,6 +181,84 @@ jobs:
         rm -rf "$REPO_DIR/"*/sQeeZ-Lexer-Exe
         rm -rf "$REPO_DIR/"*/sQeeZ-Lexer-Exe.exe
         rm -rf "$INCLUDE_DIR/node"
+        rm -rf "$TEMP_DIR"
+
+        find "$REPO_DIR" -type d -empty -delete
+
+        echo "Latest files have been downloaded and extracted to $REPO_DIR."
+
+    - name: Download and extract sQeeZ Parser (macOS)
+      if: matrix.os == 'macos-latest'
+      shell: bash
+      run: |
+        REPO="sQeeZ-scripting-language/parser"
+        REPO_DIR="./parser-lib"
+        INCLUDE_DIR="./include/parser"
+
+        if [ -d "$INCLUDE_DIR" ]; then
+          rm -rf "$INCLUDE_DIR"
+        fi
+        mkdir -p "$INCLUDE_DIR"
+        mkdir -p "$REPO_DIR"
+
+        LATEST_RELEASE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
+
+        ZIP_URL=$(echo "$LATEST_RELEASE" | grep -o "https://.*sQeeZ-Parser-macos-.*\\.zip" | head -n 1)
+
+        if [ -z "$ZIP_URL" ]; then
+          echo "No matching asset found."
+          exit 1
+        fi
+
+        TEMP_DIR=$(mktemp -d "/tmp/parser-XXXXXX")
+
+        curl -L -o "$TEMP_DIR/sQeeZ-Parser.zip" "$ZIP_URL"
+        unzip "$TEMP_DIR/sQeeZ-Parser.zip" -d "$REPO_DIR"
+
+        mv "$REPO_DIR/"*/libsQeeZ-Parser-Lib.a "$REPO_DIR/"
+        mv "$REPO_DIR/parser/"* "$INCLUDE_DIR/"
+
+        rm -rf "$REPO_DIR/"*/sQeeZ-Parser-Exe
+        rm -rf "$REPO_DIR/"*/sQeeZ-Parser-Exe.exe
+        rm -rf "$TEMP_DIR"
+
+        find "$REPO_DIR" -type d -empty -delete
+
+        echo "Latest files have been downloaded and extracted to $REPO_DIR."
+
+    - name: Download and extract sQeeZ Parser (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        REPO="sQeeZ-scripting-language/parser"
+        REPO_DIR="./parser-lib"
+        INCLUDE_DIR="./include/parser"
+
+        if [ -d "$INCLUDE_DIR" ]; then
+          rm -rf "$INCLUDE_DIR"
+        fi
+        mkdir -p "$INCLUDE_DIR"
+        mkdir -p "$REPO_DIR"
+
+        LATEST_RELEASE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
+
+        ZIP_URL=$(echo "$LATEST_RELEASE" | grep -o "https://.*sQeeZ-Parser-linux-.*\\.zip" | head -n 1)
+
+        if [ -z "$ZIP_URL" ]; then
+          echo "No matching asset found."
+          exit 1
+        fi
+
+        TEMP_DIR=$(mktemp -d "/tmp/parser-XXXXXX")
+
+        curl -L -o "$TEMP_DIR/sQeeZ-Parser.zip" "$ZIP_URL"
+        unzip "$TEMP_DIR/sQeeZ-Parser.zip" -d "$REPO_DIR"
+
+        mv "$REPO_DIR/"*/libsQeeZ-Parser-Lib.a "$REPO_DIR/"
+        mv "$REPO_DIR/parser/"* "$INCLUDE_DIR/"
+
+        rm -rf "$REPO_DIR/"*/sQeeZ-Parser-Exe
+        rm -rf "$REPO_DIR/"*/sQeeZ-Parser-Exe.exe
         rm -rf "$TEMP_DIR"
 
         find "$REPO_DIR" -type d -empty -delete
@@ -249,12 +326,6 @@ jobs:
           name: build-output-macos-latest
           path: ./build-output-macos
 
-      - name: Download build artifacts (Windows)
-        uses: actions/download-artifact@v3
-        with:
-          name: build-output-windows-latest
-          path: ./build-output-windows
-
       - name: Get the latest tag or fallback to 0.0.1
         id: get_version
         run: |
@@ -287,7 +358,6 @@ jobs:
           cp -r include/interpreter/* interpreter/
           zip -r release/sQeeZ-Interpreter-linux-${{ github.run_number }}-${{ steps.determine_version.outputs.VERSION }}.zip ./build-output-ubuntu interpreter
           zip -r release/sQeeZ-Interpreter-macos-${{ github.run_number }}-${{ steps.determine_version.outputs.VERSION }}.zip ./build-output-macos interpreter
-          zip -r release/sQeeZ-Interpreter-windows-${{ github.run_number }}-${{ steps.determine_version.outputs.VERSION }}.zip ./build-output-windows interpreter
           
       - name: Create or Update Tag
         run: |
@@ -303,4 +373,3 @@ jobs:
           artifacts: |
             release/sQeeZ-Interpreter-linux-${{ github.run_number }}-${{ steps.determine_version.outputs.VERSION }}.zip,
             release/sQeeZ-Interpreter-macos-${{ github.run_number }}-${{ steps.determine_version.outputs.VERSION }}.zip,
-            release/sQeeZ-Interpreter-windows-${{ github.run_number }}-${{ steps.determine_version.outputs.VERSION }}.zip,
