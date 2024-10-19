@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
   Parser parser(tokens);
   std::unique_ptr<Program> ast = parser.parse(devParser);
 
-  // Interpreter
+  Interpreter interpreter(std::move(ast));
 
   if (outputLexer || outputParser) {
     std::ofstream outputFile("output.log");

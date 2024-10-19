@@ -8,5 +8,6 @@
 
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
+#include "interpreter/interpreter.hpp"
 
 #endif
