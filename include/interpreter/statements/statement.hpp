@@ -13,4 +13,4 @@ private:
   Stmt *stmtNode;
 };
 
-#endif
+#endif // STATEMENT_HPP

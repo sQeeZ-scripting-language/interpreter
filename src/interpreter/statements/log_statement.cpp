@@ -33,7 +33,7 @@ void LogStatement::execute() {
 
   case LogToken::COLORED:
     int r, g, b;
-    if (auto *hexCode = dynamic_cast<StringLiteral *>(logNode->color.get())) {
+    if (auto *hexCode = dynamic_cast<HexCodeLiteral *>(logNode->color.get())) {
       hexToRGB(hexCode->value, r, g, b);
       std::cout << "\033[38;2;" << r << ";" << g << ";" << b << "m"
                 << getMessage() << "\033[0m" << std::endl;

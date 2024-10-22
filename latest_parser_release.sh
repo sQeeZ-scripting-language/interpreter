@@ -16,8 +16,11 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   ZIP_URL=$(echo "$LATEST_RELEASE" | grep -o "https://.*sQeeZ-Parser-macos-.*\.zip" | head -n 1)
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
   ZIP_URL=$(echo "$LATEST_RELEASE" | grep -o "https://.*sQeeZ-Parser-linux-.*\.zip" | head -n 1)
-else
+elif [[ "$OSTYPE" == "msys"* ]]; then
   ZIP_URL=$(echo "$LATEST_RELEASE" | grep -o "https://.*sQeeZ-Parser-windows-.*\.zip" | head -n 1)
+else
+  echo "Unsupported OS."
+  exit 1
 fi
 
 if [ -z "$ZIP_URL" ]; then
@@ -32,6 +35,7 @@ curl -L -o "$TEMP_DIR/sQeeZ-Parser.zip" "$ZIP_URL"
 unzip "$TEMP_DIR/sQeeZ-Parser.zip" -d "$REPO_DIR"
 
 mv "$REPO_DIR/"*/libsQeeZ-Parser-Lib.a "$REPO_DIR/"
+mv "$REPO_DIR/"*/sQeeZ-Parser-Lib.lib "$REPO_DIR/"
 mv "$REPO_DIR/parser/"* "$INCLUDE_DIR/"
 
 rm -rf "$REPO_DIR/"*/sQeeZ-Parser-Exe

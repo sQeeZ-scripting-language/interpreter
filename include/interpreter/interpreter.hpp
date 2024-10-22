@@ -16,4 +16,4 @@ private:
   void handleException(const std::exception &e);
 };
 
-#endif
+#endif // INTERPRETER_HPP
