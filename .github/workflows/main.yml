@@ -232,7 +232,7 @@ jobs:
         mkdir -p "$REPO_DIR"
 
         LATEST_RELEASE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
-        ZIP_URL=$(echo "$LATEST_RELEASE" | grep -o "https://.*sQeeZ-Lexer-linux-.*\\.zip" | head -n 1)
+        ZIP_URL=$(echo "$LATEST_RELEASE" | grep -o "https://.*sQeeZ-Parser-linux-.*\\.zip" | head -n 1)
 
         if [ -z "$ZIP_URL" ]; then
           echo "No matching asset found."
