@@ -12,16 +12,18 @@ project(sQeeZ-Interpreter)
 
 # OS specific configurations
 if(MSVC)
-  message(FATAL_ERROR "MSVC is not supported")
-elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
   add_definitions(-D_SQEEZ_WIN)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 elseif(APPLE)
   add_definitions(-D_SQEEZ_MAC)
   set(CMAKE_OSX_ARCHITECTURES "arm64")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -arch arm64")
-else()
+elseif(UNIX)
   add_definitions(-D_SQEEZ_LINUX)
+else()
+  message(FATAL_ERROR "Unsupported Operating System")
 endif()
 
 # Print the compiler information
@@ -51,27 +53,47 @@ include(GoogleTest)
 file(GLOB_RECURSE SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/statements/*.cpp
 )
 
 # Include the header files
 file(GLOB_RECURSE HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/include/interpreter/*.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/statements/*.hpp
 )
 
 # Include the Lexer
-set(SQEEZ_LEXER_LIB_PATH ${CMAKE_SOURCE_DIR}/lexer-lib/libsQeeZ-Lexer-Lib.a)
+if(MSVC)
+  set(SQEEZ_LEXER_LIB_PATH ${CMAKE_SOURCE_DIR}/lexer-lib/sQeeZ-Lexer-Lib.lib)
+  add_library(sQeeZ-Lexer-Lib STATIC IMPORTED)
+  set_target_properties(sQeeZ-Lexer-Lib PROPERTIES
+    IMPORTED_LOCATION ${SQEEZ_LEXER_LIB_PATH}
+    IMPORTED_IMPLIB ${SQEEZ_LEXER_LIB_PATH}
+  )
+else()
+  set(SQEEZ_LEXER_LIB_PATH ${CMAKE_SOURCE_DIR}/lexer-lib/libsQeeZ-Lexer-Lib.a)
+  add_library(sQeeZ-Lexer-Lib STATIC IMPORTED)
+  set_target_properties(sQeeZ-Lexer-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_LEXER_LIB_PATH})
+endif()
 set(SQEEZ_LEXER_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/lexer)
 include_directories(${SQEEZ_LEXER_INCLUDE_DIR})
-add_library(sQeeZ-Lexer-Lib STATIC IMPORTED)
-set_target_properties(sQeeZ-Lexer-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_LEXER_LIB_PATH})
 
-#Include the Parser
-set(SQEEZ_PARSER_LIB_PATH ${CMAKE_SOURCE_DIR}/parser-lib/libsQeeZ-Parser-Lib.a)
+# Include the Parser
+if(MSVC)
+  set(SQEEZ_PARSER_LIB_PATH ${CMAKE_SOURCE_DIR}/parser-lib/sQeeZ-Parser-Lib.lib)
+  add_library(sQeeZ-Parser-Lib STATIC IMPORTED)
+  set_target_properties(sQeeZ-Parser-Lib PROPERTIES
+    IMPORTED_LOCATION ${SQEEZ_PARSER_LIB_PATH}
+    IMPORTED_IMPLIB ${SQEEZ_PARSER_LIB_PATH}
+  )
+else()
+  set(SQEEZ_PARSER_LIB_PATH ${CMAKE_SOURCE_DIR}/parser-lib/libsQeeZ-Parser-Lib.a)
+  add_library(sQeeZ-Parser-Lib STATIC IMPORTED)
+  set_target_properties(sQeeZ-Parser-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_PARSER_LIB_PATH})
+endif()
 set(SQEEZ_PARSER_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/parser)
 include_directories(${SQEEZ_PARSER_INCLUDE_DIR})
-add_library(sQeeZ-Parser-Lib STATIC IMPORTED)
-set_target_properties(sQeeZ-Parser-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_PARSER_LIB_PATH})
 
 # Create the Library
 add_library(
@@ -99,7 +121,7 @@ add_executable(
   ${CMAKE_CURRENT_SOURCE_DIR}/test/interpreter_test.cc
 )
 target_link_libraries(
-  interpreter_test 
+  interpreter_test
   GTest::gtest_main
   sQeeZ-Interpreter-Lib
   sQeeZ-Lexer-Lib
