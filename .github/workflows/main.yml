@@ -88,7 +88,7 @@ jobs:
         TEMP_DIR=$(mktemp -d)
 
         curl -L -o "$TEMP_DIR/sQeeZ-Lexer.zip" "$ZIP_URL"
-        unzip "$TEMP_DIR/sQeeZ-Lexer.zip" -d "$REPO_DIR"
+        unzip "$TEMP_DIR/sQeeZ-Lexer.zip" -d "$REPO_DIR" || { echo "Unzipping failed"; exit 1; }
 
         mv "$REPO_DIR/"*/libsQeeZ-Lexer-Lib.a "$REPO_DIR/"
         mv "$REPO_DIR/lexer/"* "$INCLUDE_DIR/"
