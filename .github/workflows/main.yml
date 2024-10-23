@@ -85,7 +85,7 @@ jobs:
           exit 1
         fi
 
-        TEMP_DIR=$(mktemp -d)
+        TEMP_DIR=$(mktemp -d "/tmp/lexer-XXXXXX")
 
         curl --retry 5 -L -o "$TEMP_DIR/sQeeZ-Lexer.zip" "$ZIP_URL"
         unzip "$TEMP_DIR/sQeeZ-Lexer.zip" -d "$REPO_DIR" || { echo "Unzipping failed"; exit 1; }
@@ -204,6 +204,7 @@ jobs:
         fi
 
         TEMP_DIR=$(mktemp -d "/tmp/parser-XXXXXX")
+        
         curl --retry 5 -L -o "$TEMP_DIR/sQeeZ-Parser.zip" "$ZIP_URL"
         unzip "$TEMP_DIR/sQeeZ-Parser.zip" -d "$REPO_DIR"
 
