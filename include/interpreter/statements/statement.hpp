@@ -7,7 +7,7 @@
 
 class Statement {
 public:
-  Statement(Stmt *stmtNode, std::shared_ptr<Storage> storage) : stmtNode(stmtNode), storage(std::move(storage)) {};
+  Statement(Stmt *stmtNode, std::shared_ptr<Storage> storage);
   void execute();
 
 private:

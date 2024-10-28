@@ -2,12 +2,9 @@
 #define STORAGE_HPP
 
 #include <any>
-#include <memory>
 #include <unordered_map>
 #include <string>
 #include <stdexcept>
-#include <iostream>
-#include <typeinfo>
 
 class Storage {
 public:
@@ -18,41 +15,60 @@ public:
     };
 
     struct StorageEntry {
-        std::shared_ptr<std::any> value;
+        std::any value;
         StorageType type;
 
         StorageEntry(std::any val, StorageType t) 
-            : value(std::make_shared<std::any>(std::move(val))), type(t) {}
+            : value(std::move(val)), type(t) {}
     };
 
     template <typename T>
     void setVariable(const std::string& name, T value) {
-        store[name] = Entry(value, Type::VARIABLE);
+        store.emplace(name, StorageEntry(std::any(value), StorageType::VARIABLE));
     }
 
     template <typename T>
     void setConstant(const std::string& name, T value) {
-        store[name] = Entry(value, Type::CONSTANT);
+        store.emplace(name, StorageEntry(std::any(value), StorageType::VARIABLE));
     }
 
     template <typename T>
     void setFunction(const std::string& name, T value) {
-        store[name] = Entry(value, Type::FUNCTION);
+        store.emplace(name, StorageEntry(std::any(value), StorageType::VARIABLE));
     }
 
     template <typename T>
     T get(const std::string& name) const {
-        if (exists(name)) {
-            return std::any_cast<T>(*(it->second.value));
+        auto it = store.find(name);
+        if (it != store.end()) {
+            return std::any_cast<T>(it->second.value);
         }
-        throw std::runtime_error("Identifier '" + name + "' not found");
+        throw std::invalid_argument("Identifier '" + name + "' not found");
     }
 
     void update(const std::string& name, const std::any& value) {
-        if(getType(name) == StorageType::VARIABLE) {
-            store[name].value = std::make_shared<std::any>(value);
+        auto it = store.find(name);
+        if (it != store.end()) {
+            switch (it->second.type)
+            {
+            case StorageType::VARIABLE:
+                it->second.value = value;
+                break;
+            
+            case StorageType::CONSTANT:
+                throw std::logic_error("Cannot update constant '" + name + "'");
+                break;
+
+            case StorageType::FUNCTION:
+                throw std::logic_error("Cannot redefine function '" + name + "'");
+                break;
+
+            default:
+                throw std::runtime_error("Unknown storage type");
+                break;
+            }
         } else {
-            throw std::runtime_error("Cannot update constant '" + name + "'");
+            throw std::invalid_argument("Identifier '" + name + "' not found");
         }
     }
 
@@ -61,10 +77,11 @@ public:
     }
 
     StorageType getType(const std::string& name) const {
-        if (exists(name)) {
-            return store.find(name)->second.type;
+        auto it = store.find(name);
+        if (it != store.end()) {
+            return it->second.type;
         }
-        throw std::runtime_error("Identifier '" + name + "' not found");
+        throw std::invalid_argument("Identifier '" + name + "' not found");
     }
 
 private:
