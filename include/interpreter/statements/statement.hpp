@@ -3,14 +3,16 @@
 
 #include "interpreter/statements/log_statement.hpp"
 #include "parser/ast_nodes.hpp"
+#include "interpreter/storage.hpp"
 
 class Statement {
 public:
-  Statement(Stmt *stmtNode);
+  Statement(Stmt *stmtNode, std::shared_ptr<Storage> storage) : stmtNode(stmtNode), storage(std::move(storage)) {};
   void execute();
 
 private:
   Stmt *stmtNode;
+  std::shared_ptr<Storage> storage;
 };
 
 #endif // STATEMENT_HPP
