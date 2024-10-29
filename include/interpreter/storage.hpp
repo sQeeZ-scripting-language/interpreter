@@ -11,8 +11,7 @@ class Storage {
 public:
     enum class StorageType {
         VARIABLE,
-        CONSTANT,
-        FUNCTION
+        CONSTANT
     };
 
     enum DataType {
@@ -121,40 +120,46 @@ public:
     };
 
     void setValue(const std::string& name, StorageType storageType, DataType dataType, const Data& value) {
-        if (store.find(name) != store.end()) {
-            store[name].clear();
+        if (storage.find(name) != storage.end()) {
+            throw std::invalid_argument("Identifier '" + name + " 'is already defined!");
         }
-        store[name] = StorageEntry(storageType, dataType, value);
+        storage[name] = StorageEntry(storageType, dataType, value);
+    }
+
+    void updateValue(const std::string& name, const Data& value) {
+        if (storage.find(name) != storage.end()) {
+            storage[name].data = value;
+        }
     }
 
     bool exists(const std::string& name) const {
-        return store.find(name) != store.end();
+        return storage.find(name) != storage.end();
     }
     
     StorageEntry& getEntry(const std::string& name) {
-        if (store.find(name) != store.end()) {
-            return store.at(name);
+        if (storage.find(name) != storage.end()) {
+            return storage.at(name);
         }
         throw std::invalid_argument("Undefined identifier: " + name);
     }
 
     StorageType getStorageType(const std::string& name) {
-        if (store.find(name) != store.end()) {
-            return store.at(name).storageType;
+        if (storage.find(name) != storage.end()) {
+            return storage.at(name).storageType;
         }
         throw std::invalid_argument("Undefined identifier: " + name);
     }
 
     DataType getDataType(const std::string& name) {
-                if (store.find(name) != store.end()) {
-            return store.at(name).dataType;
+                if (storage.find(name) != storage.end()) {
+            return storage.at(name).dataType;
         }
         throw std::invalid_argument("Undefined identifier: " + name);
     }
 
     std::any getValue(const std::string& name) {
-        if (store.find(name) != store.end()) {
-            auto& entry = store.at(name);
+        if (storage.find(name) != storage.end()) {
+            auto& entry = storage.at(name);
             switch (entry.dataType) {
             case DataType::INTEGER:
                 return entry.data._int;
@@ -174,8 +179,16 @@ public:
         throw std::invalid_argument("Undefined identifier: " + name);
     }
 
+    void storeFunction(const std::string& name, std::shared_ptr<FunctionDeclaration> function) {
+        if (functions.find(name) != functions.end()) {
+            throw std::invalid_argument("Function '" + name + "' is already defined!");
+        }
+        functions[name] = function;
+    }
+
 private:
-    std::unordered_map<std::string, StorageEntry> store;
+    std::unordered_map<std::string, StorageEntry> storage;
+    std::unordered_map<std::string, std::shared_ptr<FunctionDeclaration>> functions;
 };
 
 #endif // STORAGE_HPP

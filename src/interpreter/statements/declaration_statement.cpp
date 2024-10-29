@@ -30,7 +30,7 @@ void DeclarationStatement::execute() {
         }
     } else {
         auto functionDeclaration = std::get<FunctionDeclaration*>(declarationNode);
-        // storage->setValue(functionDeclaration->name.value, Storage::StorageType::FUNCTION, Storage::DataType::FUNCTION, functionDeclaration);
+        storage->storeFunction(functionDeclaration->name.value, std::shared_ptr<FunctionDeclaration>(functionDeclaration));
     }
 }
 
