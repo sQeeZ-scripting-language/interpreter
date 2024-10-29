@@ -46,20 +46,68 @@ public:
         DataType dataType;
         Data data;
 
+        // Default constructor
         StorageEntry() 
             : storageType(StorageType::VARIABLE), 
-            dataType(DataType::INTEGER),
+            dataType(DataType::INTEGER), 
             data() {}
 
+        // Parameterized constructor
         StorageEntry(StorageType st, DataType dt, const Data& value) 
             : storageType(st), dataType(dt) {
             if ((dt == DataType::STRING || dt == DataType::HEXCODE) && value._string) {
-                data._string = new std::string(*value._string);  // Deep copy for strings
+                data._string = new std::string(*value._string);
             } else {
                 data = value;
             }
         }
 
+        // Copy constructor
+        StorageEntry(const StorageEntry& other) 
+            : storageType(other.storageType), dataType(other.dataType) {
+            if (dataType == DataType::STRING || dataType == DataType::HEXCODE) {
+                data._string = new std::string(*other.data._string);
+            } else {
+                data = other.data;
+            }
+        }
+
+        // Move constructor
+        StorageEntry(StorageEntry&& other) noexcept 
+            : storageType(other.storageType), dataType(other.dataType), data(other.data) {
+            other.data._string = nullptr;
+        }
+
+        // Copy assignment operator
+        StorageEntry& operator=(const StorageEntry& other) {
+            if (this != &other) {
+                clear();
+
+                storageType = other.storageType;
+                dataType = other.dataType;
+
+                if (dataType == DataType::STRING || dataType == DataType::HEXCODE) {
+                    data._string = new std::string(*other.data._string);
+                } else {
+                    data = other.data;
+                }
+            }
+            return *this;
+        }
+
+        // Move assignment operator
+        StorageEntry& operator=(StorageEntry&& other) noexcept {
+            if (this != &other) {
+                clear();
+                storageType = other.storageType;
+                dataType = other.dataType;
+                data = other.data;
+                other.data._string = nullptr;
+            }
+            return *this;
+        }
+
+        // Destructor
         ~StorageEntry() {
             clear();
         }
