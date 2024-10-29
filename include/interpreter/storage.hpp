@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <string>
 #include <stdexcept>
+#include <memory>
 
 class Storage {
 public:
@@ -14,74 +15,115 @@ public:
         FUNCTION
     };
 
-    struct StorageEntry {
-        std::any value;
-        StorageType type;
-
-        StorageEntry(std::any val, StorageType t) 
-            : value(std::move(val)), type(t) {}
+    enum DataType {
+        INTEGER,
+        DOUBLE,
+        BOOLEAN,
+        CHAR,
+        STRING,
+        HEXCODE
     };
 
-    template <typename T>
-    void setVariable(const std::string& name, T value) {
-        store.emplace(name, StorageEntry(std::any(value), StorageType::VARIABLE));
-    }
+    union Data {
+        int _int;
+        double _double;
+        bool _bool;
+        char _char;
+        std::string* _string;
 
-    template <typename T>
-    void setConstant(const std::string& name, T value) {
-        store.emplace(name, StorageEntry(std::any(value), StorageType::VARIABLE));
-    }
+        Data() : _int(0) {}
+        Data(int value) : _int(value) {}
+        Data(double value) : _double(value) {}
+        Data(bool value) : _bool(value) {}
+        Data(char value) : _char(value) {}
+        Data(std::string* value) : _string(value) {}
 
-    template <typename T>
-    void setFunction(const std::string& name, T value) {
-        store.emplace(name, StorageEntry(std::any(value), StorageType::VARIABLE));
-    }
+        ~Data() {}
+    };
 
-    template <typename T>
-    T get(const std::string& name) const {
-        auto it = store.find(name);
-        if (it != store.end()) {
-            return std::any_cast<T>(it->second.value);
-        }
-        throw std::invalid_argument("Identifier '" + name + "' not found");
-    }
+    struct StorageEntry {
+        StorageType storageType;
+        DataType dataType;
+        Data data;
 
-    void update(const std::string& name, const std::any& value) {
-        auto it = store.find(name);
-        if (it != store.end()) {
-            switch (it->second.type)
-            {
-            case StorageType::VARIABLE:
-                it->second.value = value;
-                break;
-            
-            case StorageType::CONSTANT:
-                throw std::logic_error("Cannot update constant '" + name + "'");
-                break;
+        StorageEntry() 
+            : storageType(StorageType::VARIABLE), 
+            dataType(DataType::INTEGER),
+            data() {}
 
-            case StorageType::FUNCTION:
-                throw std::logic_error("Cannot redefine function '" + name + "'");
-                break;
-
-            default:
-                throw std::runtime_error("Unknown storage type");
-                break;
+        StorageEntry(StorageType st, DataType dt, const Data& value) 
+            : storageType(st), dataType(dt) {
+            if ((dt == DataType::STRING || dt == DataType::HEXCODE) && value._string) {
+                data._string = new std::string(*value._string);  // Deep copy for strings
+            } else {
+                data = value;
             }
-        } else {
-            throw std::invalid_argument("Identifier '" + name + "' not found");
         }
+
+        ~StorageEntry() {
+            clear();
+        }
+
+        void clear() {
+            if (dataType == DataType::STRING || dataType == DataType::HEXCODE) {
+                delete data._string;
+                data._string = nullptr;
+            }
+        }
+    };
+
+    void setValue(const std::string& name, StorageType storageType, DataType dataType, const Data& value) {
+        if (store.find(name) != store.end()) {
+            store[name].clear();
+        }
+        store[name] = StorageEntry(storageType, dataType, value);
     }
 
     bool exists(const std::string& name) const {
         return store.find(name) != store.end();
     }
-
-    StorageType getType(const std::string& name) const {
-        auto it = store.find(name);
-        if (it != store.end()) {
-            return it->second.type;
+    
+    StorageEntry& getEntry(const std::string& name) {
+        if (store.find(name) != store.end()) {
+            return store.at(name);
         }
-        throw std::invalid_argument("Identifier '" + name + "' not found");
+        throw std::invalid_argument("Undefined identifier: " + name);
+    }
+
+    StorageType getStorageType(const std::string& name) {
+        if (store.find(name) != store.end()) {
+            return store.at(name).storageType;
+        }
+        throw std::invalid_argument("Undefined identifier: " + name);
+    }
+
+    DataType getDataType(const std::string& name) {
+                if (store.find(name) != store.end()) {
+            return store.at(name).dataType;
+        }
+        throw std::invalid_argument("Undefined identifier: " + name);
+    }
+
+    std::any getValue(const std::string& name) {
+        if (store.find(name) != store.end()) {
+            auto& entry = store.at(name);
+            switch (entry.dataType) {
+            case DataType::INTEGER:
+                return entry.data._int;
+            case DataType::DOUBLE:
+                return entry.data._double;
+            case DataType::BOOLEAN:
+                return entry.data._bool;
+            case DataType::CHAR:
+                return entry.data._char;
+            case DataType::STRING:
+            case DataType::HEXCODE:
+                return *(entry.data._string);
+            default:
+                throw std::invalid_argument("Unknown data type!");
+            }
+        }
+        throw std::invalid_argument("Undefined identifier: " + name);
     }
 
 private:
