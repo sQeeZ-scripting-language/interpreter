@@ -28,9 +28,10 @@ void DeclarationStatement::execute() {
                 }
             }
         }
-    } else {
+    } else if (std::holds_alternative<FunctionDeclaration*>(declarationNode)) {
         auto functionDeclaration = std::get<FunctionDeclaration*>(declarationNode);
-        storage->storeFunction(functionDeclaration->name.value, std::shared_ptr<FunctionDeclaration>(functionDeclaration));
+        std::shared_ptr<FunctionDeclaration> funcPtr = std::shared_ptr<FunctionDeclaration>(functionDeclaration);
+        storage->storeFunction(funcPtr->name.value, funcPtr);
     }
 }
 
