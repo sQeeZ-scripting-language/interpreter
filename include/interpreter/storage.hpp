@@ -119,16 +119,18 @@ public:
         }
     };
 
-    void setValue(const std::string& name, StorageType storageType, DataType dataType, const Data& value) {
+    void setValue(const std::string& name, StorageType storageType, Expr* expression) {
         if (storage.find(name) != storage.end()) {
             throw std::invalid_argument("Identifier '" + name + " 'is already defined!");
         }
-        storage[name] = StorageEntry(storageType, dataType, value);
+        storeValue(name, storageType, expression);
     }
 
-    void updateValue(const std::string& name, const Data& value) {
+    void updateValue(const std::string& name, Expr* expression) {
         if (storage.find(name) != storage.end()) {
-            storage[name].data = value;
+            storeValue(name, storage.at(name).storageType, expression);
+        } else {
+            throw std::invalid_argument("Undefined identifier: " + name);
         }
     }
 
@@ -189,6 +191,24 @@ public:
 private:
     std::unordered_map<std::string, StorageEntry> storage;
     std::unordered_map<std::string, std::shared_ptr<FunctionDeclaration>> functions;
+
+    void storeValue(const std::string& name, StorageType storageType, Expr* expression) {
+        if (auto expr = dynamic_cast<IntegerLiteral*>(expression)) {
+            storage[name] = StorageEntry(storageType, DataType::INTEGER, expr->value);
+        } else if (auto expr = dynamic_cast<DoubleLiteral*>(expression)) {
+            storage[name] = StorageEntry(storageType, DataType::DOUBLE, expr->value);
+        } else if (auto expr = dynamic_cast<BooleanLiteral*>(expression)) {
+            storage[name] = StorageEntry(storageType, DataType::BOOLEAN, expr->value);
+        } else if (auto expr = dynamic_cast<CharLiteral*>(expression)) {
+            storage[name] = StorageEntry(storageType, DataType::CHAR, expr->value);
+        } else if (auto expr = dynamic_cast<StringLiteral*>(expression)) {
+            storage[name] = StorageEntry(storageType, DataType::STRING, new std::string(expr->value));
+        } else if (auto expr = dynamic_cast<HexCodeLiteral*>(expression)) {
+            storage[name] = StorageEntry(storageType, DataType::HEXCODE, new std::string(expr->value));
+        } else {
+            throw std::invalid_argument("Unknown literal type!");
+        }
+    }
 };
 
 #endif // STORAGE_HPP
