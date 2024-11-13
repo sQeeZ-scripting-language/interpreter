@@ -24,7 +24,7 @@ void DeclarationStatement::execute() {
                 } else if (auto expr = dynamic_cast<HexCodeLiteral*>(declaration.second.get())) {
                     storage->setValue(declaration.first.value, Storage::StorageType::VARIABLE, Storage::DataType::HEXCODE, new std::string(expr->value));
                 } else {
-                    throw std::invalid_argument("Unknown variable literal type!");
+                    throw std::invalid_argument("Unknown literal type!");
                 }
             }
         }
