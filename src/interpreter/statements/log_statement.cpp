@@ -1,8 +1,8 @@
 #include "interpreter/statements/log_statement.hpp"
 
-LogStatement::LogStatement(LogStmt *logNode) : logNode(logNode) {}
+LogStatement::LogStatement(LogStmt *logNode, std::shared_ptr<Storage> storage) : logNode(logNode), storage(std::move(storage)) {}
 
-auto LogStatement::getMessage() {
+std::string LogStatement::getMessage() {
   if (logNode->message) {
     if (auto *strLiteral =
             dynamic_cast<StringLiteral *>(logNode->message.get())) {
@@ -13,6 +13,18 @@ auto LogStatement::getMessage() {
     } else if (auto *doubleLiteral =
                    dynamic_cast<DoubleLiteral *>(logNode->message.get())) {
       return std::to_string(doubleLiteral->value);
+    } else if (auto *boolLiteral =
+                   dynamic_cast<BooleanLiteral *>(logNode->message.get())) {
+      return std::string(boolLiteral->value ? "true" : "false");
+    } else if (auto *charLiteral =
+                   dynamic_cast<CharLiteral *>(logNode->message.get())) {
+      return std::string(1, charLiteral->value);
+    } else if (auto *hexCodeLiteral =
+                   dynamic_cast<HexCodeLiteral *>(logNode->message.get())) {
+      return hexCodeLiteral->value;
+    } else if (auto *identifier =
+                   dynamic_cast<Identifier *>(logNode->message.get())) {
+      return castStorageEntry(identifier->identifier.value);
     } else {
       throw std::logic_error("Unsupported log message type.");
     }
@@ -67,5 +79,24 @@ void LogStatement::hexToRGB(const std::string &hex, int &r, int &g, int &b) {
   } else {
     throw std::invalid_argument(
         "Invalid hex code format. Must start with '#'.");
+  }
+}
+
+std::string LogStatement::castStorageEntry(const std::string &name) {
+  Storage::StorageEntry entry = storage->getEntry(name);
+  switch (entry.dataType) {
+  case Storage::DataType::INTEGER:
+    return std::to_string(entry.data._int);
+  case Storage::DataType::DOUBLE:
+    return std::to_string(entry.data._double);
+  case Storage::DataType::BOOLEAN:
+    return entry.data._bool ? "true" : "false";
+  case Storage::DataType::CHAR:
+    return std::string(1, entry.data._char);
+  case Storage::DataType::STRING:
+  case Storage::DataType::HEXCODE:
+    return *(entry.data._string);
+  default:
+    throw std::invalid_argument("Unknown data type!");
   }
 }

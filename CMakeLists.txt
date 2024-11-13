@@ -54,6 +54,7 @@ file(GLOB_RECURSE SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/statements/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/expressions/*.cpp
 )
 
 # Include the header files
@@ -61,6 +62,7 @@ file(GLOB_RECURSE HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/include/interpreter/*.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/statements/*.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/expressions/*.hpp
 )
 
 # Include the Lexer
