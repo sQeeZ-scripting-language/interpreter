@@ -9,6 +9,9 @@ void Expression::execute() {
     AssignmentExpression(dynamic_cast<AssignmentExpr *>(exprNode), storage)
         .execute();
     break;
+  case NodeType::BinaryExpr:
+    BinaryExpression(dynamic_cast<BinaryExpr *>(exprNode), storage).execute();
+    break;
 
   default:
     throw std::runtime_error("Unknown expression type!");

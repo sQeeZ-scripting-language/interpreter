@@ -5,6 +5,7 @@
 #include "parser/ast_nodes.hpp"
 
 #include "interpreter/expressions/assignment_expression.hpp"
+#include "interpreter/expressions/binary_expression.hpp"
 
 class Expression {
 public:
