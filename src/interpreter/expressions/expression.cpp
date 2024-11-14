@@ -1,11 +1,13 @@
 #include "interpreter/expressions/expression.hpp"
 
-Expression::Expression(Expr *exprNode, std::shared_ptr<Storage> storage) : exprNode(exprNode), storage(std::move(storage)) {}
+Expression::Expression(Expr *exprNode, std::shared_ptr<Storage> storage)
+    : exprNode(exprNode), storage(std::move(storage)) {}
 
 void Expression::execute() {
   switch (exprNode->kind) {
   case NodeType::AssignmentExpr:
-    AssignmentExpression(dynamic_cast<AssignmentExpr *>(exprNode), storage).execute();
+    AssignmentExpression(dynamic_cast<AssignmentExpr *>(exprNode), storage)
+        .execute();
     break;
 
   default:

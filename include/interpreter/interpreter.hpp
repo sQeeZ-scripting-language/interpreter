@@ -2,9 +2,9 @@
 #define INTERPRETER_HPP
 
 #include "interpreter/statements/statement.hpp"
+#include "interpreter/storage.hpp"
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
-#include "interpreter/storage.hpp"
 
 class Interpreter {
   std::unique_ptr<Program> ast;

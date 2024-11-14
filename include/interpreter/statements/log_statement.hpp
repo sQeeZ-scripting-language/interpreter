@@ -1,8 +1,8 @@
 #ifndef LOG_STATEMENT_HPP
 #define LOG_STATEMENT_HPP
 
-#include "parser/ast_nodes.hpp"
 #include "interpreter/storage.hpp"
+#include "parser/ast_nodes.hpp"
 
 class LogStatement {
 public:
