@@ -31,11 +31,11 @@ Storage::DataWrapper BinaryExpression::addition(Storage::DataWrapper left, Stora
         case Storage::DataType::INTEGER:
             switch (right.dataType) {
                 case Storage::DataType::INTEGER:
-                    return integerAddition(left.data._int, right.data._int);
+                    return _integer(left.data._int + right.data._int);
                 case Storage::DataType::DOUBLE:
-                    return doubleAddition(left.data._int, right.data._double);
+                    return _double(left.data._int + right.data._double);
                 case Storage::DataType::CHAR:
-                    return integerAddition(left.data._int, right.data._char);
+                    return _integer(left.data._int + right.data._char);
                 case Storage::DataType::STRING:
                     return stringAddition(std::to_string(left.data._int), *right.data._string);
                 default:
@@ -44,11 +44,11 @@ Storage::DataWrapper BinaryExpression::addition(Storage::DataWrapper left, Stora
         case Storage::DataType::DOUBLE:
             switch (right.dataType) {
                 case Storage::DataType::INTEGER:
-                    return doubleAddition(left.data._double, right.data._int);
+                    return _double(left.data._double + right.data._int);
                 case Storage::DataType::DOUBLE:
-                    return doubleAddition(left.data._double, right.data._double);
+                    return _double(left.data._double + right.data._double);
                 case Storage::DataType::CHAR:
-                    return doubleAddition(left.data._double, right.data._char);
+                    return _double(left.data._double + right.data._char);
                 case Storage::DataType::STRING:
                     return stringAddition(std::to_string(left.data._double), *right.data._string);
                 default:
@@ -57,11 +57,11 @@ Storage::DataWrapper BinaryExpression::addition(Storage::DataWrapper left, Stora
         case Storage::DataType::CHAR:
             switch (right.dataType) {
                 case Storage::DataType::INTEGER:
-                    return integerAddition(left.data._char, right.data._int);
+                    return _integer(left.data._char + right.data._int);
                 case Storage::DataType::DOUBLE:
-                    return doubleAddition(left.data._char, right.data._double);
+                    return _double(left.data._char + right.data._double);
                 case Storage::DataType::CHAR:
-                    return integerAddition(left.data._char, right.data._char);
+                    return _integer(left.data._char + right.data._char);
                 case Storage::DataType::STRING:
                     return stringAddition(std::string(1, left.data._char), *right.data._string);
                 default:
@@ -86,14 +86,22 @@ Storage::DataWrapper BinaryExpression::addition(Storage::DataWrapper left, Stora
     }
 }
 
-Storage::DataWrapper BinaryExpression::integerAddition(int left, int right) {
-    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, left + right);
+Storage::DataWrapper BinaryExpression::_integer(int value) {
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, value);
 }
 
-Storage::DataWrapper BinaryExpression::doubleAddition(double left, double right) {
-    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::DOUBLE, left + right);
+Storage::DataWrapper BinaryExpression::_double(double value) {
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::DOUBLE, value);
 }
 
 Storage::DataWrapper BinaryExpression::stringAddition(std::string left, std::string right) {
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(left + right));
+}
+
+Storage::DataWrapper BinaryExpression::stringMultiplication(std::string value, int multiplier) {
+    std::string result = "";
+    for (int i = 0; i < multiplier; i++) {
+        result += value;
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(result));
 }

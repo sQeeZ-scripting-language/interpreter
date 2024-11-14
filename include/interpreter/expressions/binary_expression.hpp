@@ -17,9 +17,10 @@ private:
 
   Storage::DataWrapper addition(Storage::DataWrapper left, Storage::DataWrapper right);
 
-  Storage::DataWrapper integerAddition(int left, int right);
-  Storage::DataWrapper doubleAddition(double left, double right);
+  Storage::DataWrapper _integer(int value);
+  Storage::DataWrapper _double(double value);
   Storage::DataWrapper stringAddition(std::string left, std::string right);
+  Storage::DataWrapper stringMultiplication(std::string value, int multiplier);
 };
 
 #endif // BINARY_EXPRESSION_HPP
