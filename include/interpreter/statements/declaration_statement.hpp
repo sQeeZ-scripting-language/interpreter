@@ -4,6 +4,7 @@
 #include <variant>
 
 #include "interpreter/storage.hpp"
+#include "interpreter/expressions/expression.hpp"
 #include "parser/ast_nodes.hpp"
 
 class DeclarationStatement {

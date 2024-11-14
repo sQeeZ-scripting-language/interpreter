@@ -84,7 +84,7 @@ void LogStatement::hexToRGB(const std::string &hex, int &r, int &g, int &b) {
 }
 
 std::string LogStatement::castStorageEntry(const std::string &name) {
-  Storage::StorageEntry entry = storage->getEntry(name);
+  Storage::DataWrapper entry = storage->getEntry(name);
   switch (entry.dataType) {
   case Storage::DataType::INTEGER:
     return std::to_string(entry.data._int);

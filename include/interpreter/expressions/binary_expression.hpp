@@ -7,8 +7,8 @@
 class BinaryExpression {
 public:
   BinaryExpression(BinaryExpr *expressionNode,
-                       std::shared_ptr<Storage> storage);
-  void execute();
+                   std::shared_ptr<Storage> storage);
+  Storage::DataWrapper execute();
 
 private:
   BinaryExpr *expressionNode;

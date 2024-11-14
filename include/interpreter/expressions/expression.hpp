@@ -6,11 +6,12 @@
 
 #include "interpreter/expressions/assignment_expression.hpp"
 #include "interpreter/expressions/binary_expression.hpp"
+#include "interpreter/expressions/literal_expression.hpp"
 
 class Expression {
 public:
   Expression(Expr *exprNode, std::shared_ptr<Storage> storage);
-  void execute();
+  Storage::DataWrapper execute();
 
 private:
   Expr *exprNode;

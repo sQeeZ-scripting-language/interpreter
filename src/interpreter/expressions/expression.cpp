@@ -3,18 +3,15 @@
 Expression::Expression(Expr *exprNode, std::shared_ptr<Storage> storage)
     : exprNode(exprNode), storage(std::move(storage)) {}
 
-void Expression::execute() {
+Storage::DataWrapper Expression::execute() {
   switch (exprNode->kind) {
   case NodeType::AssignmentExpr:
     AssignmentExpression(dynamic_cast<AssignmentExpr *>(exprNode), storage)
         .execute();
-    break;
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
   case NodeType::BinaryExpr:
-    BinaryExpression(dynamic_cast<BinaryExpr *>(exprNode), storage).execute();
-    break;
-
+    return BinaryExpression(dynamic_cast<BinaryExpr *>(exprNode), storage).execute();
   default:
-    throw std::runtime_error("Unknown expression type!");
-    break;
+    return LiteralExpression(exprNode, storage).execute();
   }
 }
