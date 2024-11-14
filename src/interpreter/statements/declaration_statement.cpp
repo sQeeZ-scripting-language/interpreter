@@ -13,9 +13,7 @@ void DeclarationStatement::execute() {
     auto varDeclaration = std::get<VarDeclaration *>(declarationNode);
     for (const auto &declaration : varDeclaration->declarations) {
       if (declaration.second) {
-        Storage::DataWrapper data = Expression(static_cast<Expr *>(declaration.second.get()), storage).execute();
-        data.wrapperType = Storage::WrapperType::VARIABLE;
-        storage->setValue(declaration.first.value, data);
+        storage->setValue(declaration.first.value, Expression(static_cast<Expr *>(declaration.second.get()), storage).execute());
       }
     }
   } else if (std::holds_alternative<FunctionDeclaration *>(declarationNode)) {

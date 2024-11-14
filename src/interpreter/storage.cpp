@@ -77,11 +77,13 @@ void Storage::setValue(const std::string &name, DataWrapper dataWrapper) {
     throw std::invalid_argument("Identifier '" + name +
                                 " 'is already defined!");
   }
+  dataWrapper.wrapperType = WrapperType::VARIABLE;
   storage[name] = dataWrapper;
 }
 
 void Storage::updateValue(const std::string &name, DataWrapper dataWrapper) {
   if (storage.find(name) != storage.end()) {
+    dataWrapper.wrapperType = WrapperType::VARIABLE;
     storage[name] = dataWrapper;
   } else {
     throw std::invalid_argument("Undefined identifier: " + name);

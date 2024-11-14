@@ -11,6 +11,8 @@ Storage::DataWrapper Expression::execute() {
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
   case NodeType::BinaryExpr:
     return BinaryExpression(dynamic_cast<BinaryExpr *>(exprNode), storage).execute();
+  case NodeType::UnaryExpr:
+    return UnaryExpression(dynamic_cast<UnaryExpr *>(exprNode), storage).execute();
   default:
     return LiteralExpression(exprNode, storage).execute();
   }
