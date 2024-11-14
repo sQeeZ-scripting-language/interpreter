@@ -12,11 +12,11 @@ Storage::DataWrapper BinaryExpression::execute() {
         case OperatorToken::SUBTRACTION:
             return subtraction(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
         case OperatorToken::MULTIPLICATION:
-            throw std::runtime_error("Unsupported binary expression.");
+            return multiplication(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
         case OperatorToken::DIVISION:
-            throw std::runtime_error("Unsupported binary expression.");
+            return division(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
         case OperatorToken::MODULUS:
-            throw std::runtime_error("Unsupported binary expression.");
+            return modulus(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
         
         default:
             throw std::runtime_error("Unsupported binary operator.");
@@ -123,6 +123,55 @@ Storage::DataWrapper BinaryExpression::subtraction(Storage::DataWrapper left, St
             }
         default:
             throw std::invalid_argument("Invalid subtraction expression!");
+    }
+}
+
+Storage::DataWrapper BinaryExpression::multiplication(Storage::DataWrapper left, Storage::DataWrapper right) {
+    switch (left.dataType) {
+        case Storage::DataType::INTEGER:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _integer(left.data._int * right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return _double(left.data._int * right.data._double);
+                case Storage::DataType::CHAR:
+                    return _integer(left.data._int * right.data._char);
+                case Storage::DataType::STRING:
+                    return stringMultiplication(*right.data._string, left.data._int);
+                default:
+                    throw std::invalid_argument("Invalid multiplication expression!");
+            }
+        case Storage::DataType::DOUBLE:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _double(left.data._double * right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return _double(left.data._double * right.data._double);
+                case Storage::DataType::CHAR:
+                    return _double(left.data._double * right.data._char);
+                default:
+                    throw std::invalid_argument("Invalid multiplication expression!");
+            }
+        case Storage::DataType::CHAR:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _integer(left.data._char * right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return _double(left.data._char * right.data._double);
+                case Storage::DataType::CHAR:
+                    return _integer(left.data._char * right.data._char);
+                default:
+                    throw std::invalid_argument("Invalid multiplication expression!");
+            }
+        case Storage::DataType::STRING:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return stringMultiplication(*left.data._string, right.data._int);
+                default:
+                    throw std::invalid_argument("Invalid multiplication expression!");
+            }
+        default:
+            throw std::invalid_argument("Invalid multiplication expression!");
     }
 }
 
