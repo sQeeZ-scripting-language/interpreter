@@ -215,6 +215,46 @@ Storage::DataWrapper BinaryExpression::division(Storage::DataWrapper left, Stora
     }
 }
 
+Storage::DataWrapper BinaryExpression::modulus(Storage::DataWrapper left, Storage::DataWrapper right) {
+    switch (left.dataType) {
+        case Storage::DataType::INTEGER:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _integer(left.data._int % right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return _double(std::fmod(left.data._int, right.data._double));
+                case Storage::DataType::CHAR:
+                    return _integer(left.data._int % right.data._char);
+                default:
+                    throw std::invalid_argument("Invalid modulus expression!");
+            }
+        case Storage::DataType::DOUBLE:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _double(std::fmod(left.data._double, right.data._int));
+                case Storage::DataType::DOUBLE:
+                    return _double(std::fmod(left.data._double, right.data._double));
+                case Storage::DataType::CHAR:
+                    return _double(std::fmod(left.data._double, right.data._char));
+                default:
+                    throw std::invalid_argument("Invalid modulus expression!");
+            }
+        case Storage::DataType::CHAR:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _integer(left.data._char % right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return _double(std::fmod(left.data._char, right.data._double));
+                case Storage::DataType::CHAR:
+                    return _integer(left.data._char % right.data._char);
+                default:
+                    throw std::invalid_argument("Invalid modulus expression!");
+            }
+        default:
+            throw std::invalid_argument("Invalid modulus expression!");
+    }
+}
+
 Storage::DataWrapper BinaryExpression::_integer(int value) {
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, value);
 }
