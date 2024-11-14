@@ -10,7 +10,7 @@ Storage::DataWrapper BinaryExpression::execute() {
         case OperatorToken::ADDITION:
             return addition(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
         case OperatorToken::SUBTRACTION:
-            throw std::runtime_error("Unsupported binary expression.");
+            return subtraction(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
         case OperatorToken::MULTIPLICATION:
             throw std::runtime_error("Unsupported binary expression.");
         case OperatorToken::DIVISION:
@@ -83,6 +83,46 @@ Storage::DataWrapper BinaryExpression::addition(Storage::DataWrapper left, Stora
             break;
         default:
             throw std::invalid_argument("Invalid addition expression!");
+    }
+}
+
+Storage::DataWrapper BinaryExpression::subtraction(Storage::DataWrapper left, Storage::DataWrapper right) {
+    switch (left.dataType) {
+        case Storage::DataType::INTEGER:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _integer(left.data._int - right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return _double(left.data._int - right.data._double);
+                case Storage::DataType::CHAR:
+                    return _integer(left.data._int - right.data._char);
+                default:
+                    throw std::invalid_argument("Invalid subtraction expression!");
+            }
+        case Storage::DataType::DOUBLE:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _double(left.data._double - right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return _double(left.data._double - right.data._double);
+                case Storage::DataType::CHAR:
+                    return _double(left.data._double - right.data._char);
+                default:
+                    throw std::invalid_argument("Invalid subtraction expression!");
+            }
+        case Storage::DataType::CHAR:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _integer(left.data._char - right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return _double(left.data._char - right.data._double);
+                case Storage::DataType::CHAR:
+                    return _integer(left.data._char - right.data._char);
+                default:
+                    throw std::invalid_argument("Invalid subtraction expression!");
+            }
+        default:
+            throw std::invalid_argument("Invalid subtraction expression!");
     }
 }
 
