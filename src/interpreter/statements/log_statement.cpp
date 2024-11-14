@@ -39,23 +39,25 @@ void LogStatement::execute() {
 
 std::string LogStatement::getPrintableValue() {
   if (logNode->message) {
-    Storage::DataWrapper value = Expression(dynamic_cast<Expr *>(logNode->message.get()), storage).execute();
+    Storage::DataWrapper value =
+        Expression(dynamic_cast<Expr *>(logNode->message.get()), storage)
+            .execute();
     switch (value.dataType) {
-      case Storage::DataType::INTEGER:
-        return std::to_string(value.data._int);
-      case Storage::DataType::DOUBLE:
-        return std::to_string(value.data._double);
-      case Storage::DataType::BOOLEAN:
-        return value.data._bool ? "true" : "false";
-      case Storage::DataType::CHAR:
-        return std::string(1, value.data._char);
-      case Storage::DataType::STRING:
-      case Storage::DataType::HEXCODE:
-        return *(value.data._string);
-      case Storage::DataType::_NULL:
-        return "null";
-      default:
-        throw std::invalid_argument("Unknown data type!");
+    case Storage::DataType::INTEGER:
+      return std::to_string(value.data._int);
+    case Storage::DataType::DOUBLE:
+      return std::to_string(value.data._double);
+    case Storage::DataType::BOOLEAN:
+      return value.data._bool ? "true" : "false";
+    case Storage::DataType::CHAR:
+      return std::string(1, value.data._char);
+    case Storage::DataType::STRING:
+    case Storage::DataType::HEXCODE:
+      return *(value.data._string);
+    case Storage::DataType::_NULL:
+      return "null";
+    default:
+      throw std::invalid_argument("Unknown data type!");
     }
   } else {
     throw std::invalid_argument("No log message provided.");

@@ -1,9 +1,9 @@
 #ifndef LOG_STATEMENT_HPP
 #define LOG_STATEMENT_HPP
 
+#include "interpreter/expressions/expression.hpp"
 #include "interpreter/storage.hpp"
 #include "parser/ast_nodes.hpp"
-#include "interpreter/expressions/expression.hpp"
 
 class LogStatement {
 public:

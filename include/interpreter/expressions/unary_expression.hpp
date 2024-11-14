@@ -1,9 +1,9 @@
 #ifndef UNARY_EXPRESSION_HPP
 #define UNARY_EXPRESSION_HPP
 
+#include "interpreter/expressions/binary_expression.hpp"
 #include "interpreter/storage.hpp"
 #include "parser/ast_nodes.hpp"
-#include "interpreter/expressions/binary_expression.hpp"
 
 class UnaryExpression {
 public:
