@@ -5,7 +5,9 @@ LiteralExpression::LiteralExpression(Expr *expressionNode,
     : expressionNode(expressionNode), storage(std::move(storage)) {}
 
 Storage::DataWrapper LiteralExpression::execute() {
-    if (auto expr = dynamic_cast<IntegerLiteral *>(expressionNode)) {
+    if (auto expr = dynamic_cast<Identifier *>(expressionNode)) {
+        return storage->getEntry(expr->identifier.value);
+    } else if (auto expr = dynamic_cast<IntegerLiteral *>(expressionNode)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, expr->value);
     } else if (auto expr = dynamic_cast<DoubleLiteral *>(expressionNode)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::DOUBLE, expr->value);
