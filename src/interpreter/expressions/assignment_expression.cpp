@@ -1,16 +1,48 @@
 #include "interpreter/expressions/assignment_expression.hpp"
 
-AssignmentExpression::AssignmentExpression(AssignmentExpr *expressionNode,
-                                           std::shared_ptr<Storage> storage)
+AssignmentExpression::AssignmentExpression(Expr *expressionNode, std::shared_ptr<Storage> storage)
     : expressionNode(expressionNode), storage(std::move(storage)) {}
 
 void AssignmentExpression::execute() {
-  if (auto assignee =
-          dynamic_cast<Identifier *>(expressionNode->assignee.get())) {
-    if (expressionNode->value) {
-        storage->updateValue(assignee->identifier.value, Expression(dynamic_cast<Expr *>(expressionNode->value.get()), storage).execute());
+    if (auto expr = dynamic_cast<AssignmentExpr *>(expressionNode)) {
+        if (auto assignee = dynamic_cast<Identifier *>(expr->assignee.get())) {
+            if (expr->value) {
+                storage->updateValue(assignee->identifier.value, Expression(dynamic_cast<Expr *>(expr->value.get()), storage).execute());
+            }
+        } else {
+            throw std::logic_error("Assignee must be an identifier");
+        }
+    } else if (auto expr = dynamic_cast<CompoundAssignmentExpr *>(expressionNode)) {
+        if (expr->operator_.tag == Token::TypeTag::OPERATOR) {
+            if (auto assignee = dynamic_cast<Identifier *>(expr->assignee.get())) {
+                Storage::DataWrapper value = Expression(dynamic_cast<Expr *>(expr->value.get()), storage).execute();
+                Storage::DataWrapper assigneeValue = storage->getEntry(assignee->identifier.value);
+                switch (expr->operator_.type.operatorToken) {
+                    case OperatorToken::ADDITION_ASSIGNMENT:
+                        storage->updateValue(assignee->identifier.value, BinaryExpression::addition(assigneeValue, value));
+                        break;
+                    case OperatorToken::SUBTRACTION_ASSIGNMENT:
+                        storage->updateValue(assignee->identifier.value, BinaryExpression::subtraction(assigneeValue, value));
+                        break;
+                    case OperatorToken::MULTIPLICATION_ASSIGNMENT:
+                        storage->updateValue(assignee->identifier.value, BinaryExpression::multiplication(assigneeValue, value));
+                        break;
+                    case OperatorToken::DIVISION_ASSIGNMENT:
+                        storage->updateValue(assignee->identifier.value, BinaryExpression::division(assigneeValue, value));
+                        break;
+                    case OperatorToken::MODULUS_ASSIGNMENT:
+                        storage->updateValue(assignee->identifier.value, BinaryExpression::modulus(assigneeValue, value));
+                        break;
+                    default:
+                        throw std::logic_error("Unsupported compound assignment operator.");
+                }
+            } else {
+                throw std::logic_error("Assignee must be an identifier");
+            }
+        } else {
+            throw std::logic_error("Unsupported compound assignment expression.");
+        }
+    } else {
+        throw std::logic_error("Unsupported assignment expression.");
     }
-  } else {
-    throw std::logic_error("Assignee must be an identifier");
-  }
 }

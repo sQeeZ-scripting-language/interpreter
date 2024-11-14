@@ -311,7 +311,7 @@ Storage::DataWrapper BinaryExpression::stringAddition(std::string left, std::str
 
 Storage::DataWrapper BinaryExpression::stringMultiplication(std::string value, int multiplier) {
     std::string result = "";
-    for (int i = 0; i < multiplier; i++) {
+    for (int i = 0; i < multiplier; ++i) {
         result += value;
     }
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(result));
