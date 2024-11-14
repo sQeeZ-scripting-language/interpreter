@@ -16,6 +16,10 @@ private:
   std::shared_ptr<Storage> storage;
 
   Storage::DataWrapper addition(Storage::DataWrapper left, Storage::DataWrapper right);
+
+  Storage::DataWrapper integerAddition(int left, int right);
+  Storage::DataWrapper doubleAddition(double left, double right);
+  Storage::DataWrapper stringAddition(std::string left, std::string right);
 };
 
 #endif // BINARY_EXPRESSION_HPP

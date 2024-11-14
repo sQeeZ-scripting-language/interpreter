@@ -9,15 +9,14 @@ Storage::DataWrapper BinaryExpression::execute() {
         switch (expressionNode->operator_.type.operatorToken) {
         case OperatorToken::ADDITION:
             return addition(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
-            break;
         case OperatorToken::SUBTRACTION:
-            break;
+            throw std::runtime_error("Unsupported binary expression.");
         case OperatorToken::MULTIPLICATION:
-            break;
+            throw std::runtime_error("Unsupported binary expression.");
         case OperatorToken::DIVISION:
-            break;
+            throw std::runtime_error("Unsupported binary expression.");
         case OperatorToken::MODULUS:
-            break;
+            throw std::runtime_error("Unsupported binary expression.");
         
         default:
             throw std::runtime_error("Unsupported binary operator.");
@@ -28,10 +27,73 @@ Storage::DataWrapper BinaryExpression::execute() {
 }
 
 Storage::DataWrapper BinaryExpression::addition(Storage::DataWrapper left, Storage::DataWrapper right) {
-    if (left.dataType == Storage::DataType::INTEGER && right.dataType == Storage::DataType::INTEGER) {
-        std::cout << "Adding " << left.data._int << " and " << right.data._int << std::endl;
-        return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, left.data._int + right.data._int);
-    } else {
-        throw std::runtime_error("Unsupported addition operation.");
+    switch (left.dataType) {
+        case Storage::DataType::INTEGER:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return integerAddition(left.data._int, right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return doubleAddition(left.data._int, right.data._double);
+                case Storage::DataType::CHAR:
+                    return integerAddition(left.data._int, right.data._char);
+                case Storage::DataType::STRING:
+                    return stringAddition(std::to_string(left.data._int), *right.data._string);
+                default:
+                    throw std::invalid_argument("Invalid addition expression!");
+            }
+        case Storage::DataType::DOUBLE:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return doubleAddition(left.data._double, right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return doubleAddition(left.data._double, right.data._double);
+                case Storage::DataType::CHAR:
+                    return doubleAddition(left.data._double, right.data._char);
+                case Storage::DataType::STRING:
+                    return stringAddition(std::to_string(left.data._double), *right.data._string);
+                default:
+                    throw std::invalid_argument("Invalid addition expression!");
+            }
+        case Storage::DataType::CHAR:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return integerAddition(left.data._char, right.data._int);
+                case Storage::DataType::DOUBLE:
+                    return doubleAddition(left.data._char, right.data._double);
+                case Storage::DataType::CHAR:
+                    return integerAddition(left.data._char, right.data._char);
+                case Storage::DataType::STRING:
+                    return stringAddition(std::string(1, left.data._char), *right.data._string);
+                default:
+                    throw std::invalid_argument("Invalid addition expression!");
+            }
+        case Storage::DataType::STRING:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return stringAddition(*left.data._string, std::to_string(right.data._int));
+                case Storage::DataType::DOUBLE:
+                    return stringAddition(*left.data._string, std::to_string(right.data._double));
+                case Storage::DataType::CHAR:
+                    return stringAddition(*left.data._string, std::string(1, right.data._char));
+                case Storage::DataType::STRING:
+                    return stringAddition(*left.data._string, *right.data._string);
+                default:
+                    throw std::invalid_argument("Invalid addition expression!");
+            }
+            break;
+        default:
+            throw std::invalid_argument("Invalid addition expression!");
     }
+}
+
+Storage::DataWrapper BinaryExpression::integerAddition(int left, int right) {
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, left + right);
+}
+
+Storage::DataWrapper BinaryExpression::doubleAddition(double left, double right) {
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::DOUBLE, left + right);
+}
+
+Storage::DataWrapper BinaryExpression::stringAddition(std::string left, std::string right) {
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(left + right));
 }
