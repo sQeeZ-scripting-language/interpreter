@@ -20,6 +20,7 @@ private:
   Storage::DataWrapper multiplication(Storage::DataWrapper left, Storage::DataWrapper right);
   Storage::DataWrapper division(Storage::DataWrapper left, Storage::DataWrapper right);
   Storage::DataWrapper modulus(Storage::DataWrapper left, Storage::DataWrapper right);
+  Storage::DataWrapper potentiation(Storage::DataWrapper left, Storage::DataWrapper right);
 
   Storage::DataWrapper _integer(int value);
   Storage::DataWrapper _double(double value);

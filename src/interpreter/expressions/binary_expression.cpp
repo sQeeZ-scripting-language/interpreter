@@ -17,6 +17,8 @@ Storage::DataWrapper BinaryExpression::execute() {
             return division(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
         case OperatorToken::MODULUS:
             return modulus(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
+        case OperatorToken::POTENTIATION:
+            return potentiation(Expression(expressionNode->left.get(), storage).execute(), Expression(expressionNode->right.get(), storage).execute());
         
         default:
             throw std::runtime_error("Unsupported binary operator.");
@@ -252,6 +254,46 @@ Storage::DataWrapper BinaryExpression::modulus(Storage::DataWrapper left, Storag
             }
         default:
             throw std::invalid_argument("Invalid modulus expression!");
+    }
+}
+
+Storage::DataWrapper BinaryExpression::potentiation(Storage::DataWrapper left, Storage::DataWrapper right) {
+    switch (left.dataType) {
+        case Storage::DataType::INTEGER:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _integer(std::pow(left.data._int, right.data._int));
+                case Storage::DataType::DOUBLE:
+                    return _double(std::pow(left.data._int, right.data._double));
+                case Storage::DataType::CHAR:
+                    return _integer(std::pow(left.data._int, right.data._char));
+                default:
+                    throw std::invalid_argument("Invalid potentiation expression!");
+            }
+        case Storage::DataType::DOUBLE:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _double(std::pow(left.data._double, right.data._int));
+                case Storage::DataType::DOUBLE:
+                    return _double(std::pow(left.data._double, right.data._double));
+                case Storage::DataType::CHAR:
+                    return _double(std::pow(left.data._double, right.data._char));
+                default:
+                    throw std::invalid_argument("Invalid potentiation expression!");
+            }
+        case Storage::DataType::CHAR:
+            switch (right.dataType) {
+                case Storage::DataType::INTEGER:
+                    return _integer(std::pow(left.data._char, right.data._int));
+                case Storage::DataType::DOUBLE:
+                    return _double(std::pow(left.data._char, right.data._double));
+                case Storage::DataType::CHAR:
+                    return _integer(std::pow(left.data._char, right.data._char));
+                default:
+                    throw std::invalid_argument("Invalid potentiation expression!");
+            }
+        default:
+            throw std::invalid_argument("Invalid potentiation expression!");
     }
 }
 
