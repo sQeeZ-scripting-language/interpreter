@@ -10,8 +10,8 @@
 
 class Storage {
 public:
-  enum class StorageType { VARIABLE, CONSTANT };
-  enum DataType { INTEGER, DOUBLE, BOOLEAN, CHAR, STRING, HEXCODE };
+  enum class WrapperType { VALUE, VARIABLE, CONSTANT };
+  enum DataType { INTEGER, DOUBLE, BOOLEAN, CHAR, STRING, HEXCODE, _NULL };
 
   union Data {
     int _int;
@@ -29,40 +29,33 @@ public:
     ~Data();
   };
 
-  struct StorageEntry {
-    StorageType storageType;
+  struct DataWrapper {
+    WrapperType wrapperType;
     DataType dataType;
     Data data;
 
-    StorageEntry();
-    StorageEntry(StorageType st, DataType dt, const Data &value);
-    StorageEntry(const StorageEntry &other);
-    StorageEntry(StorageEntry &&other) noexcept;
-    StorageEntry &operator=(const StorageEntry &other);
-    StorageEntry &operator=(StorageEntry &&other) noexcept;
-    ~StorageEntry();
+    DataWrapper();
+    DataWrapper(WrapperType st, DataType dt, const Data &value);
+    DataWrapper(const DataWrapper &other);
+    DataWrapper(DataWrapper &&other) noexcept;
+    DataWrapper &operator=(const DataWrapper &other);
+    DataWrapper &operator=(DataWrapper &&other) noexcept;
+    ~DataWrapper();
 
     void clear();
   };
 
-  void setValue(const std::string &name, StorageType storageType,
-                Expr *expression);
-  void updateValue(const std::string &name, Expr *expression);
+  void setValue(const std::string &name, DataWrapper dataWrapper);
+  void updateValue(const std::string &name, DataWrapper dataWrapper);
   bool exists(const std::string &name) const;
-  StorageEntry &getEntry(const std::string &name);
-  StorageType getStorageType(const std::string &name);
-  DataType getDataType(const std::string &name);
-  std::any getValue(const std::string &name);
+  DataWrapper &getEntry(const std::string &name);
   void storeFunction(const std::string &name,
                      std::shared_ptr<FunctionDeclaration> function);
 
 private:
-  std::unordered_map<std::string, StorageEntry> storage;
+  std::unordered_map<std::string, DataWrapper> storage;
   std::unordered_map<std::string, std::shared_ptr<FunctionDeclaration>>
       functions;
-
-  void storeValue(const std::string &name, StorageType storageType,
-                  Expr *expression);
 };
 
 #endif // STORAGE_HPP
