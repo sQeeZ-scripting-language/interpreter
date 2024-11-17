@@ -20,4 +20,4 @@ private:
   std::shared_ptr<Storage> storage;
 };
 
-#endif // LOG_STATEMENT_HPP
+#endif // DECLARATION_STATEMENT_HPP
