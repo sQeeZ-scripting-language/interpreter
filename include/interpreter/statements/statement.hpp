@@ -2,6 +2,7 @@
 #define STATEMENT_HPP
 
 #include "interpreter/expressions/expression.hpp"
+#include "interpreter/statements/conditional_statement.hpp"
 #include "interpreter/statements/declaration_statement.hpp"
 #include "interpreter/statements/log_statement.hpp"
 #include "interpreter/storage.hpp"
