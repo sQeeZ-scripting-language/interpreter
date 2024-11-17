@@ -17,34 +17,52 @@ LoopStatement::LoopStatement(ForOfStmt *loopNode, std::shared_ptr<Storage> stora
 
 void LoopStatement::execute() {
     if (std::holds_alternative<WhileStmt *>(loopNode)) {
-
+        executeWhileLoop();
     } else if (std::holds_alternative<DoWhileStmt *>(loopNode)) {
-
+        executeDoWhileLoop();
     } else if (std::holds_alternative<ForStmt *>(loopNode)) {
-
+        executeForLoop();
     } else if (std::holds_alternative<ForInStmt *>(loopNode)) {
-
+        executeForInLoop();
     } else if (std::holds_alternative<ForOfStmt *>(loopNode)) {
-
+        executeForOfLoop();
     }
 }
 
-void executeWhileLoop() {
-    
+void LoopStatement::executeWhileLoop() {
+    auto whileLoop = std::get<WhileStmt *>(loopNode);
+    while (checkTrueishness(whileLoop->condition, storage)) {
+        for (const auto &stmt : whileLoop->body) {
+            Statement(stmt.get(), storage).execute();
+        }
+    }
 }
 
-void executeDoWhileLoop() {
-    
+void LoopStatement::executeDoWhileLoop() {
+    auto doWhileLoop = std::get<DoWhileStmt *>(loopNode);
+    do {
+        for (const auto &stmt : doWhileLoop->body) {
+            Statement(stmt.get(), storage).execute();
+        }
+    } while (checkTrueishness(doWhileLoop->condition, storage));
 }
 
-void executeForLoop() {
-    
+void LoopStatement::executeForLoop() {
+    auto forLoop = std::get<ForStmt *>(loopNode);
+    while (checkTrueishness(forLoop->condition, storage)) {
+        for (const auto &stmt : forLoop->body) {
+            Statement(stmt.get(), storage).execute();
+        }
+        if (forLoop->increment) {
+            Statement(forLoop->increment.get(), storage).execute();
+        }
+    }
 }
 
-void executeForInLoop() {
-    
+void LoopStatement::executeForInLoop() {
+
 }
 
-void executeForOfLoop() {
-    
+void LoopStatement::executeForOfLoop() {
+
 }

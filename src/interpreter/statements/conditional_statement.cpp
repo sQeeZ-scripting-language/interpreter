@@ -6,14 +6,14 @@ ConditionalStatement::ConditionalStatement(ConditionalStmt *conditionalNode,
 
 void ConditionalStatement::execute() {
   bool executed = false;
-  if (checkTrueishness(conditionalNode->ifClause.first)) {
+  if (checkTrueishness(conditionalNode->ifClause.first, storage)) {
     for (const auto &stmt : conditionalNode->ifClause.second) {
       Statement(stmt.get(), storage).execute();
     }
     executed = true;
   } else if (!conditionalNode->elifClauses.empty()) {
     for (const auto &elifClause : conditionalNode->elifClauses) {
-      if (checkTrueishness(elifClause.first)) {
+      if (checkTrueishness(elifClause.first, storage)) {
         for (const auto &stmt : elifClause.second) {
           Statement(stmt.get(), storage).execute();
         }
