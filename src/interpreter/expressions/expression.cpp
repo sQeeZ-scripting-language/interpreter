@@ -1,15 +1,22 @@
 #include "interpreter/expressions/expression.hpp"
 
-Expression::Expression(Expr *exprNode, std::shared_ptr<Storage> storage) : exprNode(exprNode), storage(std::move(storage)) {}
+Expression::Expression(Expr *exprNode, std::shared_ptr<Storage> storage)
+    : exprNode(exprNode), storage(std::move(storage)) {}
 
-void Expression::execute() {
+Storage::DataWrapper Expression::execute() {
   switch (exprNode->kind) {
   case NodeType::AssignmentExpr:
-    AssignmentExpression(dynamic_cast<AssignmentExpr *>(exprNode), storage).execute();
-    break;
-
+  case NodeType::CompoundAssignmentExpr:
+    AssignmentExpression(exprNode, storage).execute();
+    return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                Storage::DataType::_NULL, 0);
+  case NodeType::BinaryExpr:
+    return BinaryExpression(dynamic_cast<BinaryExpr *>(exprNode), storage)
+        .execute();
+  case NodeType::UnaryExpr:
+    return UnaryExpression(dynamic_cast<UnaryExpr *>(exprNode), storage)
+        .execute();
   default:
-    throw std::runtime_error("Unknown expression type!");
-    break;
+    return LiteralExpression(exprNode, storage).execute();
   }
 }

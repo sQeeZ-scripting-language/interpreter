@@ -1,8 +1,9 @@
 #ifndef LOG_STATEMENT_HPP
 #define LOG_STATEMENT_HPP
 
-#include "parser/ast_nodes.hpp"
+#include "interpreter/expressions/expression.hpp"
 #include "interpreter/storage.hpp"
+#include "parser/ast_nodes.hpp"
 
 class LogStatement {
 public:
@@ -12,9 +13,8 @@ public:
 private:
   LogStmt *logNode;
   std::shared_ptr<Storage> storage;
-  std::string getMessage();
+  std::string getPrintableValue();
   void hexToRGB(const std::string &hex, int &r, int &g, int &b);
-  std::string castStorageEntry(const std::string &name);
 };
 
 #endif // LOG_STATEMENT_HPP
