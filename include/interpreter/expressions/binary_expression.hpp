@@ -1,6 +1,8 @@
 #ifndef BINARY_EXPRESSION_HPP
 #define BINARY_EXPRESSION_HPP
 
+#include <cmath>
+
 #include "interpreter/expressions/expression.hpp"
 #include "interpreter/storage.hpp"
 #include "parser/ast_nodes.hpp"
