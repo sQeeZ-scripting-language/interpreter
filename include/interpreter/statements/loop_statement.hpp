@@ -17,8 +17,14 @@ public:
   void execute();
 
 private:
-  std::variant<WhileStmt *, DoWhileStmt *, ForStmt *, ForInStmt *, ForOfStmt *> declarationNode;
+  std::variant<WhileStmt *, DoWhileStmt *, ForStmt *, ForInStmt *, ForOfStmt *> loopNode;
   std::shared_ptr<Storage> storage;
+
+  void executeWhileLoop();
+  void executeDoWhileLoop();
+  void executeForLoop();
+  void executeForInLoop();
+  void executeForOfLoop();
 };
 
 #endif // LOOP_STATEMENT_HPP
