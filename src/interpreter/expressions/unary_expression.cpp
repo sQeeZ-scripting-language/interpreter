@@ -31,7 +31,8 @@ Storage::DataWrapper UnaryExpression::execute() {
     } else {
       throw std::logic_error("Operand must be an identifier.");
     }
-  } else if (expressionNode->operator_.tag == Token::TypeTag::LOGICAL && expressionNode->operator_.type.logicalToken == LogicalToken::NOT) {
+  } else if (expressionNode->operator_.tag == Token::TypeTag::LOGICAL &&
+             expressionNode->operator_.type.logicalToken == LogicalToken::NOT) {
     return _boolean(!checkTrueishness(expressionNode->operand, storage));
   } else {
     throw std::runtime_error("Unsupported unary expression.");

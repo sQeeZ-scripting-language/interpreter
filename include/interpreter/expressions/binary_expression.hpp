@@ -30,7 +30,7 @@ public:
 private:
   BinaryExpr *expressionNode;
   std::shared_ptr<Storage> storage;
-  
+
   static Storage::DataWrapper stringAddition(std::string left,
                                              std::string right);
   static Storage::DataWrapper stringMultiplication(std::string value,
