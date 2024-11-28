@@ -4,6 +4,7 @@
 #include "interpreter/expressions/expression.hpp"
 #include "interpreter/statements/statement.hpp"
 #include "interpreter/storage.hpp"
+#include "interpreter/utils.hpp"
 #include "parser/ast_nodes.hpp"
 
 class ConditionalStatement {
@@ -15,8 +16,6 @@ public:
 private:
   ConditionalStmt *conditionalNode;
   std::shared_ptr<Storage> storage;
-
-  bool checkTrusishness(const std::unique_ptr<Expr> &expr);
 };
 
 #endif // CONDITIONAL_STATEMENT_HPP

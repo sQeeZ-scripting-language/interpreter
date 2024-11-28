@@ -18,6 +18,9 @@ public:
 private:
   std::variant<VarDeclaration *, FunctionDeclaration *> declarationNode;
   std::shared_ptr<Storage> storage;
+
+  void executeVarDeclaration();
+  void executeFunctionDeclaration();
 };
 
-#endif // LOG_STATEMENT_HPP
+#endif // DECLARATION_STATEMENT_HPP

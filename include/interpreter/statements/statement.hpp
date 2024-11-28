@@ -5,6 +5,7 @@
 #include "interpreter/statements/conditional_statement.hpp"
 #include "interpreter/statements/declaration_statement.hpp"
 #include "interpreter/statements/log_statement.hpp"
+#include "interpreter/statements/loop_statement.hpp"
 #include "interpreter/storage.hpp"
 #include "parser/ast_nodes.hpp"
 

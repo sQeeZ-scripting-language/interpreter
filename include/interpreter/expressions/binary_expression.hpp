@@ -5,6 +5,7 @@
 
 #include "interpreter/expressions/expression.hpp"
 #include "interpreter/storage.hpp"
+#include "interpreter/utils.hpp"
 #include "parser/ast_nodes.hpp"
 
 class BinaryExpression {
@@ -30,8 +31,6 @@ private:
   BinaryExpr *expressionNode;
   std::shared_ptr<Storage> storage;
 
-  static Storage::DataWrapper _integer(int value);
-  static Storage::DataWrapper _double(double value);
   static Storage::DataWrapper stringAddition(std::string left,
                                              std::string right);
   static Storage::DataWrapper stringMultiplication(std::string value,

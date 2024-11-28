@@ -35,6 +35,56 @@ Storage::DataWrapper BinaryExpression::execute() {
     default:
       throw std::runtime_error("Unsupported binary operator.");
     }
+  } else if (expressionNode->operator_.tag == Token::TypeTag::LOGICAL) {
+    switch (expressionNode->operator_.type.logicalToken) {
+    case LogicalToken::EQUAL:
+      return _boolean(checkEquality(
+          Expression(expressionNode->left.get(), storage).execute(),
+          Expression(expressionNode->right.get(), storage).execute(), true));
+    case LogicalToken::NOT_EQUAL:
+      return _boolean(checkEquality(
+          Expression(expressionNode->left.get(), storage).execute(),
+          Expression(expressionNode->right.get(), storage).execute(), false));
+    case LogicalToken::GREATER:
+      return _boolean(checkGreater(
+          Expression(expressionNode->left.get(), storage).execute(),
+          Expression(expressionNode->right.get(), storage).execute()));
+    case LogicalToken::GREATER_EQUAL:
+      return _boolean(
+          checkGreater(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute()) ||
+          checkEquality(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute(),
+              true));
+    case LogicalToken::LESS:
+      return _boolean(
+          !checkGreater(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute()) &&
+          !checkEquality(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute(),
+              true));
+    case LogicalToken::LESS_EQUAL:
+      return _boolean(
+          !checkGreater(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute()) ||
+          checkEquality(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute(),
+              true));
+    case LogicalToken::AND:
+      return _boolean(checkTrueishness(expressionNode->left, storage) &&
+                      checkTrueishness(expressionNode->right, storage));
+    case LogicalToken::OR:
+      return _boolean(checkTrueishness(expressionNode->left, storage) ||
+                      checkTrueishness(expressionNode->right, storage));
+    default:
+      throw std::runtime_error("Unsupported logical operator.");
+    }
   } else {
     throw std::runtime_error("Unsupported binary expression.");
   }
@@ -321,16 +371,6 @@ BinaryExpression::potentiation(Storage::DataWrapper left,
   default:
     throw std::invalid_argument("Invalid potentiation expression!");
   }
-}
-
-Storage::DataWrapper BinaryExpression::_integer(int value) {
-  return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                              Storage::DataType::INTEGER, value);
-}
-
-Storage::DataWrapper BinaryExpression::_double(double value) {
-  return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                              Storage::DataType::DOUBLE, value);
 }
 
 Storage::DataWrapper BinaryExpression::stringAddition(std::string left,
