@@ -17,6 +17,21 @@ void Statement::execute() {
     ConditionalStatement(dynamic_cast<ConditionalStmt *>(stmtNode), storage)
         .execute();
     break;
+  case NodeType::WhileStmt:
+    LoopStatement(dynamic_cast<WhileStmt *>(stmtNode), storage).execute();
+    break;
+  case NodeType::DoWhileStmt:
+    LoopStatement(dynamic_cast<DoWhileStmt *>(stmtNode), storage).execute();
+    break;
+  case NodeType::ForStmt:
+    LoopStatement(dynamic_cast<ForStmt *>(stmtNode), storage).execute();
+    break;
+  case NodeType::ForInStmt:
+    LoopStatement(dynamic_cast<ForInStmt *>(stmtNode), storage).execute();
+    break;
+  case NodeType::ForOfStmt:
+    LoopStatement(dynamic_cast<ForOfStmt *>(stmtNode), storage).execute();
+    break;
   case NodeType::LogStmt:
     LogStatement(dynamic_cast<LogStmt *>(stmtNode), storage).execute();
     break;
