@@ -46,13 +46,36 @@ Storage::DataWrapper BinaryExpression::execute() {
           Expression(expressionNode->left.get(), storage).execute(),
           Expression(expressionNode->right.get(), storage).execute(), false));
     case LogicalToken::GREATER:
-      break;
+      return _boolean(checkGreater(
+          Expression(expressionNode->left.get(), storage).execute(),
+          Expression(expressionNode->right.get(), storage).execute()));
     case LogicalToken::GREATER_EQUAL:
-      break;
+      return _boolean(
+          checkGreater(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute()) ||
+          checkEquality(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute(),
+              true));
     case LogicalToken::LESS:
-      break;
+      return _boolean(
+          !checkGreater(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute()) &&
+          !checkEquality(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute(),
+              true));
     case LogicalToken::LESS_EQUAL:
-      break;
+      return _boolean(
+          !checkGreater(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute()) ||
+          checkEquality(
+              Expression(expressionNode->left.get(), storage).execute(),
+              Expression(expressionNode->right.get(), storage).execute(),
+              true));
     case LogicalToken::AND:
       break;
     case LogicalToken::OR:

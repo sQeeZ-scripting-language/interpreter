@@ -193,6 +193,99 @@ bool checkEquality(Storage::DataWrapper left, Storage::DataWrapper right,
   }
 }
 
+bool checkGreater(Storage::DataWrapper left, Storage::DataWrapper right) {
+  std::regex int_regex("^-?\\d+$");
+  std::regex double_regex("^-?\\d+(\\.\\d+)?([eE][+-]?\\d+)?$");
+  switch (left.dataType) {
+  case Storage::DataType::INTEGER:
+    switch (right.dataType) {
+    case Storage::DataType::INTEGER:
+      return left.data._int > right.data._int;
+    case Storage::DataType::DOUBLE:
+      return left.data._int > right.data._double;
+    case Storage::DataType::CHAR:
+      return left.data._int > right.data._char;
+    case Storage::DataType::STRING:
+      if (!std::regex_match(*right.data._string, int_regex)) {
+        throw std::invalid_argument("Invalid greater expression!");
+      }
+      return left.data._int > std::stoi(*right.data._string);
+    default:
+      throw std::invalid_argument("Invalid greater expression!");
+    }
+
+  case Storage::DataType::DOUBLE:
+    switch (right.dataType) {
+    case Storage::DataType::INTEGER:
+      return left.data._double > right.data._int;
+    case Storage::DataType::DOUBLE:
+      return left.data._double > right.data._double;
+    case Storage::DataType::CHAR:
+      return left.data._double > right.data._char;
+    case Storage::DataType::STRING:
+      if (!std::regex_match(*right.data._string, double_regex)) {
+        throw std::invalid_argument("Invalid greater expression!");
+      }
+      return left.data._double > std::stod(*right.data._string);
+    default:
+      throw std::invalid_argument("Invalid greater expression!");
+    }
+
+  case Storage::DataType::CHAR:
+    switch (right.dataType) {
+    case Storage::DataType::INTEGER:
+      return left.data._char > right.data._int;
+    case Storage::DataType::DOUBLE:
+      return left.data._char > right.data._double;
+    case Storage::DataType::CHAR:
+      return left.data._char > right.data._char;
+    case Storage::DataType::STRING:
+      if (right.data._string->size() != 1) {
+        throw std::invalid_argument("Invalid greater expression!");
+      }
+      return left.data._char > right.data._string->at(0);
+    default:
+      throw std::invalid_argument("Invalid greater expression!");
+    }
+
+  case Storage::DataType::STRING:
+    switch (right.dataType) {
+    case Storage::DataType::INTEGER:
+      if (!std::regex_match(*left.data._string, int_regex)) {
+        throw std::invalid_argument("Invalid greater expression!");
+      }
+      return std::stoi(*left.data._string) > right.data._int;
+    case Storage::DataType::DOUBLE:
+      if (!std::regex_match(*left.data._string, double_regex)) {
+        throw std::invalid_argument("Invalid greater expression!");
+      }
+      return std::stod(*left.data._string) > right.data._double;
+    case Storage::DataType::CHAR:
+      if (left.data._string->size() != 1) {
+        throw std::invalid_argument("Invalid greater expression!");
+      }
+      return left.data._string->at(0) > right.data._char;
+    case Storage::DataType::STRING:
+    case Storage::DataType::HEXCODE:
+      return *left.data._string > *right.data._string;
+    default:
+      throw std::invalid_argument("Invalid greater expression!");
+    }
+
+  case Storage::DataType::HEXCODE:
+    switch (right.dataType) {
+    case Storage::DataType::STRING:
+    case Storage::DataType::HEXCODE:
+      return left.data._string > right.data._string;
+    default:
+      throw std::invalid_argument("Invalid greater expression!");
+    }
+
+  default:
+    throw std::invalid_argument("Invalid greater expression!");
+  }
+}
+
 std::string toLowerCase(std::string str) {
   std::transform(str.begin(), str.end(), str.begin(), ::tolower);
   return str;
