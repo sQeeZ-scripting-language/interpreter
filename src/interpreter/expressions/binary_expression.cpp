@@ -77,9 +77,15 @@ Storage::DataWrapper BinaryExpression::execute() {
               Expression(expressionNode->right.get(), storage).execute(),
               true));
     case LogicalToken::AND:
-      break;
+      return _boolean(
+          checkTrueishness(expressionNode->left, storage) &&
+          checkTrueishness(expressionNode->right, storage));
     case LogicalToken::OR:
-      break;
+      return _boolean(
+          checkTrueishness(expressionNode->left, storage) ||
+          checkTrueishness(expressionNode->right, storage));
+    default:
+      throw std::runtime_error("Unsupported logical operator.");
     }
   } else {
     throw std::runtime_error("Unsupported binary expression.");
@@ -367,21 +373,6 @@ BinaryExpression::potentiation(Storage::DataWrapper left,
   default:
     throw std::invalid_argument("Invalid potentiation expression!");
   }
-}
-
-Storage::DataWrapper BinaryExpression::_integer(int value) {
-  return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                              Storage::DataType::INTEGER, value);
-}
-
-Storage::DataWrapper BinaryExpression::_double(double value) {
-  return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                              Storage::DataType::DOUBLE, value);
-}
-
-Storage::DataWrapper BinaryExpression::_boolean(bool value) {
-  return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                              Storage::DataType::BOOLEAN, value);
 }
 
 Storage::DataWrapper BinaryExpression::stringAddition(std::string left,

@@ -1,5 +1,20 @@
 #include "interpreter/utils.hpp"
 
+Storage::DataWrapper _integer(int value) {
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::INTEGER, value);
+}
+
+Storage::DataWrapper _double(double value) {
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::DOUBLE, value);
+}
+
+Storage::DataWrapper _boolean(bool value) {
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::BOOLEAN, value);
+}
+
 bool checkTrueishness(const std::unique_ptr<Expr> &expr,
                       std::shared_ptr<Storage> storage) {
   Storage::DataWrapper datawrapper = Expression(expr.get(), storage).execute();
