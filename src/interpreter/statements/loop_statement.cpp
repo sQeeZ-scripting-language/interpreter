@@ -36,6 +36,7 @@ void LoopStatement::execute() {
 
 void LoopStatement::executeWhileLoop() {
   auto whileLoop = std::get<WhileStmt *>(loopNode);
+  storage.push_back(std::make_shared<Storage>());
   while (checkTrueishness(whileLoop->condition, storage)) {
     for (const auto &stmt : whileLoop->body) {
       Statement(stmt.get(), storage).execute();
@@ -45,6 +46,7 @@ void LoopStatement::executeWhileLoop() {
 
 void LoopStatement::executeDoWhileLoop() {
   auto doWhileLoop = std::get<DoWhileStmt *>(loopNode);
+  storage.push_back(std::make_shared<Storage>());
   do {
     for (const auto &stmt : doWhileLoop->body) {
       Statement(stmt.get(), storage).execute();
@@ -54,6 +56,7 @@ void LoopStatement::executeDoWhileLoop() {
 
 void LoopStatement::executeForLoop() {
   auto forLoop = std::get<ForStmt *>(loopNode);
+  storage.push_back(std::make_shared<Storage>());
   while (checkTrueishness(forLoop->condition, storage)) {
     for (const auto &stmt : forLoop->body) {
       Statement(stmt.get(), storage).execute();
@@ -64,6 +67,12 @@ void LoopStatement::executeForLoop() {
   }
 }
 
-void LoopStatement::executeForInLoop() {}
+void LoopStatement::executeForInLoop() {
+  auto forInLoop = std::get<ForInStmt *>(loopNode);
+  storage.push_back(std::make_shared<Storage>());
+}
 
-void LoopStatement::executeForOfLoop() {}
+void LoopStatement::executeForOfLoop() {
+  auto forOfLoop = std::get<ForOfStmt *>(loopNode);
+  storage.push_back(std::make_shared<Storage>());
+}

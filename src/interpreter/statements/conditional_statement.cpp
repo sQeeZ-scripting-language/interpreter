@@ -6,6 +6,7 @@ ConditionalStatement::ConditionalStatement(ConditionalStmt *conditionalNode,
 
 void ConditionalStatement::execute() {
   bool executed = false;
+  storage.push_back(std::make_shared<Storage>());
   if (checkTrueishness(conditionalNode->ifClause.first, storage)) {
     for (const auto &stmt : conditionalNode->ifClause.second) {
       Statement(stmt.get(), storage).execute();

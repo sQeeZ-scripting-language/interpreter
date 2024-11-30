@@ -23,7 +23,7 @@ void DeclarationStatement::executeVarDeclaration() {
       if (storageKeyIndex(storage, declaration.first.value) != -1) {
         throw std::logic_error("Variable already declared.");
       }
-      storage.front()->setValue(
+      storage.back()->setValue(
           declaration.first.value,
           Expression(static_cast<Expr *>(declaration.second.get()), storage)
               .execute());
@@ -38,5 +38,5 @@ void DeclarationStatement::executeFunctionDeclaration() {
   if (functionKeyIndex(storage, functionDeclaration->name.value) != -1) {
     throw std::logic_error("Function already declared.");
   }
-  storage.front()->storeFunction(funcPtr->name.value, funcPtr);
+  storage.back()->storeFunction(funcPtr->name.value, funcPtr);
 }
