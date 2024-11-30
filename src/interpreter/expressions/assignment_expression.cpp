@@ -1,7 +1,7 @@
 #include "interpreter/expressions/assignment_expression.hpp"
 
-AssignmentExpression::AssignmentExpression(Expr *expressionNode,
-                                           std::vector<std::shared_ptr<Storage>> storage)
+AssignmentExpression::AssignmentExpression(
+    Expr *expressionNode, std::vector<std::shared_ptr<Storage>> storage)
     : expressionNode(expressionNode), storage(std::move(storage)) {}
 
 void AssignmentExpression::execute() {
@@ -55,8 +55,9 @@ void AssignmentExpression::execute() {
               BinaryExpression::division(assigneeValue, value));
           break;
         case OperatorToken::MODULUS_ASSIGNMENT:
-          storage[keyIndex]->updateValue(assignee->identifier.value,
-                               BinaryExpression::modulus(assigneeValue, value));
+          storage[keyIndex]->updateValue(
+              assignee->identifier.value,
+              BinaryExpression::modulus(assigneeValue, value));
           break;
         default:
           throw std::logic_error("Unsupported compound assignment operator.");

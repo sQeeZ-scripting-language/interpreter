@@ -306,7 +306,8 @@ std::string toLowerCase(std::string str) {
   return str;
 }
 
-int storageKeyIndex(std::vector<std::shared_ptr<Storage>> storage, std::string key) {
+int storageKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
+                    std::string key) {
   for (int i = 0; i < storage.size(); i++) {
     if (storage[i]->exists(key)) {
       return i;
@@ -315,7 +316,8 @@ int storageKeyIndex(std::vector<std::shared_ptr<Storage>> storage, std::string k
   return -1;
 }
 
-int functionKeyIndex(std::vector<std::shared_ptr<Storage>> storage, std::string key) {
+int functionKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
+                     std::string key) {
   for (int i = 0; i < storage.size(); i++) {
     if (storage[i]->functionExists(key)) {
       return i;

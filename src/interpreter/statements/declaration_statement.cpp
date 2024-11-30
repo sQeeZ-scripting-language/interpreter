@@ -1,11 +1,13 @@
 #include "interpreter/statements/declaration_statement.hpp"
 
-DeclarationStatement::DeclarationStatement(FunctionDeclaration *declarationNode,
-                                           std::vector<std::shared_ptr<Storage>> storage)
+DeclarationStatement::DeclarationStatement(
+    FunctionDeclaration *declarationNode,
+    std::vector<std::shared_ptr<Storage>> storage)
     : declarationNode(declarationNode), storage(std::move(storage)) {}
 
-DeclarationStatement::DeclarationStatement(VarDeclaration *declarationNode,
-                                           std::vector<std::shared_ptr<Storage>> storage)
+DeclarationStatement::DeclarationStatement(
+    VarDeclaration *declarationNode,
+    std::vector<std::shared_ptr<Storage>> storage)
     : declarationNode(declarationNode), storage(std::move(storage)) {}
 
 void DeclarationStatement::execute() {

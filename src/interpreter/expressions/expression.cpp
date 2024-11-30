@@ -1,6 +1,7 @@
 #include "interpreter/expressions/expression.hpp"
 
-Expression::Expression(Expr *exprNode, std::vector<std::shared_ptr<Storage>> storage)
+Expression::Expression(Expr *exprNode,
+                       std::vector<std::shared_ptr<Storage>> storage)
     : exprNode(exprNode), storage(std::move(storage)) {}
 
 Storage::DataWrapper Expression::execute() {

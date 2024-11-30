@@ -7,7 +7,8 @@
 
 class AssignmentExpression {
 public:
-  AssignmentExpression(Expr *expressionNode, std::vector<std::shared_ptr<Storage>> storage);
+  AssignmentExpression(Expr *expressionNode,
+                       std::vector<std::shared_ptr<Storage>> storage);
   void execute();
 
 private:

@@ -11,11 +11,16 @@
 
 class LoopStatement {
 public:
-  LoopStatement(WhileStmt *loopNode, std::vector<std::shared_ptr<Storage>> storage);
-  LoopStatement(DoWhileStmt *loopNode, std::vector<std::shared_ptr<Storage>> storage);
-  LoopStatement(ForStmt *loopNode, std::vector<std::shared_ptr<Storage>> storage);
-  LoopStatement(ForInStmt *loopNode, std::vector<std::shared_ptr<Storage>> storage);
-  LoopStatement(ForOfStmt *loopNode, std::vector<std::shared_ptr<Storage>> storage);
+  LoopStatement(WhileStmt *loopNode,
+                std::vector<std::shared_ptr<Storage>> storage);
+  LoopStatement(DoWhileStmt *loopNode,
+                std::vector<std::shared_ptr<Storage>> storage);
+  LoopStatement(ForStmt *loopNode,
+                std::vector<std::shared_ptr<Storage>> storage);
+  LoopStatement(ForInStmt *loopNode,
+                std::vector<std::shared_ptr<Storage>> storage);
+  LoopStatement(ForOfStmt *loopNode,
+                std::vector<std::shared_ptr<Storage>> storage);
   void execute();
 
 private:

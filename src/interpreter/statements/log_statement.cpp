@@ -1,6 +1,7 @@
 #include "interpreter/statements/log_statement.hpp"
 
-LogStatement::LogStatement(LogStmt *logNode, std::vector<std::shared_ptr<Storage>> storage)
+LogStatement::LogStatement(LogStmt *logNode,
+                           std::vector<std::shared_ptr<Storage>> storage)
     : logNode(logNode), storage(std::move(storage)) {}
 
 void LogStatement::execute() {

@@ -1,7 +1,7 @@
 #include "interpreter/expressions/literal_expression.hpp"
 
-LiteralExpression::LiteralExpression(Expr *expressionNode,
-                                     std::vector<std::shared_ptr<Storage>> storage)
+LiteralExpression::LiteralExpression(
+    Expr *expressionNode, std::vector<std::shared_ptr<Storage>> storage)
     : expressionNode(expressionNode), storage(std::move(storage)) {}
 
 Storage::DataWrapper LiteralExpression::execute() {

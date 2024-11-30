@@ -57,7 +57,8 @@ void LoopStatement::executeDoWhileLoop() {
 void LoopStatement::executeForLoop() {
   auto forLoop = std::get<ForStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
-  forLoop->iterator ? Statement(forLoop->iterator.get(), storage).execute() : void();
+  forLoop->iterator ? Statement(forLoop->iterator.get(), storage).execute()
+                    : void();
   while (checkTrueishness(forLoop->condition, storage)) {
     for (const auto &stmt : forLoop->body) {
       Statement(stmt.get(), storage).execute();
