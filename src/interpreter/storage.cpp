@@ -94,6 +94,10 @@ bool Storage::exists(const std::string &name) const {
   return storage.find(name) != storage.end();
 }
 
+bool Storage::functionExists(const std::string &name) const {
+  return functions.find(name) != functions.end();
+}
+
 Storage::DataWrapper &Storage::getEntry(const std::string &name) {
   if (storage.find(name) != storage.end()) {
     return storage.at(name);

@@ -2,16 +2,18 @@
 #define LITERAL_EXPRESSION_HPP
 
 #include "interpreter/storage.hpp"
+#include "interpreter/utils.hpp"
 #include "parser/ast_nodes.hpp"
 
 class LiteralExpression {
 public:
-  LiteralExpression(Expr *expressionNode, std::shared_ptr<Storage> storage);
+  LiteralExpression(Expr *expressionNode,
+                    std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper execute();
 
 private:
   Expr *expressionNode;
-  std::shared_ptr<Storage> storage;
+  std::vector<std::shared_ptr<Storage>> storage;
 };
 
 #endif // LITERAL_EXPRESSION_HPP

@@ -16,7 +16,7 @@ Storage::DataWrapper _boolean(bool value) {
 }
 
 bool checkTrueishness(const std::unique_ptr<Expr> &expr,
-                      std::shared_ptr<Storage> storage) {
+                      std::vector<std::shared_ptr<Storage>> storage) {
   Storage::DataWrapper datawrapper = Expression(expr.get(), storage).execute();
   switch (datawrapper.dataType) {
   case Storage::DataType::BOOLEAN:
@@ -304,4 +304,24 @@ bool checkGreater(Storage::DataWrapper left, Storage::DataWrapper right) {
 std::string toLowerCase(std::string str) {
   std::transform(str.begin(), str.end(), str.begin(), ::tolower);
   return str;
+}
+
+int storageKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
+                    std::string key) {
+  for (int i = 0; i < storage.size(); i++) {
+    if (storage[i]->exists(key)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+int functionKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
+                     std::string key) {
+  for (int i = 0; i < storage.size(); i++) {
+    if (storage[i]->functionExists(key)) {
+      return i;
+    }
+  }
+  return -1;
 }

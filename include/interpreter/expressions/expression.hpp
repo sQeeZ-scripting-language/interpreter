@@ -11,12 +11,12 @@
 
 class Expression {
 public:
-  Expression(Expr *exprNode, std::shared_ptr<Storage> storage);
+  Expression(Expr *exprNode, std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper execute();
 
 private:
   Expr *exprNode;
-  std::shared_ptr<Storage> storage;
+  std::vector<std::shared_ptr<Storage>> storage;
 };
 
 #endif // EXPRESSION_HPP

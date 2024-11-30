@@ -11,12 +11,12 @@
 
 class Statement {
 public:
-  Statement(Stmt *stmtNode, std::shared_ptr<Storage> storage);
+  Statement(Stmt *stmtNode, std::vector<std::shared_ptr<Storage>> storage);
   void execute();
 
 private:
   Stmt *stmtNode;
-  std::shared_ptr<Storage> storage;
+  std::vector<std::shared_ptr<Storage>> storage;
 };
 
 #endif // STATEMENT_HPP

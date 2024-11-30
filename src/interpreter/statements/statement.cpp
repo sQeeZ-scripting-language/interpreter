@@ -1,6 +1,7 @@
 #include "interpreter/statements/statement.hpp"
 
-Statement::Statement(Stmt *stmtNode, std::shared_ptr<Storage> storage)
+Statement::Statement(Stmt *stmtNode,
+                     std::vector<std::shared_ptr<Storage>> storage)
     : stmtNode(stmtNode), storage(std::move(storage)) {}
 
 void Statement::execute() {

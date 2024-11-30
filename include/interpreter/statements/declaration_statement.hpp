@@ -10,14 +10,14 @@
 class DeclarationStatement {
 public:
   DeclarationStatement(FunctionDeclaration *declarationNode,
-                       std::shared_ptr<Storage> storage);
+                       std::vector<std::shared_ptr<Storage>> storage);
   DeclarationStatement(VarDeclaration *declarationNode,
-                       std::shared_ptr<Storage> storage);
+                       std::vector<std::shared_ptr<Storage>> storage);
   void execute();
 
 private:
   std::variant<VarDeclaration *, FunctionDeclaration *> declarationNode;
-  std::shared_ptr<Storage> storage;
+  std::vector<std::shared_ptr<Storage>> storage;
 
   void executeVarDeclaration();
   void executeFunctionDeclaration();

@@ -1,11 +1,13 @@
 #include "interpreter/statements/conditional_statement.hpp"
 
-ConditionalStatement::ConditionalStatement(ConditionalStmt *conditionalNode,
-                                           std::shared_ptr<Storage> storage)
+ConditionalStatement::ConditionalStatement(
+    ConditionalStmt *conditionalNode,
+    std::vector<std::shared_ptr<Storage>> storage)
     : conditionalNode(conditionalNode), storage(std::move(storage)) {}
 
 void ConditionalStatement::execute() {
   bool executed = false;
+  storage.push_back(std::make_shared<Storage>());
   if (checkTrueishness(conditionalNode->ifClause.first, storage)) {
     for (const auto &stmt : conditionalNode->ifClause.second) {
       Statement(stmt.get(), storage).execute();
