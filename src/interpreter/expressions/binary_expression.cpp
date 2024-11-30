@@ -1,7 +1,7 @@
 #include "interpreter/expressions/binary_expression.hpp"
 
 BinaryExpression::BinaryExpression(BinaryExpr *expressionNode,
-                                   std::shared_ptr<Storage> storage)
+                                   std::vector<std::shared_ptr<Storage>> storage)
     : expressionNode(expressionNode), storage(std::move(storage)) {}
 
 Storage::DataWrapper BinaryExpression::execute() {

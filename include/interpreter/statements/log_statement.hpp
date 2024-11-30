@@ -7,12 +7,12 @@
 
 class LogStatement {
 public:
-  LogStatement(LogStmt *logNode, std::shared_ptr<Storage> storage);
+  LogStatement(LogStmt *logNode, std::vector<std::shared_ptr<Storage>> storage);
   void execute();
 
 private:
   LogStmt *logNode;
-  std::shared_ptr<Storage> storage;
+  std::vector<std::shared_ptr<Storage>> storage;
   std::string getPrintableValue();
   void hexToRGB(const std::string &hex, int &r, int &g, int &b);
 };

@@ -1,12 +1,16 @@
 #include "interpreter/expressions/literal_expression.hpp"
 
 LiteralExpression::LiteralExpression(Expr *expressionNode,
-                                     std::shared_ptr<Storage> storage)
+                                     std::vector<std::shared_ptr<Storage>> storage)
     : expressionNode(expressionNode), storage(std::move(storage)) {}
 
 Storage::DataWrapper LiteralExpression::execute() {
   if (auto expr = dynamic_cast<Identifier *>(expressionNode)) {
-    return storage->getEntry(expr->identifier.value);
+    int keyIndex = storageKeyIndex(storage, expr->identifier.value);
+    if (keyIndex == -1) {
+      throw std::logic_error("Variable not declared.");
+    }
+    return storage[keyIndex]->getEntry(expr->identifier.value);
   } else if (auto expr = dynamic_cast<IntegerLiteral *>(expressionNode)) {
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                 Storage::DataType::INTEGER, expr->value);

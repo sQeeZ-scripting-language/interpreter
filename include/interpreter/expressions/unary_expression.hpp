@@ -7,12 +7,12 @@
 
 class UnaryExpression {
 public:
-  UnaryExpression(UnaryExpr *expressionNode, std::shared_ptr<Storage> storage);
+  UnaryExpression(UnaryExpr *expressionNode, std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper execute();
 
 private:
   UnaryExpr *expressionNode;
-  std::shared_ptr<Storage> storage;
+  std::vector<std::shared_ptr<Storage>> storage;
 };
 
 #endif // UNARY_EXPRESSION_HPP

@@ -11,7 +11,7 @@
 class BinaryExpression {
 public:
   BinaryExpression(BinaryExpr *expressionNode,
-                   std::shared_ptr<Storage> storage);
+                   std::vector<std::shared_ptr<Storage>>);
   Storage::DataWrapper execute();
 
   static Storage::DataWrapper addition(Storage::DataWrapper left,
@@ -29,7 +29,7 @@ public:
 
 private:
   BinaryExpr *expressionNode;
-  std::shared_ptr<Storage> storage;
+  std::vector<std::shared_ptr<Storage>> storage;
 
   static Storage::DataWrapper stringAddition(std::string left,
                                              std::string right);

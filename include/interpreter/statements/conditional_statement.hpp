@@ -10,12 +10,12 @@
 class ConditionalStatement {
 public:
   ConditionalStatement(ConditionalStmt *conditionalNode,
-                       std::shared_ptr<Storage> storage);
+                       std::vector<std::shared_ptr<Storage>> storage);
   void execute();
 
 private:
   ConditionalStmt *conditionalNode;
-  std::shared_ptr<Storage> storage;
+  std::vector<std::shared_ptr<Storage>> storage;
 };
 
 #endif // CONDITIONAL_STATEMENT_HPP

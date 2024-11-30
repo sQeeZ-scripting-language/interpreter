@@ -48,6 +48,7 @@ public:
   void setValue(const std::string &name, DataWrapper dataWrapper);
   void updateValue(const std::string &name, DataWrapper dataWrapper);
   bool exists(const std::string &name) const;
+  bool functionExists(const std::string &name) const;
   DataWrapper &getEntry(const std::string &name);
   void storeFunction(const std::string &name,
                      std::shared_ptr<FunctionDeclaration> function);

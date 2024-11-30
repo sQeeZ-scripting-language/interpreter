@@ -1,7 +1,7 @@
 #include "interpreter/statements/conditional_statement.hpp"
 
 ConditionalStatement::ConditionalStatement(ConditionalStmt *conditionalNode,
-                                           std::shared_ptr<Storage> storage)
+                                           std::vector<std::shared_ptr<Storage>> storage)
     : conditionalNode(conditionalNode), storage(std::move(storage)) {}
 
 void ConditionalStatement::execute() {
