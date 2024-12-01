@@ -11,6 +11,14 @@ Storage::DataWrapper LiteralExpression::execute() {
       throw std::logic_error("Variable not declared.");
     }
     return storage[keyIndex]->getEntry(expr->identifier.value);
+  } else if (auto expr = dynamic_cast<ArrayLiteral *>(expressionNode)) {
+    std::vector<Storage::DataWrapper> elements;
+    for (const auto &element : expr->elements) {
+      elements.push_back(Expression(element.get(), storage).execute());
+    }
+    return Storage::DataWrapper(
+        Storage::WrapperType::VALUE, Storage::DataType::ARRAY,
+        new std::vector<Storage::DataWrapper>(elements));
   } else if (auto expr = dynamic_cast<IntegerLiteral *>(expressionNode)) {
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                 Storage::DataType::INTEGER, expr->value);

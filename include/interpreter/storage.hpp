@@ -11,7 +11,18 @@
 class Storage {
 public:
   enum class WrapperType { VALUE, VARIABLE, CONSTANT };
-  enum DataType { INTEGER, DOUBLE, BOOLEAN, CHAR, STRING, HEXCODE, _NULL };
+  enum DataType {
+    INTEGER,
+    DOUBLE,
+    BOOLEAN,
+    CHAR,
+    STRING,
+    HEXCODE,
+    ARRAY,
+    _NULL
+  };
+
+  struct DataWrapper;
 
   union Data {
     int _int;
@@ -19,6 +30,7 @@ public:
     bool _bool;
     char _char;
     std::string *_string;
+    std::vector<DataWrapper> *_array;
 
     Data();
     Data(int value);
@@ -26,6 +38,7 @@ public:
     Data(bool value);
     Data(char value);
     Data(std::string *value);
+    Data(std::vector<DataWrapper> *value);
     ~Data();
   };
 
