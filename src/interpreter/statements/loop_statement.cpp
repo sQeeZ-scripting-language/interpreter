@@ -76,6 +76,22 @@ void LoopStatement::executeForLoop() {
 
 void LoopStatement::executeForOfLoop() {
   auto forOfLoop = std::get<ForOfStmt *>(loopNode);
+  storage.push_back(std::make_shared<Storage>());
+  Statement(forOfLoop->iterator.get(), storage).execute();
+  Storage::DataWrapper iterable =
+      Expression(forOfLoop->iterable.get(), storage).execute();
+  if (iterable.dataType != Storage::DataType::ARRAY) {
+    throw std::runtime_error("Iterable is not an array!");
+  }
+  std::string key = storage.back()->getSingleKey();
+  for (const auto &data : *iterable.data._array) {
+    storage.back()->updateValue(key, data);
+    storage.push_back(std::make_shared<Storage>());
+    for (const auto &stmt : forOfLoop->body) {
+      Statement(stmt.get(), storage).execute();
+    }
+    storage.pop_back();
+  }
 }
 
 void LoopStatement::executeForInLoop() {

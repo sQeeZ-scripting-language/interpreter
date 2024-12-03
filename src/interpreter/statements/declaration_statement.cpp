@@ -21,15 +21,16 @@ void DeclarationStatement::execute() {
 void DeclarationStatement::executeVarDeclaration() {
   auto varDeclaration = std::get<VarDeclaration *>(declarationNode);
   for (const auto &declaration : varDeclaration->declarations) {
-    if (declaration.second) {
-      if (storageKeyIndex(storage, declaration.first.value) != -1) {
-        throw std::logic_error("Variable already declared.");
-      }
-      storage.back()->setValue(
-          declaration.first.value,
-          Expression(static_cast<Expr *>(declaration.second.get()), storage)
-              .execute());
+    if (storageKeyIndex(storage, declaration.first.value) != -1) {
+      throw std::logic_error("Variable already declared.");
     }
+    Storage::DataWrapper value =
+        declaration.second == nullptr
+            ? Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                   Storage::DataType::_NULL, 0)
+            : Expression(static_cast<Expr *>(declaration.second.get()), storage)
+                  .execute();
+    storage.back()->setValue(declaration.first.value, value);
   }
 }
 

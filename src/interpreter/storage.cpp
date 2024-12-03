@@ -108,6 +108,13 @@ Storage::DataWrapper &Storage::getEntry(const std::string &name) {
   throw std::invalid_argument("Undefined identifier: " + name);
 }
 
+std::string Storage::getSingleKey() {
+  if (storage.size() == 1) {
+    return storage.begin()->first;
+  }
+  throw std::invalid_argument("Expected a single identifier!");
+}
+
 void Storage::storeFunction(const std::string &name,
                             std::shared_ptr<FunctionDeclaration> function) {
   if (functions.find(name) != functions.end()) {

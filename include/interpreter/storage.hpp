@@ -66,6 +66,7 @@ public:
   bool exists(const std::string &name) const;
   bool functionExists(const std::string &name) const;
   DataWrapper &getEntry(const std::string &name);
+  std::string getSingleKey();
   void storeFunction(const std::string &name,
                      std::shared_ptr<FunctionDeclaration> function);
 
