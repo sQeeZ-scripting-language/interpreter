@@ -29,4 +29,5 @@ void ConditionalStatement::execute() {
       Statement(stmt.get(), storage).execute();
     }
   }
+  storage.pop_back();
 }
