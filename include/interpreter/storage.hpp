@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <map>
 
 class Storage {
 public:
@@ -32,7 +33,7 @@ public:
     char _char;
     std::string *_string;
     std::vector<DataWrapper> *_array;
-    std::unordered_map<std::string, DataWrapper> *_object;
+    std::map<std::string, DataWrapper> *_object;
 
     Data();
     Data(int value);
@@ -41,7 +42,7 @@ public:
     Data(char value);
     Data(std::string *value);
     Data(std::vector<DataWrapper> *value);
-    Data(std::unordered_map<std::string, DataWrapper> *value);
+    Data(std::map<std::string, DataWrapper> *value);
     ~Data();
   };
 
