@@ -19,10 +19,11 @@ Storage::DataWrapper LiteralExpression::execute() {
     return Storage::DataWrapper(
         Storage::WrapperType::VALUE, Storage::DataType::ARRAY,
         new std::vector<Storage::DataWrapper>(elements));
-  } else if (auto expr = dynamic_cast<ObjectLiteral *> (expressionNode)) {
+  } else if (auto expr = dynamic_cast<ObjectLiteral *>(expressionNode)) {
     std::unordered_map<std::string, Storage::DataWrapper> elements;
     for (const auto &property : expr->properties) {
-      elements[property.get()->key.value] = Expression(property.get()->value.get(), storage).execute();
+      elements[property.get()->key.value] =
+          Expression(property.get()->value.get(), storage).execute();
     }
     return Storage::DataWrapper(
         Storage::WrapperType::VALUE, Storage::DataType::OBJECT,

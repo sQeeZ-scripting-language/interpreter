@@ -74,10 +74,10 @@ void LoopStatement::executeForLoop() {
   storage.pop_back();
 }
 
-void LoopStatement::executeForInLoop() {
-  auto forInLoop = std::get<ForInStmt *>(loopNode);
-}
-
 void LoopStatement::executeForOfLoop() {
   auto forOfLoop = std::get<ForOfStmt *>(loopNode);
+}
+
+void LoopStatement::executeForInLoop() {
+  auto forInLoop = std::get<ForInStmt *>(loopNode);
 }

@@ -68,7 +68,8 @@ std::string LogStatement::getPrintableValue(Storage::DataWrapper value) {
     return result + "]";
   case Storage::DataType::OBJECT:
     result = "{";
-    for (auto it = value.data._object->begin(); it != value.data._object->end(); ++it) {
+    for (auto it = value.data._object->begin(); it != value.data._object->end();
+         ++it) {
       result += it->first + ": " + getPrintableValue(it->second) +
                 (std::next(it) != value.data._object->end() ? ", " : "");
     }
