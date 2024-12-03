@@ -19,6 +19,7 @@ public:
     STRING,
     HEXCODE,
     ARRAY,
+    OBJECT,
     _NULL
   };
 
@@ -31,6 +32,7 @@ public:
     char _char;
     std::string *_string;
     std::vector<DataWrapper> *_array;
+    std::unordered_map<std::string, DataWrapper> *_object;
 
     Data();
     Data(int value);
@@ -39,6 +41,7 @@ public:
     Data(char value);
     Data(std::string *value);
     Data(std::vector<DataWrapper> *value);
+    Data(std::unordered_map<std::string, DataWrapper> *value);
     ~Data();
   };
 
