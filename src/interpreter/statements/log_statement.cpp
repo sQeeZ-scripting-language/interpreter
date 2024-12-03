@@ -66,6 +66,13 @@ std::string LogStatement::getPrintableValue(Storage::DataWrapper value) {
                 (&element != &value.data._array->back() ? ", " : "");
     }
     return result + "]";
+  case Storage::DataType::OBJECT:
+    result = "{";
+    for (auto it = value.data._object->begin(); it != value.data._object->end(); ++it) {
+      result += it->first + ": " + getPrintableValue(it->second) +
+                (std::next(it) != value.data._object->end() ? ", " : "");
+    }
+    return result + "}";
   case Storage::DataType::_NULL:
     return "null";
   default:
