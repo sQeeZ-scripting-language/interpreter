@@ -77,15 +77,14 @@ void LoopStatement::executeForLoop() {
 void LoopStatement::executeForOfLoop() {
   auto forOfLoop = std::get<ForOfStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
-  Statement(forOfLoop->iterator.get(), storage).execute();
+  std::vector<std::string> keys = DeclarationStatement(dynamic_cast<VarDeclaration *>(forOfLoop->iterator.get()), storage).declareLoopVariables();
   Storage::DataWrapper iterable =
       Expression(forOfLoop->iterable.get(), storage).execute();
   if (iterable.dataType != Storage::DataType::ARRAY) {
     throw std::runtime_error("Iterable is not an array!");
   }
-  std::string key = storage.back()->getSingleKey();
   for (const auto &data : *iterable.data._array) {
-    storage.back()->updateValue(key, data);
+    storage.back()->updateValue(keys.front(), data);
     storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : forOfLoop->body) {
       Statement(stmt.get(), storage).execute();
@@ -96,4 +95,22 @@ void LoopStatement::executeForOfLoop() {
 
 void LoopStatement::executeForInLoop() {
   auto forInLoop = std::get<ForInStmt *>(loopNode);
+  storage.push_back(std::make_shared<Storage>());
+  std::vector<std::string> keys = DeclarationStatement(dynamic_cast<VarDeclaration *>(forInLoop->iterator.get()), storage).declareLoopVariables();
+  Storage::DataWrapper iterable =
+      Expression(forInLoop->iterable.get(), storage).execute();
+  if (iterable.dataType != Storage::DataType::OBJECT) {
+    throw std::runtime_error("Iterable is not an object!");
+  }
+  for (const auto &data : *iterable.data._object) {
+    storage.back()->updateValue(keys.front(), Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(data.first)));
+    if (keys.size() > 1) {
+      storage.back()->updateValue(keys.at(1), data.second);
+    }
+    storage.push_back(std::make_shared<Storage>());
+    for (const auto &stmt : forInLoop->body) {
+      Statement(stmt.get(), storage).execute();
+    }
+    storage.pop_back();
+  }
 }

@@ -14,12 +14,13 @@ public:
   DeclarationStatement(VarDeclaration *declarationNode,
                        std::vector<std::shared_ptr<Storage>> storage);
   void execute();
+  std::vector<std::string> declareLoopVariables();
 
 private:
   std::variant<VarDeclaration *, FunctionDeclaration *> declarationNode;
   std::vector<std::shared_ptr<Storage>> storage;
 
-  void executeVarDeclaration();
+  std::vector<std::string> executeVarDeclaration();
   void executeFunctionDeclaration();
 };
 
