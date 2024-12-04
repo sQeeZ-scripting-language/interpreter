@@ -36,21 +36,23 @@ void LoopStatement::execute() {
 
 void LoopStatement::executeWhileLoop() {
   auto whileLoop = std::get<WhileStmt *>(loopNode);
-  storage.push_back(std::make_shared<Storage>());
   while (checkTrueishness(whileLoop->condition, storage)) {
+    storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : whileLoop->body) {
       Statement(stmt.get(), storage).execute();
     }
+    storage.pop_back();
   }
 }
 
 void LoopStatement::executeDoWhileLoop() {
   auto doWhileLoop = std::get<DoWhileStmt *>(loopNode);
-  storage.push_back(std::make_shared<Storage>());
   do {
+    storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : doWhileLoop->body) {
       Statement(stmt.get(), storage).execute();
     }
+    storage.pop_back();
   } while (checkTrueishness(doWhileLoop->condition, storage));
 }
 
@@ -60,21 +62,64 @@ void LoopStatement::executeForLoop() {
   forLoop->iterator ? Statement(forLoop->iterator.get(), storage).execute()
                     : void();
   while (checkTrueishness(forLoop->condition, storage)) {
+    storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : forLoop->body) {
       Statement(stmt.get(), storage).execute();
     }
     if (forLoop->increment) {
       Statement(forLoop->increment.get(), storage).execute();
     }
+    storage.pop_back();
+  }
+  storage.pop_back();
+}
+
+void LoopStatement::executeForOfLoop() {
+  auto forOfLoop = std::get<ForOfStmt *>(loopNode);
+  storage.push_back(std::make_shared<Storage>());
+  std::vector<std::string> keys =
+      DeclarationStatement(
+          dynamic_cast<VarDeclaration *>(forOfLoop->iterator.get()), storage)
+          .declareLoopVariables();
+  Storage::DataWrapper iterable =
+      Expression(forOfLoop->iterable.get(), storage).execute();
+  if (iterable.dataType != Storage::DataType::ARRAY) {
+    throw std::runtime_error("Iterable is not an array!");
+  }
+  for (const auto &data : *iterable.data._array) {
+    storage.back()->updateValue(keys.front(), data);
+    storage.push_back(std::make_shared<Storage>());
+    for (const auto &stmt : forOfLoop->body) {
+      Statement(stmt.get(), storage).execute();
+    }
+    storage.pop_back();
   }
 }
 
 void LoopStatement::executeForInLoop() {
   auto forInLoop = std::get<ForInStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
-}
-
-void LoopStatement::executeForOfLoop() {
-  auto forOfLoop = std::get<ForOfStmt *>(loopNode);
-  storage.push_back(std::make_shared<Storage>());
+  std::vector<std::string> keys =
+      DeclarationStatement(
+          dynamic_cast<VarDeclaration *>(forInLoop->iterator.get()), storage)
+          .declareLoopVariables();
+  Storage::DataWrapper iterable =
+      Expression(forInLoop->iterable.get(), storage).execute();
+  if (iterable.dataType != Storage::DataType::OBJECT) {
+    throw std::runtime_error("Iterable is not an object!");
+  }
+  for (const auto &data : *iterable.data._object) {
+    storage.back()->updateValue(
+        keys.front(), Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                           Storage::DataType::STRING,
+                                           new std::string(data.first)));
+    if (keys.size() > 1) {
+      storage.back()->updateValue(keys.at(1), data.second);
+    }
+    storage.push_back(std::make_shared<Storage>());
+    for (const auto &stmt : forInLoop->body) {
+      Statement(stmt.get(), storage).execute();
+    }
+    storage.pop_back();
+  }
 }

@@ -18,19 +18,27 @@ void DeclarationStatement::execute() {
   }
 }
 
-void DeclarationStatement::executeVarDeclaration() {
+std::vector<std::string> DeclarationStatement::declareLoopVariables() {
+  return executeVarDeclaration();
+}
+
+std::vector<std::string> DeclarationStatement::executeVarDeclaration() {
   auto varDeclaration = std::get<VarDeclaration *>(declarationNode);
+  std::vector<std::string> declaredVariables = {};
   for (const auto &declaration : varDeclaration->declarations) {
-    if (declaration.second) {
-      if (storageKeyIndex(storage, declaration.first.value) != -1) {
-        throw std::logic_error("Variable already declared.");
-      }
-      storage.back()->setValue(
-          declaration.first.value,
-          Expression(static_cast<Expr *>(declaration.second.get()), storage)
-              .execute());
+    if (storageKeyIndex(storage, declaration.first.value) != -1) {
+      throw std::logic_error("Variable already declared.");
     }
+    Storage::DataWrapper value =
+        declaration.second == nullptr
+            ? Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                   Storage::DataType::_NULL, 0)
+            : Expression(static_cast<Expr *>(declaration.second.get()), storage)
+                  .execute();
+    storage.back()->setValue(declaration.first.value, value);
+    declaredVariables.push_back(declaration.first.value);
   }
+  return declaredVariables;
 }
 
 void DeclarationStatement::executeFunctionDeclaration() {

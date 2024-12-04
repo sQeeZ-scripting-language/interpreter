@@ -31,8 +31,8 @@ private:
   void executeWhileLoop();
   void executeDoWhileLoop();
   void executeForLoop();
-  void executeForInLoop();
   void executeForOfLoop();
+  void executeForInLoop();
 };
 
 #endif // LOOP_STATEMENT_HPP

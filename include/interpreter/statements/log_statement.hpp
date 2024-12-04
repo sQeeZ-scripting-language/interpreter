@@ -13,7 +13,7 @@ public:
 private:
   LogStmt *logNode;
   std::vector<std::shared_ptr<Storage>> storage;
-  std::string getPrintableValue();
+  std::string getPrintableValue(Storage::DataWrapper value);
   void hexToRGB(const std::string &hex, int &r, int &g, int &b);
 };
 

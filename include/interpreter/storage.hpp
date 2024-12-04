@@ -3,6 +3,7 @@
 
 #include "parser/ast_nodes.hpp"
 #include <any>
+#include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -11,7 +12,19 @@
 class Storage {
 public:
   enum class WrapperType { VALUE, VARIABLE, CONSTANT };
-  enum DataType { INTEGER, DOUBLE, BOOLEAN, CHAR, STRING, HEXCODE, _NULL };
+  enum DataType {
+    INTEGER,
+    DOUBLE,
+    BOOLEAN,
+    CHAR,
+    STRING,
+    HEXCODE,
+    ARRAY,
+    OBJECT,
+    _NULL
+  };
+
+  struct DataWrapper;
 
   union Data {
     int _int;
@@ -19,6 +32,8 @@ public:
     bool _bool;
     char _char;
     std::string *_string;
+    std::vector<DataWrapper> *_array;
+    std::map<std::string, DataWrapper> *_object;
 
     Data();
     Data(int value);
@@ -26,6 +41,8 @@ public:
     Data(bool value);
     Data(char value);
     Data(std::string *value);
+    Data(std::vector<DataWrapper> *value);
+    Data(std::map<std::string, DataWrapper> *value);
     ~Data();
   };
 

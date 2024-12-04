@@ -6,6 +6,9 @@ Storage::Data::Data(double value) : _double(value) {}
 Storage::Data::Data(bool value) : _bool(value) {}
 Storage::Data::Data(char value) : _char(value) {}
 Storage::Data::Data(std::string *value) : _string(value) {}
+Storage::Data::Data(std::vector<DataWrapper> *value) : _array(value) {}
+Storage::Data::Data(std::map<std::string, DataWrapper> *value)
+    : _object(value) {}
 Storage::Data::~Data() {}
 
 Storage::DataWrapper::DataWrapper()
