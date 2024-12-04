@@ -315,13 +315,3 @@ int storageKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
   }
   return -1;
 }
-
-int functionKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
-                     std::string key) {
-  for (int i = 0; i < storage.size(); i++) {
-    if (storage[i]->functionExists(key)) {
-      return i;
-    }
-  }
-  return -1;
-}

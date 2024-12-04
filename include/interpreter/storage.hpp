@@ -11,7 +11,7 @@
 
 class Storage {
 public:
-  enum class WrapperType { VALUE, VARIABLE, CONSTANT };
+  enum class WrapperType { VALUE, VARIABLE, CONSTANT, FUNCTION };
   enum DataType {
     INTEGER,
     DOUBLE,
@@ -21,6 +21,7 @@ public:
     HEXCODE,
     ARRAY,
     OBJECT,
+    FUNCTION,
     _NULL
   };
 
@@ -34,6 +35,7 @@ public:
     std::string *_string;
     std::vector<DataWrapper> *_array;
     std::map<std::string, DataWrapper> *_object;
+    FunctionDeclaration *_function;
 
     Data();
     Data(int value);
@@ -43,6 +45,7 @@ public:
     Data(std::string *value);
     Data(std::vector<DataWrapper> *value);
     Data(std::map<std::string, DataWrapper> *value);
+    Data(FunctionDeclaration *value);
     ~Data();
   };
 
@@ -65,15 +68,10 @@ public:
   void setValue(const std::string &name, DataWrapper dataWrapper);
   void updateValue(const std::string &name, DataWrapper dataWrapper);
   bool exists(const std::string &name) const;
-  bool functionExists(const std::string &name) const;
   DataWrapper &getEntry(const std::string &name);
-  void storeFunction(const std::string &name,
-                     std::shared_ptr<FunctionDeclaration> function);
 
 private:
   std::unordered_map<std::string, DataWrapper> storage;
-  std::unordered_map<std::string, std::shared_ptr<FunctionDeclaration>>
-      functions;
 };
 
 #endif // STORAGE_HPP

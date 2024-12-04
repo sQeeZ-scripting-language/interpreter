@@ -9,6 +9,7 @@ Storage::Data::Data(std::string *value) : _string(value) {}
 Storage::Data::Data(std::vector<DataWrapper> *value) : _array(value) {}
 Storage::Data::Data(std::map<std::string, DataWrapper> *value)
     : _object(value) {}
+Storage::Data::Data(FunctionDeclaration *value) : _function(value) {}
 Storage::Data::~Data() {}
 
 Storage::DataWrapper::DataWrapper()
@@ -97,21 +98,9 @@ bool Storage::exists(const std::string &name) const {
   return storage.find(name) != storage.end();
 }
 
-bool Storage::functionExists(const std::string &name) const {
-  return functions.find(name) != functions.end();
-}
-
 Storage::DataWrapper &Storage::getEntry(const std::string &name) {
   if (storage.find(name) != storage.end()) {
     return storage.at(name);
   }
   throw std::invalid_argument("Undefined identifier: " + name);
-}
-
-void Storage::storeFunction(const std::string &name,
-                            std::shared_ptr<FunctionDeclaration> function) {
-  if (functions.find(name) != functions.end()) {
-    throw std::invalid_argument("Function '" + name + "' is already defined!");
-  }
-  functions[name] = function;
 }
