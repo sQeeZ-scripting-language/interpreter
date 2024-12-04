@@ -77,7 +77,10 @@ void LoopStatement::executeForLoop() {
 void LoopStatement::executeForOfLoop() {
   auto forOfLoop = std::get<ForOfStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
-  std::vector<std::string> keys = DeclarationStatement(dynamic_cast<VarDeclaration *>(forOfLoop->iterator.get()), storage).declareLoopVariables();
+  std::vector<std::string> keys =
+      DeclarationStatement(
+          dynamic_cast<VarDeclaration *>(forOfLoop->iterator.get()), storage)
+          .declareLoopVariables();
   Storage::DataWrapper iterable =
       Expression(forOfLoop->iterable.get(), storage).execute();
   if (iterable.dataType != Storage::DataType::ARRAY) {
@@ -96,14 +99,20 @@ void LoopStatement::executeForOfLoop() {
 void LoopStatement::executeForInLoop() {
   auto forInLoop = std::get<ForInStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
-  std::vector<std::string> keys = DeclarationStatement(dynamic_cast<VarDeclaration *>(forInLoop->iterator.get()), storage).declareLoopVariables();
+  std::vector<std::string> keys =
+      DeclarationStatement(
+          dynamic_cast<VarDeclaration *>(forInLoop->iterator.get()), storage)
+          .declareLoopVariables();
   Storage::DataWrapper iterable =
       Expression(forInLoop->iterable.get(), storage).execute();
   if (iterable.dataType != Storage::DataType::OBJECT) {
     throw std::runtime_error("Iterable is not an object!");
   }
   for (const auto &data : *iterable.data._object) {
-    storage.back()->updateValue(keys.front(), Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(data.first)));
+    storage.back()->updateValue(
+        keys.front(), Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                           Storage::DataType::STRING,
+                                           new std::string(data.first)));
     if (keys.size() > 1) {
       storage.back()->updateValue(keys.at(1), data.second);
     }
