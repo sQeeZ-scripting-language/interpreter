@@ -13,7 +13,6 @@ class Interpreter {
 public:
   Interpreter(std::unique_ptr<Program> &&ast);
   void interpret(bool devMode);
-
 };
 
 #endif // INTERPRETER_HPP

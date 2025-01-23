@@ -18,7 +18,8 @@ Storage::DataWrapper Expression::execute() {
     return UnaryExpression(dynamic_cast<UnaryExpr *>(exprNode), storage)
         .execute();
   case NodeType::CallExpr:
-    return CallExpression(dynamic_cast<CallExpr *>(exprNode), storage).execute();
+    return CallExpression(dynamic_cast<CallExpr *>(exprNode), storage)
+        .execute();
   case NodeType::MemberExpr:
     return MemberExpression(dynamic_cast<MemberExpr *>(exprNode), storage)
         .execute();

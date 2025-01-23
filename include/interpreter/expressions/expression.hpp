@@ -6,8 +6,8 @@
 
 #include "interpreter/expressions/assignment_expression.hpp"
 #include "interpreter/expressions/binary_expression.hpp"
-#include "interpreter/expressions/literal_expression.hpp"
 #include "interpreter/expressions/call_expression.hpp"
+#include "interpreter/expressions/literal_expression.hpp"
 #include "interpreter/expressions/member_expression.hpp"
 #include "interpreter/expressions/unary_expression.hpp"
 

@@ -7,7 +7,8 @@
 
 class ReturnStatement {
 public:
-  ReturnStatement(ReturnStmt *returnNode, std::vector<std::shared_ptr<Storage>> storage);
+  ReturnStatement(ReturnStmt *returnNode,
+                  std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper execute();
 
 private:

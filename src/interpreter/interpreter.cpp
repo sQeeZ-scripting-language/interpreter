@@ -14,5 +14,3 @@ void Interpreter::interpret(bool devMode) {
     handleException(e);
   }
 }
-
-

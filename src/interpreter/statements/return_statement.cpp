@@ -5,5 +5,5 @@ ReturnStatement::ReturnStatement(ReturnStmt *returnNode,
     : returnNode(returnNode), storage(std::move(storage)) {}
 
 Storage::DataWrapper ReturnStatement::execute() {
-    return Expression(returnNode->value.get(), storage).execute();
+  return Expression(returnNode->value.get(), storage).execute();
 }
