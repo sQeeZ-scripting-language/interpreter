@@ -316,12 +316,9 @@ int storageKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
   return -1;
 }
 
-int functionKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
-                     std::string key) {
-  for (int i = 0; i < storage.size(); i++) {
-    if (storage[i]->functionExists(key)) {
-      return i;
-    }
-  }
-  return -1;
+void handleException(const std::exception &e) {
+  std::string exceptionType = typeid(e).name();
+
+  std::cerr << "\033[1;30m\033[41m[sQeeZ]: Exception of type: " << exceptionType
+            << " - Message: " << e.what() << "\033[0m" << std::endl;
 }

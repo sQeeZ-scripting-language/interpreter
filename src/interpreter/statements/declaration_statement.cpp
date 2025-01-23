@@ -26,8 +26,8 @@ std::vector<std::string> DeclarationStatement::executeVarDeclaration() {
   auto varDeclaration = std::get<VarDeclaration *>(declarationNode);
   std::vector<std::string> declaredVariables = {};
   for (const auto &declaration : varDeclaration->declarations) {
-    if (storageKeyIndex(storage, declaration.first.value) != -1) {
-      throw std::logic_error("Variable already declared.");
+    if (storage.back()->exists(declaration.first.value)) {
+      throw std::logic_error("Identifier is already defined!");
     }
     Storage::DataWrapper value =
         declaration.second == nullptr
@@ -43,10 +43,11 @@ std::vector<std::string> DeclarationStatement::executeVarDeclaration() {
 
 void DeclarationStatement::executeFunctionDeclaration() {
   auto functionDeclaration = std::get<FunctionDeclaration *>(declarationNode);
-  std::shared_ptr<FunctionDeclaration> funcPtr =
-      std::shared_ptr<FunctionDeclaration>(functionDeclaration);
-  if (functionKeyIndex(storage, functionDeclaration->name.value) != -1) {
-    throw std::logic_error("Function already declared.");
+  if (storage.back()->exists(functionDeclaration->name.value)) {
+    throw std::logic_error("Identifier is already defined!");
   }
-  storage.back()->storeFunction(funcPtr->name.value, funcPtr);
+  storage.back()->setValue(functionDeclaration->name.value,
+                           Storage::DataWrapper(Storage::WrapperType::FUNCTION,
+                                                Storage::DataType::FUNCTION,
+                                                functionDeclaration));
 }

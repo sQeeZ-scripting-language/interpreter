@@ -9,6 +9,7 @@ Storage::Data::Data(std::string *value) : _string(value) {}
 Storage::Data::Data(std::vector<DataWrapper> *value) : _array(value) {}
 Storage::Data::Data(std::map<std::string, DataWrapper> *value)
     : _object(value) {}
+Storage::Data::Data(FunctionDeclaration *value) : _function(value) {}
 Storage::Data::~Data() {}
 
 Storage::DataWrapper::DataWrapper()
@@ -19,6 +20,8 @@ Storage::DataWrapper::DataWrapper(WrapperType st, DataType dt,
     : wrapperType(st), dataType(dt) {
   if ((dt == DataType::STRING || dt == DataType::HEXCODE) && value._string) {
     data._string = new std::string(*value._string);
+  } else if (dt == DataType::FUNCTION && value._function) {
+    data._function = value._function;
   } else {
     data = value;
   }
@@ -28,6 +31,8 @@ Storage::DataWrapper::DataWrapper(const DataWrapper &other)
     : wrapperType(other.wrapperType), dataType(other.dataType) {
   if (dataType == DataType::STRING || dataType == DataType::HEXCODE) {
     data._string = new std::string(*other.data._string);
+  } else if (dataType == DataType::FUNCTION && other.data._function) {
+    data._function = other.data._function;
   } else {
     data = other.data;
   }
@@ -80,13 +85,11 @@ void Storage::setValue(const std::string &name, DataWrapper dataWrapper) {
     throw std::invalid_argument("Identifier '" + name +
                                 " 'is already defined!");
   }
-  dataWrapper.wrapperType = WrapperType::VARIABLE;
   storage[name] = dataWrapper;
 }
 
 void Storage::updateValue(const std::string &name, DataWrapper dataWrapper) {
   if (storage.find(name) != storage.end()) {
-    dataWrapper.wrapperType = WrapperType::VARIABLE;
     storage[name] = dataWrapper;
   } else {
     throw std::invalid_argument("Undefined identifier: " + name);
@@ -97,21 +100,9 @@ bool Storage::exists(const std::string &name) const {
   return storage.find(name) != storage.end();
 }
 
-bool Storage::functionExists(const std::string &name) const {
-  return functions.find(name) != functions.end();
-}
-
 Storage::DataWrapper &Storage::getEntry(const std::string &name) {
   if (storage.find(name) != storage.end()) {
     return storage.at(name);
   }
   throw std::invalid_argument("Undefined identifier: " + name);
-}
-
-void Storage::storeFunction(const std::string &name,
-                            std::shared_ptr<FunctionDeclaration> function) {
-  if (functions.find(name) != functions.end()) {
-    throw std::invalid_argument("Function '" + name + "' is already defined!");
-  }
-  functions[name] = function;
 }

@@ -22,7 +22,6 @@ bool checkGreater(Storage::DataWrapper left, Storage::DataWrapper right);
 std::string toLowerCase(std::string str);
 int storageKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
                     std::string key);
-int functionKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
-                     std::string key);
+void handleException(const std::exception &e);
 
 #endif // UTILS_HPP
