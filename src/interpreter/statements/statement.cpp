@@ -36,6 +36,9 @@ void Statement::execute() {
   case NodeType::LogStmt:
     LogStatement(dynamic_cast<LogStmt *>(stmtNode), storage).execute();
     break;
+  case NodeType::ReturnStmt:
+    ReturnStatement(dynamic_cast<ReturnStmt *>(stmtNode), storage).execute();
+    break;
   default:
     Expression(dynamic_cast<Expr *>(stmtNode), storage).execute();
     break;
