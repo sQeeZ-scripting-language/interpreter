@@ -20,6 +20,8 @@ Storage::DataWrapper::DataWrapper(WrapperType st, DataType dt,
     : wrapperType(st), dataType(dt) {
   if ((dt == DataType::STRING || dt == DataType::HEXCODE) && value._string) {
     data._string = new std::string(*value._string);
+  } else if (dt == DataType::FUNCTION && value._function) {
+    data._function = value._function;
   } else {
     data = value;
   }
@@ -29,6 +31,8 @@ Storage::DataWrapper::DataWrapper(const DataWrapper &other)
     : wrapperType(other.wrapperType), dataType(other.dataType) {
   if (dataType == DataType::STRING || dataType == DataType::HEXCODE) {
     data._string = new std::string(*other.data._string);
+  } else if (dataType == DataType::FUNCTION && other.data._function) {
+    data._function = other.data._function;
   } else {
     data = other.data;
   }
@@ -81,13 +85,11 @@ void Storage::setValue(const std::string &name, DataWrapper dataWrapper) {
     throw std::invalid_argument("Identifier '" + name +
                                 " 'is already defined!");
   }
-  dataWrapper.wrapperType = WrapperType::VARIABLE;
   storage[name] = dataWrapper;
 }
 
 void Storage::updateValue(const std::string &name, DataWrapper dataWrapper) {
   if (storage.find(name) != storage.end()) {
-    dataWrapper.wrapperType = WrapperType::VARIABLE;
     storage[name] = dataWrapper;
   } else {
     throw std::invalid_argument("Undefined identifier: " + name);

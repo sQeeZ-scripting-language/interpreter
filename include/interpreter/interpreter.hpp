@@ -3,6 +3,7 @@
 
 #include "interpreter/statements/statement.hpp"
 #include "interpreter/storage.hpp"
+#include "interpreter/utils.hpp"
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
 
@@ -13,8 +14,6 @@ public:
   Interpreter(std::unique_ptr<Program> &&ast);
   void interpret(bool devMode);
 
-private:
-  void handleException(const std::exception &e);
 };
 
 #endif // INTERPRETER_HPP
