@@ -32,17 +32,22 @@ Storage::DataWrapper CallExpression::functionCall() {
     }
     storage.push_back(parameterStorage);
     storage.push_back(std::make_shared<Storage>());
+    Storage::DataWrapper returnValue = Storage::DataWrapper();
     try {
         for (const auto &statement : functionDeclaration->body) {
-            Statement(statement.get(), storage).execute();
+            if (statement.get()->kind == NodeType::ReturnStmt) {
+                returnValue = ReturnStatement(dynamic_cast<ReturnStmt *>(statement.get()), storage).execute();
+                break;
+            } else {
+                Statement(statement.get(), storage).execute();
+            }
         }
     } catch (const std::exception &e) {
         handleException(e);
     }
     storage.pop_back();
     storage.pop_back();
-    // get result out of return statement
-    return Storage::DataWrapper();
+    return returnValue;
 }
 
 Storage::DataWrapper CallExpression::methodCall() {
