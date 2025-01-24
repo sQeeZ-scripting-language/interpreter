@@ -57,5 +57,20 @@ Storage::DataWrapper CallExpression::functionCall() {
 }
 
 Storage::DataWrapper CallExpression::methodCall() {
-  throw std::runtime_error("Method call not implemented!");
+  Storage::DataWrapper caller =
+      Expression(expressionNode->caller.get(), storage).execute();
+  if (expressionNode->method.get()->kind != NodeType::Identifier) {
+    throw std::runtime_error("Invalid method call!");
+  }
+  if (caller.dataType == Storage::DataType::OBJECT) {
+    return Storage::DataWrapper();
+  } else if (caller.dataType == Storage::DataType::ARRAY) {
+    Array array;
+    return array.callMethod(
+        dynamic_cast<Identifier *>(expressionNode->method.get())->identifier.value,
+        expressionNode->caller.get(), std::move(expressionNode->args), storage);
+    return Storage::DataWrapper();
+  } else {
+    throw std::runtime_error("Invalid method call!");
+  }
 }
