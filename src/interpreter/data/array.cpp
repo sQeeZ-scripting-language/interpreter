@@ -35,7 +35,35 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             }
             return tmpValue;
         case ArrayMethod::SHIFT:
+            if (args.size() != 0) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (callerValue.data._array->empty()) {
+                return tmpValue;
+            }
+            tmpValue = callerValue.data._array->front();
+            callerValue.data._array->erase(callerValue.data._array->begin());
+            if (auto expr = dynamic_cast<Identifier *>(caller)) {
+                int keyIndex = storageKeyIndex(storage, expr->identifier.value);
+                if (keyIndex == -1) {
+                    throw std::logic_error("Variable not declared.");
+                }
+                storage[keyIndex]->updateValue(expr->identifier.value, callerValue);
+            }
+            return tmpValue;
         case ArrayMethod::UNSHIFT:
+            if (args.size() != 1) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            callerValue.data._array->insert(callerValue.data._array->begin(), Expression(args[0].get(), storage).execute());
+            if (auto expr = dynamic_cast<Identifier *>(caller)) {
+                int keyIndex = storageKeyIndex(storage, expr->identifier.value);
+                if (keyIndex == -1) {
+                    throw std::logic_error("Variable not declared.");
+                }
+                storage[keyIndex]->updateValue(expr->identifier.value, callerValue);
+            }
+            return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, static_cast<int>(callerValue.data._array->size()));
         case ArrayMethod::SPLICE:
         case ArrayMethod::REVERSE:
         case ArrayMethod::SORT:
