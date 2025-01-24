@@ -2,6 +2,7 @@
 
 Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {;
     Storage::DataWrapper callerValue = Expression(caller, storage).execute();
+    Storage::DataWrapper tmpValue = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
     switch (stringToEnumMap.at(method)) {
         case ArrayMethod::PUSH:
             if (args.size() != 1) {
@@ -17,6 +18,22 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             }
             return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, static_cast<int>(callerValue.data._array->size()));
         case ArrayMethod::POP:
+            if (args.size() != 0) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (callerValue.data._array->empty()) {
+                return tmpValue;
+            }
+            tmpValue = callerValue.data._array->back();
+            callerValue.data._array->pop_back();
+            if (auto expr = dynamic_cast<Identifier *>(caller)) {
+                int keyIndex = storageKeyIndex(storage, expr->identifier.value);
+                if (keyIndex == -1) {
+                    throw std::logic_error("Variable not declared.");
+                }
+                storage[keyIndex]->updateValue(expr->identifier.value, callerValue);
+            }
+            return tmpValue;
         case ArrayMethod::SHIFT:
         case ArrayMethod::UNSHIFT:
         case ArrayMethod::SPLICE:
