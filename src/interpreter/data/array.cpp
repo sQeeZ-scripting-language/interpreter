@@ -3,6 +3,9 @@
 Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {;
     Storage::DataWrapper callerValue = Expression(caller, storage).execute();
     Storage::DataWrapper tmpValue = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+    std::vector<Storage::DataWrapper> tmpElements, tmpDeletedElements;
+    int start, count;
+
     switch (stringToEnumMap.at(method)) {
         case ArrayMethod::PUSH:
             if (args.size() != 1) {
@@ -65,6 +68,54 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             }
             return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, static_cast<int>(callerValue.data._array->size()));
         case ArrayMethod::SPLICE:
+            if (args.size() < 2 || args.size() > 3) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (callerValue.data._array->empty()) {
+                return tmpValue;
+            }
+            if (args[0].get()->kind != NodeType::IntegerLiteral || args[1].get()->kind != NodeType::IntegerLiteral) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            start = Expression(args[0].get(), storage).execute().data._int;
+            count = Expression(args[1].get(), storage).execute().data._int;
+            
+            if (args.size() == 3) {
+                tmpElements = *(Expression(args[2].get(), storage).execute().data._array);
+            }
+
+            if (start < 0) {
+                start = static_cast<int>(callerValue.data._array->size()) + start;
+            }
+            if (start < 0) {
+                start = 0;
+            }
+            if (count < 0) {
+                count = 0;
+            }
+            if (start > static_cast<int>(callerValue.data._array->size())) {
+                start = static_cast<int>(callerValue.data._array->size());
+            }
+            if (count > static_cast<int>(callerValue.data._array->size()) - start) {
+                count = static_cast<int>(callerValue.data._array->size()) - start;
+            }
+            
+            for (int i = 0; i < count; ++i) {
+                tmpDeletedElements.push_back(callerValue.data._array->at(start + i));
+            }
+            callerValue.data._array->erase(callerValue.data._array->begin() + start, callerValue.data._array->begin() + start + count);
+            for (int i = 0; i < static_cast<int>(tmpElements.size()); ++i) {
+                callerValue.data._array->insert(callerValue.data._array->begin() + start + i, tmpElements[i]);
+            }
+            
+            if (auto expr = dynamic_cast<Identifier *>(caller)) {
+                int keyIndex = storageKeyIndex(storage, expr->identifier.value);
+                if (keyIndex == -1) {
+                    throw std::logic_error("Variable not declared.");
+                }
+                storage[keyIndex]->updateValue(expr->identifier.value, callerValue);
+            }
+            return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(tmpDeletedElements));
         case ArrayMethod::REVERSE:
         case ArrayMethod::SORT:
         case ArrayMethod::FILL:
