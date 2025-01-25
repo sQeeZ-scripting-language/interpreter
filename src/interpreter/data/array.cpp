@@ -117,6 +117,18 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             }
             return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(tmpDeletedElements));
         case ArrayMethod::REVERSE:
+            if (args.size() != 0) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            std::reverse(callerValue.data._array->begin(), callerValue.data._array->end());
+            if (auto expr = dynamic_cast<Identifier *>(caller)) {
+                int keyIndex = storageKeyIndex(storage, expr->identifier.value);
+                if (keyIndex == -1) {
+                    throw std::logic_error("Variable not declared.");
+                }
+                storage[keyIndex]->updateValue(expr->identifier.value, callerValue);
+            }
+            return callerValue;
         case ArrayMethod::SORT:
         case ArrayMethod::FILL:
         case ArrayMethod::CONCAT:
