@@ -23,5 +23,6 @@ std::string toLowerCase(std::string str);
 int storageKeyIndex(std::vector<std::shared_ptr<Storage>> storage,
                     std::string key);
 void handleException(const std::exception &e);
+std::string getPrintableValue(Storage::DataWrapper value);
 
 #endif // UTILS_HPP
