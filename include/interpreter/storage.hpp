@@ -63,6 +63,7 @@ public:
     ~DataWrapper();
 
     void clear();
+    bool equals(const DataWrapper &other) const;
   };
 
   void setValue(const std::string &name, DataWrapper dataWrapper);
