@@ -4,7 +4,7 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
     Storage::DataWrapper callerValue = Expression(caller, storage).execute();
     Storage::DataWrapper tmpValue = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
     std::vector<Storage::DataWrapper> tmpElements, tmpDeletedElements;
-    int start, count;
+    int start, end, count;
 
     switch (stringToEnumMap.at(method)) {
         case ArrayMethod::PUSH:
@@ -130,7 +130,44 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             }
             return callerValue;
         case ArrayMethod::SORT:
+            break;
         case ArrayMethod::FILL:
+            if (args.size() < 1 || args.size() > 3) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (callerValue.data._array->empty()) {
+                return tmpValue;
+            }
+            if (args[0].get()->kind != NodeType::Identifier && args[0].get()->kind != NodeType::ArrayLiteral && args[0].get()->kind != NodeType::ObjectLiteral && args[0].get()->kind != NodeType::IntegerLiteral && args[0].get()->kind != NodeType::DoubleLiteral && args[0].get()->kind != NodeType::CharLiteral && args[0].get()->kind != NodeType::StringLiteral && args[0].get()->kind != NodeType::BooleanLiteral && args[0].get()->kind != NodeType::NullLiteral) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            if (args.size() >= 2 && args[1].get()->kind != NodeType::IntegerLiteral) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            if (args.size() >= 3 && args[2].get()->kind != NodeType::IntegerLiteral) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            if (args.size() == 1) {
+                start = 0;
+                end = static_cast<int>(callerValue.data._array->size());
+            } else if (args.size() == 2) {
+                start = Expression(args[1].get(), storage).execute().data._int;
+                end = static_cast<int>(callerValue.data._array->size());
+            } else {
+                start = Expression(args[1].get(), storage).execute().data._int;
+                end = Expression(args[2].get(), storage).execute().data._int;
+            }
+            for (int i = start; i < end; ++i) {
+                callerValue.data._array->at(i) = Expression(args[0].get(), storage).execute();
+            }
+            if (auto expr = dynamic_cast<Identifier *>(caller)) {
+                int keyIndex = storageKeyIndex(storage, expr->identifier.value);
+                if (keyIndex == -1) {
+                    throw std::logic_error("Variable not declared.");
+                }
+                storage[keyIndex]->updateValue(expr->identifier.value, callerValue);
+            }
+            return callerValue;
         case ArrayMethod::CONCAT:
         case ArrayMethod::SLICE:
         case ArrayMethod::INCLUDES:
