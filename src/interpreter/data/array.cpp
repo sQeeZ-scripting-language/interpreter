@@ -74,16 +74,14 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             if (callerValue.data._array->empty()) {
                 return tmpValue;
             }
-            if (args[0].get()->kind != NodeType::IntegerLiteral || args[1].get()->kind != NodeType::IntegerLiteral) {
+            if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER || Expression(args[1].get(), storage).execute().dataType != Storage::DataType::INTEGER) {
                 throw std::logic_error("Invalid arguments!");
             }
             start = Expression(args[0].get(), storage).execute().data._int;
             count = Expression(args[1].get(), storage).execute().data._int;
-            
             if (args.size() == 3) {
                 tmpElements = *(Expression(args[2].get(), storage).execute().data._array);
             }
-
             if (start < 0) {
                 start = static_cast<int>(callerValue.data._array->size()) + start;
             }
@@ -99,7 +97,6 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             if (count > static_cast<int>(callerValue.data._array->size()) - start) {
                 count = static_cast<int>(callerValue.data._array->size()) - start;
             }
-            
             for (int i = 0; i < count; ++i) {
                 tmpDeletedElements.push_back(callerValue.data._array->at(start + i));
             }
@@ -107,7 +104,6 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             for (int i = 0; i < static_cast<int>(tmpElements.size()); ++i) {
                 callerValue.data._array->insert(callerValue.data._array->begin() + start + i, tmpElements[i]);
             }
-            
             if (auto expr = dynamic_cast<Identifier *>(caller)) {
                 int keyIndex = storageKeyIndex(storage, expr->identifier.value);
                 if (keyIndex == -1) {
@@ -138,7 +134,7 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             if (callerValue.data._array->empty()) {
                 return tmpValue;
             }
-            if (args[0].get()->kind != NodeType::Identifier && args[0].get()->kind != NodeType::ArrayLiteral && args[0].get()->kind != NodeType::ObjectLiteral && args[0].get()->kind != NodeType::IntegerLiteral && args[0].get()->kind != NodeType::DoubleLiteral && args[0].get()->kind != NodeType::CharLiteral && args[0].get()->kind != NodeType::StringLiteral && args[0].get()->kind != NodeType::BooleanLiteral && args[0].get()->kind != NodeType::NullLiteral) {
+            if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::ARRAY || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::BOOLEAN || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::CHAR || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::DOUBLE || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::HEXCODE || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::OBJECT || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::_NULL) {
                 throw std::logic_error("Invalid arguments!");
             }
             if (args.size() >= 2 && args[1].get()->kind != NodeType::IntegerLiteral) {
@@ -187,6 +183,39 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             }
             return callerValue;
         case ArrayMethod::SLICE:
+            if (args.size() == 0) {
+                return callerValue;
+            }
+            if (args.size() > 2) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (args.size() >= 1 && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            if (args.size() >= 2 && Expression(args[1].get(), storage).execute().dataType != Storage::DataType::INTEGER) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            if (Expression(args[0].get(), storage).execute().data._int < 0) {
+                start = static_cast<int>(callerValue.data._array->size()) + Expression(args[0].get(), storage).execute().data._int;
+            } else if (Expression(args[0].get(), storage).execute().data._int > static_cast<int>(callerValue.data._array->size())) {
+                return tmpValue;
+            } else {
+                start = Expression(args[0].get(), storage).execute().data._int;
+            }
+            if (args.size() == 1 || Expression(args[1].get(), storage).execute().data._int > static_cast<int>(callerValue.data._array->size())) {
+                end = static_cast<int>(callerValue.data._array->size());
+            } else if(Expression(args[1].get(), storage).execute().data._int < 0) {
+                end = static_cast<int>(callerValue.data._array->size()) + Expression(args[1].get(), storage).execute().data._int;
+            } else {
+                end = Expression(args[1].get(), storage).execute().data._int;
+            }
+            if (start >= end) {
+                return tmpValue;
+            }
+            for (int i = start; i < end; ++i) {
+                tmpElements.push_back(callerValue.data._array->at(i));
+            }
+            return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(tmpElements));
         case ArrayMethod::INCLUDES:
         case ArrayMethod::INDEX_OF:
         case ArrayMethod::LAST_INDEX_OF:
