@@ -342,7 +342,24 @@ Storage::DataWrapper Array::lastIndexOf(std::string method, Expr *caller, Storag
 }
 
 Storage::DataWrapper Array::join(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
-    return Storage::DataWrapper();
+    if (args.size() > 1) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    std::string separator = "";
+    if (args.size() == 1) {
+        if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING) {
+            throw std::logic_error("Invalid arguments!");
+        }
+        separator = *(Expression(args[0].get(), storage).execute().data._string);
+    }
+    std::string result = "";
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+        if (i != 0) {
+            result += separator;
+        }
+        result += getPrintableValue(callerValue.data._array->at(i));
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(result));
 }
 
 Storage::DataWrapper Array::every(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
