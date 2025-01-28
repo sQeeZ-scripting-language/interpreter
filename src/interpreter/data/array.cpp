@@ -57,7 +57,7 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
     }
 }
 
-Storage::DataWrapper Array::push(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::push(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     if (args.size() != 1) {
         throw std::logic_error("Invalid number of arguments!");
     }
@@ -72,7 +72,7 @@ Storage::DataWrapper Array::push(std::string method, Expr *caller, Storage::Data
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, static_cast<int>(callerValue.data._array->size()));
 }
 
-Storage::DataWrapper Array::pop(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::pop(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     Storage::DataWrapper tmpValue = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
     if (args.size() != 0) {
         throw std::logic_error("Invalid number of arguments!");
@@ -92,7 +92,7 @@ Storage::DataWrapper Array::pop(std::string method, Expr *caller, Storage::DataW
     return tmpValue;
 }
 
-Storage::DataWrapper Array::shift(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::shift(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     Storage::DataWrapper tmpValue = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
     if (args.size() != 0) {
         throw std::logic_error("Invalid number of arguments!");
@@ -112,7 +112,7 @@ Storage::DataWrapper Array::shift(std::string method, Expr *caller, Storage::Dat
     return tmpValue;
 }
 
-Storage::DataWrapper Array::unshift(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::unshift(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     if (args.size() != 1) {
         throw std::logic_error("Invalid number of arguments!");
     }
@@ -127,7 +127,7 @@ Storage::DataWrapper Array::unshift(std::string method, Expr *caller, Storage::D
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, static_cast<int>(callerValue.data._array->size()));
 }
 
-Storage::DataWrapper Array::splice(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::splice(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     Storage::DataWrapper tmpValue = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
     std::vector<Storage::DataWrapper> tmpElements, tmpDeletedElements;
     int start, count;
@@ -177,7 +177,7 @@ Storage::DataWrapper Array::splice(std::string method, Expr *caller, Storage::Da
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(tmpDeletedElements));
 }
 
-Storage::DataWrapper Array::reverse(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::reverse(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     if (args.size() != 0) {
         throw std::logic_error("Invalid number of arguments!");
     }
@@ -192,11 +192,11 @@ Storage::DataWrapper Array::reverse(std::string method, Expr *caller, Storage::D
     return callerValue;
 }
 
-Storage::DataWrapper Array::sort(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::sort(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::fill(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::fill(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     Storage::DataWrapper tmpValue = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
     int start, end;
     if (args.size() < 1 || args.size() > 3) {
@@ -237,7 +237,7 @@ Storage::DataWrapper Array::fill(std::string method, Expr *caller, Storage::Data
     return callerValue;
 }
 
-Storage::DataWrapper Array::concat(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::concat(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     if (args.size() != 1) {
         throw std::logic_error("Invalid number of arguments!");
     }
@@ -257,7 +257,7 @@ Storage::DataWrapper Array::concat(std::string method, Expr *caller, Storage::Da
     return callerValue;
 }
 
-Storage::DataWrapper Array::slice(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::slice(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     Storage::DataWrapper tmpValue = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
     std::vector<Storage::DataWrapper> tmpElements;
     int start, end;
@@ -296,7 +296,7 @@ Storage::DataWrapper Array::slice(std::string method, Expr *caller, Storage::Dat
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(tmpElements));
 }
 
-Storage::DataWrapper Array::includes(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::includes(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     if (args.size() != 1) {
         throw std::logic_error("Invalid number of arguments!");
     }
@@ -311,7 +311,7 @@ Storage::DataWrapper Array::includes(std::string method, Expr *caller, Storage::
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN, false);
 }
 
-Storage::DataWrapper Array::indexOf(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::indexOf(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     if (args.size() != 1) {
         throw std::logic_error("Invalid number of arguments!");
     }
@@ -326,7 +326,7 @@ Storage::DataWrapper Array::indexOf(std::string method, Expr *caller, Storage::D
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, -1);
 }
 
-Storage::DataWrapper Array::lastIndexOf(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::lastIndexOf(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     if (args.size() != 1) {
         throw std::logic_error("Invalid number of arguments!");
     }
@@ -341,46 +341,46 @@ Storage::DataWrapper Array::lastIndexOf(std::string method, Expr *caller, Storag
     return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, -1);
 }
 
-Storage::DataWrapper Array::join(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::join(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::every(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::every(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::some(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::some(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::find(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::find(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::findIndex(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::findIndex(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::filter(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::filter(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::map(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::map(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::reduce(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::reduce(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::flat(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::flat(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::flatMap(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::flatMap(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
 
-Storage::DataWrapper Array::forEach(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>> args, std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Array::forEach(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
