@@ -134,7 +134,7 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             if (callerValue.data._array->empty()) {
                 return tmpValue;
             }
-            if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::ARRAY || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::BOOLEAN || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::CHAR || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::DOUBLE || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::HEXCODE || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::OBJECT || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING || Expression(args[0].get(), storage).execute().dataType != Storage::DataType::_NULL) {
+            if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::ARRAY && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::BOOLEAN && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::CHAR && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::DOUBLE && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::HEXCODE && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::OBJECT && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::_NULL) {
                 throw std::logic_error("Invalid arguments!");
             }
             if (args.size() >= 2 && args[1].get()->kind != NodeType::IntegerLiteral) {
@@ -217,8 +217,44 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             }
             return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(tmpElements));
         case ArrayMethod::INCLUDES:
+            if (args.size() != 1) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::ARRAY && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::BOOLEAN && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::CHAR && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::DOUBLE && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::HEXCODE && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::OBJECT && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::_NULL) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            for (int i = 0; i < callerValue.data._array->size(); ++i) {
+                if (callerValue.data._array->at(i).equals(Expression(args[0].get(), storage).execute())) {
+                    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN, true);
+                }
+            }
+            return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN, false);
         case ArrayMethod::INDEX_OF:
+            if (args.size() != 1) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::ARRAY && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::BOOLEAN && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::CHAR && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::DOUBLE && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::HEXCODE && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::OBJECT && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::_NULL) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            for (int i = 0; i < callerValue.data._array->size(); ++i) {
+                if (callerValue.data._array->at(i).equals(Expression(args[0].get(), storage).execute())) {
+                    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, i);
+                }
+            }
+            return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, -1);
         case ArrayMethod::LAST_INDEX_OF:
+            if (args.size() != 1) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::ARRAY && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::BOOLEAN && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::CHAR && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::DOUBLE && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::HEXCODE && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::OBJECT && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::_NULL) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            for (int i = static_cast<int>(callerValue.data._array->size()) - 1; i >= 0; --i) {
+                if (callerValue.data._array->at(i).equals(Expression(args[0].get(), storage).execute())) {
+                    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, i);
+                }
+            }
+            return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, -1);
         case ArrayMethod::JOIN:
         case ArrayMethod::EVERY:
         case ArrayMethod::SOME:
