@@ -169,6 +169,23 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
             }
             return callerValue;
         case ArrayMethod::CONCAT:
+            if (args.size() != 1) {
+                throw std::logic_error("Invalid number of arguments!");
+            }
+            if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::ARRAY) {
+                throw std::logic_error("Invalid arguments!");
+            }
+            for (int i = 0; i < static_cast<int>(Expression(args[0].get(), storage).execute().data._array->size()); ++i) {
+                callerValue.data._array->push_back(Expression(args[0].get(), storage).execute().data._array->at(i));
+            }
+            if (auto expr = dynamic_cast<Identifier *>(caller)) {
+                int keyIndex = storageKeyIndex(storage, expr->identifier.value);
+                if (keyIndex == -1) {
+                    throw std::logic_error("Variable not declared.");
+                }
+                storage[keyIndex]->updateValue(expr->identifier.value, callerValue);
+            }
+            return callerValue;
         case ArrayMethod::SLICE:
         case ArrayMethod::INCLUDES:
         case ArrayMethod::INDEX_OF:
