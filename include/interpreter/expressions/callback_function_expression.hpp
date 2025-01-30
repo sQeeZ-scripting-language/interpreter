@@ -18,7 +18,7 @@ private:
   CallbackFunctionExpr *expressionNode;
   std::vector<std::shared_ptr<Storage>> storage;
 
-  Storage::DataWrapper executeBody();
+  Storage::DataWrapper executeBody(std::shared_ptr<Storage> parameterStorage);
 };
 
 #endif // CALLBACK_FUNCTION_EXPRESSION_HPP
