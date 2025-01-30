@@ -13,12 +13,12 @@ public:
   CallbackFunctionExpression(CallbackFunctionExpr *expressionNode,
                  std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper execute();
+  Storage::DataWrapper executeBody(std::shared_ptr<Storage> parameterStorage);
 
 private:
   CallbackFunctionExpr *expressionNode;
   std::vector<std::shared_ptr<Storage>> storage;
 
-  Storage::DataWrapper executeBody(std::shared_ptr<Storage> parameterStorage);
 };
 
 #endif // CALLBACK_FUNCTION_EXPRESSION_HPP

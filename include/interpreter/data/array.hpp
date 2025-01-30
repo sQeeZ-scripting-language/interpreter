@@ -5,6 +5,7 @@
 #include <string>
 #include "interpreter/storage.hpp"
 #include "interpreter/expressions/expression.hpp"
+#include "interpreter/expressions/callback_function_expression.hpp"
 #include "parser/ast_nodes.hpp"
 #include "interpreter/utils.hpp"
 

@@ -23,6 +23,10 @@ Storage::DataWrapper Expression::execute() {
   case NodeType::MemberExpr:
     return MemberExpression(dynamic_cast<MemberExpr *>(exprNode), storage)
         .execute();
+  case NodeType::CallbackFunctionExpr:
+    return CallbackFunctionExpression(
+               dynamic_cast<CallbackFunctionExpr *>(exprNode), storage)
+        .execute();
   default:
     return LiteralExpression(exprNode, storage).execute();
   }

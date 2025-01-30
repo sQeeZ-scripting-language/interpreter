@@ -23,7 +23,7 @@ Storage::DataWrapper::DataWrapper(WrapperType st, DataType dt,
     data._string = new std::string(*value._string);
   } else if (dt == DataType::FUNCTION && value._function) {
     data._function = value._function;
-  } else if (dt == DataType::FUNCTION && value._callbackFunction) {
+  } else if (dt == DataType::CALLBACK_FUNCTION && value._callbackFunction) {
     data._callbackFunction = value._callbackFunction;
   } else {
     data = value;
@@ -36,7 +36,7 @@ Storage::DataWrapper::DataWrapper(const DataWrapper &other)
     data._string = new std::string(*other.data._string);
   } else if (dataType == DataType::FUNCTION && other.data._function) {
     data._function = other.data._function;
-  } else if (dataType == DataType::FUNCTION && other.data._callbackFunction) {
+  } else if (dataType == DataType::CALLBACK_FUNCTION && other.data._callbackFunction) {
     data._callbackFunction = other.data._callbackFunction;
   } else {
     data = other.data;
