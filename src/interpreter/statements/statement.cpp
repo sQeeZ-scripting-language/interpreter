@@ -4,7 +4,7 @@ Statement::Statement(Stmt *stmtNode,
                      std::vector<std::shared_ptr<Storage>> storage)
     : stmtNode(stmtNode), storage(std::move(storage)) {}
 
-void Statement::execute() {
+Storage::DataWrapper Statement::execute() {
   switch (stmtNode->kind) {
   case NodeType::FunctionDeclaration:
     DeclarationStatement(dynamic_cast<FunctionDeclaration *>(stmtNode), storage)
@@ -37,10 +37,11 @@ void Statement::execute() {
     LogStatement(dynamic_cast<LogStmt *>(stmtNode), storage).execute();
     break;
   case NodeType::ReturnStmt:
-    ReturnStatement(dynamic_cast<ReturnStmt *>(stmtNode), storage).execute();
+    return ReturnStatement(dynamic_cast<ReturnStmt *>(stmtNode), storage).execute();
     break;
   default:
-    Expression(dynamic_cast<Expr *>(stmtNode), storage).execute();
+    return Expression(dynamic_cast<Expr *>(stmtNode), storage).execute();
     break;
   }
+  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
 }

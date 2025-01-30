@@ -13,7 +13,7 @@
 class Statement {
 public:
   Statement(Stmt *stmtNode, std::vector<std::shared_ptr<Storage>> storage);
-  void execute();
+  Storage::DataWrapper execute();
 
 private:
   Stmt *stmtNode;
