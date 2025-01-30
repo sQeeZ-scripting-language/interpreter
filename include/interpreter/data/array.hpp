@@ -97,6 +97,9 @@ private:
     Storage::DataWrapper flat(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper flatMap(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper forEach(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
+
+    // Utils
+    Storage::DataWrapper flattenArray(Storage::DataWrapper array, int depth);
 };
 
 #endif // ARRAY_HPP

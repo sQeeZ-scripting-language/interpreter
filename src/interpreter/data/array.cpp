@@ -573,7 +573,14 @@ Storage::DataWrapper Array::reduce(std::string method, Expr *caller, Storage::Da
 }
 
 Storage::DataWrapper Array::flat(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
-    return Storage::DataWrapper();
+    if (args.size() > 1) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    if (args.size() == 1 && Expression(args[0].get(), storage).execute().dataType != Storage::DataType::INTEGER) {
+        throw std::logic_error("Invalid arguments!");
+    }
+    int depth = args.size() == 1 ? Expression(args[0].get(), storage).execute().data._int : 1;
+    return flattenArray(callerValue, depth);
 }
 
 Storage::DataWrapper Array::flatMap(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
@@ -583,3 +590,17 @@ Storage::DataWrapper Array::flatMap(std::string method, Expr *caller, Storage::D
 Storage::DataWrapper Array::forEach(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
     return Storage::DataWrapper();
 }
+
+Storage::DataWrapper Array::flattenArray(Storage::DataWrapper array, int depth) {
+    Storage::DataWrapper result = Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>());
+    for (const auto& item : *array.data._array) {
+        if (item.dataType == Storage::DataType::ARRAY && depth > 0) {
+            Storage::DataWrapper flattened = flattenArray(item, depth - 1);
+            result.data._array->insert(result.data._array->end(), flattened.data._array->begin(), flattened.data._array->end());
+        } else {
+            result.data._array->push_back(item);
+        }
+    }
+    return result;
+}
+
