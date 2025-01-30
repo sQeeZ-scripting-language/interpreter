@@ -20,43 +20,51 @@ LoopStatement::LoopStatement(ForOfStmt *loopNode,
                              std::vector<std::shared_ptr<Storage>> storage)
     : loopNode(loopNode), storage(std::move(storage)) {}
 
-void LoopStatement::execute() {
+Storage::DataWrapper LoopStatement::execute() {
   if (std::holds_alternative<WhileStmt *>(loopNode)) {
-    executeWhileLoop();
+    return executeWhileLoop();
   } else if (std::holds_alternative<DoWhileStmt *>(loopNode)) {
-    executeDoWhileLoop();
+    return executeDoWhileLoop();
   } else if (std::holds_alternative<ForStmt *>(loopNode)) {
-    executeForLoop();
+    return executeForLoop();
   } else if (std::holds_alternative<ForInStmt *>(loopNode)) {
-    executeForInLoop();
+    return executeForInLoop();
   } else if (std::holds_alternative<ForOfStmt *>(loopNode)) {
-    executeForOfLoop();
+    return executeForOfLoop();
   }
 }
 
-void LoopStatement::executeWhileLoop() {
+Storage::DataWrapper LoopStatement::executeWhileLoop() {
   auto whileLoop = std::get<WhileStmt *>(loopNode);
   while (checkTrueishnessOfExpression(whileLoop->condition, storage)) {
     storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : whileLoop->body) {
+      if (stmt->kind == NodeType::ReturnStmt) {
+        storage.pop_back();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+      }
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();
   }
 }
 
-void LoopStatement::executeDoWhileLoop() {
+Storage::DataWrapper LoopStatement::executeDoWhileLoop() {
   auto doWhileLoop = std::get<DoWhileStmt *>(loopNode);
   do {
     storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : doWhileLoop->body) {
+      if (stmt->kind == NodeType::ReturnStmt) {
+        storage.pop_back();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+      }
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();
   } while (checkTrueishnessOfExpression(doWhileLoop->condition, storage));
 }
 
-void LoopStatement::executeForLoop() {
+Storage::DataWrapper LoopStatement::executeForLoop() {
   auto forLoop = std::get<ForStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
   if (forLoop->iterator) {
@@ -65,6 +73,11 @@ void LoopStatement::executeForLoop() {
   while (checkTrueishnessOfExpression(forLoop->condition, storage)) {
     storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : forLoop->body) {
+      if (stmt->kind == NodeType::ReturnStmt) {
+        storage.pop_back();
+        storage.pop_back();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+      }
       Statement(stmt.get(), storage).execute();
     }
     if (forLoop->increment) {
@@ -75,7 +88,7 @@ void LoopStatement::executeForLoop() {
   storage.pop_back();
 }
 
-void LoopStatement::executeForOfLoop() {
+Storage::DataWrapper LoopStatement::executeForOfLoop() {
   auto forOfLoop = std::get<ForOfStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
   std::vector<std::string> keys =
@@ -91,13 +104,17 @@ void LoopStatement::executeForOfLoop() {
     storage.back()->updateValue(keys.front(), data);
     storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : forOfLoop->body) {
+      if (stmt->kind == NodeType::ReturnStmt) {
+        storage.pop_back();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+      }
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();
   }
 }
 
-void LoopStatement::executeForInLoop() {
+Storage::DataWrapper LoopStatement::executeForInLoop() {
   auto forInLoop = std::get<ForInStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
   std::vector<std::string> keys =
@@ -119,6 +136,10 @@ void LoopStatement::executeForInLoop() {
     }
     storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : forInLoop->body) {
+      if (stmt->kind == NodeType::ReturnStmt) {
+        storage.pop_back();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+      }
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();

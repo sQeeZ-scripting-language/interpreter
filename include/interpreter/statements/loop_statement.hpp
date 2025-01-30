@@ -21,18 +21,18 @@ public:
                 std::vector<std::shared_ptr<Storage>> storage);
   LoopStatement(ForOfStmt *loopNode,
                 std::vector<std::shared_ptr<Storage>> storage);
-  void execute();
+  Storage::DataWrapper execute();
 
 private:
   std::variant<WhileStmt *, DoWhileStmt *, ForStmt *, ForInStmt *, ForOfStmt *>
       loopNode;
   std::vector<std::shared_ptr<Storage>> storage;
 
-  void executeWhileLoop();
-  void executeDoWhileLoop();
-  void executeForLoop();
-  void executeForOfLoop();
-  void executeForInLoop();
+  Storage::DataWrapper executeWhileLoop();
+  Storage::DataWrapper executeDoWhileLoop();
+  Storage::DataWrapper executeForLoop();
+  Storage::DataWrapper executeForOfLoop();
+  Storage::DataWrapper executeForInLoop();
 };
 
 #endif // LOOP_STATEMENT_HPP

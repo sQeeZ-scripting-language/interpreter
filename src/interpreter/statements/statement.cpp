@@ -15,24 +15,17 @@ Storage::DataWrapper Statement::execute() {
         .execute();
     break;
   case NodeType::ConditionalStmt:
-    ConditionalStatement(dynamic_cast<ConditionalStmt *>(stmtNode), storage)
-        .execute();
-    break;
+    return ConditionalStatement(dynamic_cast<ConditionalStmt *>(stmtNode), storage).execute();
   case NodeType::WhileStmt:
-    LoopStatement(dynamic_cast<WhileStmt *>(stmtNode), storage).execute();
-    break;
+    return LoopStatement(dynamic_cast<WhileStmt *>(stmtNode), storage).execute();
   case NodeType::DoWhileStmt:
-    LoopStatement(dynamic_cast<DoWhileStmt *>(stmtNode), storage).execute();
-    break;
+    return LoopStatement(dynamic_cast<DoWhileStmt *>(stmtNode), storage).execute();
   case NodeType::ForStmt:
-    LoopStatement(dynamic_cast<ForStmt *>(stmtNode), storage).execute();
-    break;
+    return LoopStatement(dynamic_cast<ForStmt *>(stmtNode), storage).execute();
   case NodeType::ForInStmt:
-    LoopStatement(dynamic_cast<ForInStmt *>(stmtNode), storage).execute();
-    break;
+    return LoopStatement(dynamic_cast<ForInStmt *>(stmtNode), storage).execute();
   case NodeType::ForOfStmt:
-    LoopStatement(dynamic_cast<ForOfStmt *>(stmtNode), storage).execute();
-    break;
+    return LoopStatement(dynamic_cast<ForOfStmt *>(stmtNode), storage).execute();
   case NodeType::LogStmt:
     LogStatement(dynamic_cast<LogStmt *>(stmtNode), storage).execute();
     break;
