@@ -32,6 +32,7 @@ Storage::DataWrapper LoopStatement::execute() {
   } else if (std::holds_alternative<ForOfStmt *>(loopNode)) {
     return executeForOfLoop();
   }
+  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeWhileLoop() {
@@ -47,6 +48,7 @@ Storage::DataWrapper LoopStatement::executeWhileLoop() {
     }
     storage.pop_back();
   }
+  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeDoWhileLoop() {
@@ -62,6 +64,7 @@ Storage::DataWrapper LoopStatement::executeDoWhileLoop() {
     }
     storage.pop_back();
   } while (checkTrueishnessOfExpression(doWhileLoop->condition, storage));
+  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeForLoop() {
@@ -86,6 +89,7 @@ Storage::DataWrapper LoopStatement::executeForLoop() {
     storage.pop_back();
   }
   storage.pop_back();
+  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeForOfLoop() {
@@ -112,6 +116,7 @@ Storage::DataWrapper LoopStatement::executeForOfLoop() {
     }
     storage.pop_back();
   }
+  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeForInLoop() {
@@ -144,4 +149,5 @@ Storage::DataWrapper LoopStatement::executeForInLoop() {
     }
     storage.pop_back();
   }
+  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
 }

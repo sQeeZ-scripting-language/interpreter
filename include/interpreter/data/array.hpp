@@ -31,6 +31,8 @@ enum class ArrayMethod {
     SOME,
     FIND,
     FIND_INDEX,
+    FIND_LAST,
+    FIND_LAST_INDEX,
     FILTER,
     MAP,
     REDUCE,
@@ -64,6 +66,8 @@ private:
         {"some", ArrayMethod::SOME},
         {"find", ArrayMethod::FIND},
         {"findIndex", ArrayMethod::FIND_INDEX},
+        {"findLast", ArrayMethod::FIND_LAST},
+        {"findLastIndex", ArrayMethod::FIND_LAST_INDEX},
         {"filter", ArrayMethod::FILTER},
         {"map", ArrayMethod::MAP},
         {"reduce", ArrayMethod::REDUCE},
@@ -91,6 +95,8 @@ private:
     Storage::DataWrapper some(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper find(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper findIndex(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
+    Storage::DataWrapper findLast(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
+    Storage::DataWrapper findLastIndex(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper filter(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper map(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper reduce(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
