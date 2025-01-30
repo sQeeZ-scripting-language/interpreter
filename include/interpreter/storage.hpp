@@ -22,6 +22,7 @@ public:
     ARRAY,
     OBJECT,
     FUNCTION,
+    CALLBACK_FUNCTION,
     _NULL
   };
 
@@ -36,6 +37,7 @@ public:
     std::vector<DataWrapper> *_array;
     std::map<std::string, DataWrapper> *_object;
     FunctionDeclaration *_function;
+    CallbackFunctionExpr *_callbackFunction;
 
     Data();
     Data(int value);
@@ -46,6 +48,7 @@ public:
     Data(std::vector<DataWrapper> *value);
     Data(std::map<std::string, DataWrapper> *value);
     Data(FunctionDeclaration *value);
+    Data(CallbackFunctionExpr *value);
     ~Data();
   };
 

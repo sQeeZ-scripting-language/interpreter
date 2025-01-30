@@ -10,6 +10,7 @@ Storage::Data::Data(std::vector<DataWrapper> *value) : _array(value) {}
 Storage::Data::Data(std::map<std::string, DataWrapper> *value)
     : _object(value) {}
 Storage::Data::Data(FunctionDeclaration *value) : _function(value) {}
+Storage::Data::Data(CallbackFunctionExpr *value) : _callbackFunction(value) {}
 Storage::Data::~Data() {}
 
 Storage::DataWrapper::DataWrapper()
@@ -22,6 +23,8 @@ Storage::DataWrapper::DataWrapper(WrapperType st, DataType dt,
     data._string = new std::string(*value._string);
   } else if (dt == DataType::FUNCTION && value._function) {
     data._function = value._function;
+  } else if (dt == DataType::FUNCTION && value._callbackFunction) {
+    data._callbackFunction = value._callbackFunction;
   } else {
     data = value;
   }
@@ -33,6 +36,8 @@ Storage::DataWrapper::DataWrapper(const DataWrapper &other)
     data._string = new std::string(*other.data._string);
   } else if (dataType == DataType::FUNCTION && other.data._function) {
     data._function = other.data._function;
+  } else if (dataType == DataType::FUNCTION && other.data._callbackFunction) {
+    data._callbackFunction = other.data._callbackFunction;
   } else {
     data = other.data;
   }
@@ -118,6 +123,8 @@ bool Storage::DataWrapper::equals(const DataWrapper &other) const {
     return true;
   case DataType::FUNCTION:
     return data._function == other.data._function;
+  case DataType::CALLBACK_FUNCTION:
+    return data._callbackFunction == other.data._callbackFunction;
   case DataType::_NULL:
     return true;
   }
