@@ -10,6 +10,7 @@
 #include "interpreter/utils.hpp"
 
 enum class ArrayMethod {
+    LENGTH,
     // Mutating methods
     PUSH,
     POP,
@@ -44,6 +45,7 @@ public:
 
 private:
     inline static const std::unordered_map<std::string, ArrayMethod> stringToEnumMap = {
+        {"length", ArrayMethod::LENGTH},
         {"push", ArrayMethod::PUSH},
         {"pop", ArrayMethod::POP},
         {"shift", ArrayMethod::SHIFT},
@@ -70,6 +72,7 @@ private:
         {"forEach", ArrayMethod::FOR_EACH}
     };
 
+    Storage::DataWrapper length(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper push(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper pop(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);
     Storage::DataWrapper shift(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage);

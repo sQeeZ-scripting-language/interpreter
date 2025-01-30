@@ -4,6 +4,8 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
     Storage::DataWrapper callerValue = Expression(caller, storage).execute();
 
     switch (stringToEnumMap.at(method)) {
+        case ArrayMethod::LENGTH:
+            return length(method, caller, callerValue, args, storage);
         case ArrayMethod::PUSH:
             return push(method, caller, callerValue, args, storage);
         case ArrayMethod::POP:
@@ -55,6 +57,13 @@ Storage::DataWrapper Array::callMethod(std::string method, Expr *caller, const s
         default:
             throw std::runtime_error("Invalid array method!");
     }
+}
+
+Storage::DataWrapper Array::length(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
+    if (args.size() != 0) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, static_cast<int>(callerValue.data._array->size()));
 }
 
 Storage::DataWrapper Array::push(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
