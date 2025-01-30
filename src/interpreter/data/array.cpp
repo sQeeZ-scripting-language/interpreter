@@ -540,7 +540,36 @@ Storage::DataWrapper Array::map(std::string method, Expr *caller, Storage::DataW
 }
 
 Storage::DataWrapper Array::reduce(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
-    return Storage::DataWrapper();
+    if (args.size() < 1 || args.size() > 2) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    Storage::DataWrapper callbackFunction = Expression(args[0].get(), storage).execute();
+    if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
+        throw std::logic_error("Invalid arguments!");
+    }
+    if (callbackFunction.data._callbackFunction->parameters.size() != 2) {
+        throw std::logic_error("Invalid number of parameters!");
+    }
+    if (!(callbackFunction.data._callbackFunction->parameters[0].tag == Token::TypeTag::DATA && callbackFunction.data._callbackFunction->parameters[0].type.dataToken == DataToken::IDENTIFIER) || !(callbackFunction.data._callbackFunction->parameters[1].tag == Token::TypeTag::DATA && callbackFunction.data._callbackFunction->parameters[1].type.dataToken == DataToken::IDENTIFIER)) {
+        throw std::logic_error("Invalid parameters!");
+    }
+    if (callerValue.data._array->empty()) {
+        if (args.size() == 2) {
+            return Expression(args[1].get(), storage).execute();
+        }
+        throw std::logic_error("Invalid arguments!");
+    }
+    Storage::DataWrapper accumulator = callerValue.data._array->at(0);
+    if (args.size() == 2) {
+        accumulator = Expression(args[1].get(), storage).execute();
+    }
+    for (int i = args.size() == 2 ? 0 : 1; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+        std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
+        parameterStorage->setValue(callbackFunction.data._callbackFunction->parameters[0].value, accumulator);
+        parameterStorage->setValue(callbackFunction.data._callbackFunction->parameters[1].value, callerValue.data._array->at(i));
+        accumulator = CallbackFunctionExpression(callbackFunction.data._callbackFunction, storage).executeBody(parameterStorage);
+    }
+    return accumulator;
 }
 
 Storage::DataWrapper Array::flat(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
