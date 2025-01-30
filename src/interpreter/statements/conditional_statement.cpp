@@ -8,14 +8,14 @@ ConditionalStatement::ConditionalStatement(
 void ConditionalStatement::execute() {
   bool executed = false;
   storage.push_back(std::make_shared<Storage>());
-  if (checkTrueishness(conditionalNode->ifClause.first, storage)) {
+  if (checkTrueishnessOfExpression(conditionalNode->ifClause.first, storage)) {
     for (const auto &stmt : conditionalNode->ifClause.second) {
       Statement(stmt.get(), storage).execute();
     }
     executed = true;
   } else if (!conditionalNode->elifClauses.empty()) {
     for (const auto &elifClause : conditionalNode->elifClauses) {
-      if (checkTrueishness(elifClause.first, storage)) {
+      if (checkTrueishnessOfExpression(elifClause.first, storage)) {
         for (const auto &stmt : elifClause.second) {
           Statement(stmt.get(), storage).execute();
         }

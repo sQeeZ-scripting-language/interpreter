@@ -36,7 +36,7 @@ void LoopStatement::execute() {
 
 void LoopStatement::executeWhileLoop() {
   auto whileLoop = std::get<WhileStmt *>(loopNode);
-  while (checkTrueishness(whileLoop->condition, storage)) {
+  while (checkTrueishnessOfExpression(whileLoop->condition, storage)) {
     storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : whileLoop->body) {
       Statement(stmt.get(), storage).execute();
@@ -53,15 +53,16 @@ void LoopStatement::executeDoWhileLoop() {
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();
-  } while (checkTrueishness(doWhileLoop->condition, storage));
+  } while (checkTrueishnessOfExpression(doWhileLoop->condition, storage));
 }
 
 void LoopStatement::executeForLoop() {
   auto forLoop = std::get<ForStmt *>(loopNode);
   storage.push_back(std::make_shared<Storage>());
-  forLoop->iterator ? Statement(forLoop->iterator.get(), storage).execute()
-                    : void();
-  while (checkTrueishness(forLoop->condition, storage)) {
+  if (forLoop->iterator) {
+    Statement(forLoop->iterator.get(), storage).execute();
+  }
+  while (checkTrueishnessOfExpression(forLoop->condition, storage)) {
     storage.push_back(std::make_shared<Storage>());
     for (const auto &stmt : forLoop->body) {
       Statement(stmt.get(), storage).execute();
