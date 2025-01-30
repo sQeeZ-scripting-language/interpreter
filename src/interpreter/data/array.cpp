@@ -206,7 +206,38 @@ Storage::DataWrapper Array::reverse(std::string method, Expr *caller, Storage::D
 }
 
 Storage::DataWrapper Array::sort(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
-    return Storage::DataWrapper();
+    if (args.size() != 0) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    std::sort(callerValue.data._array->begin(), callerValue.data._array->end(), [](const Storage::DataWrapper &a, const Storage::DataWrapper &b) {
+        if (a.dataType != b.dataType) {
+            return a.dataType < b.dataType;
+        }
+        switch (a.dataType) {
+            case Storage::DataType::BOOLEAN:
+                return a.data._bool < b.data._bool;
+            case Storage::DataType::INTEGER:
+                return a.data._int < b.data._int;
+            case Storage::DataType::DOUBLE:
+                return a.data._double < b.data._double;
+            case Storage::DataType::CHAR:
+                return a.data._char < b.data._char;
+            case Storage::DataType::STRING:
+            case Storage::DataType::HEXCODE:
+                return *a.data._string < *b.data._string;
+            case Storage::DataType::ARRAY:
+                return a.data._array->size() < b.data._array->size();
+            case Storage::DataType::OBJECT:
+                return a.data._object->size() < b.data._object->size();
+            case Storage::DataType::FUNCTION:
+                return a.data._function->name.value.length() < b.data._function->name.value.length();
+            case Storage::DataType::CALLBACK_FUNCTION:
+                return false;
+            default:
+                throw std::runtime_error("Unknown data type!");
+        }
+    });
+    return callerValue;
 }
 
 Storage::DataWrapper Array::fill(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {

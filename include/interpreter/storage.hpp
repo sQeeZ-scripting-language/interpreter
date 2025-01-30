@@ -13,9 +13,9 @@ class Storage {
 public:
   enum class WrapperType { VALUE, VARIABLE, CONSTANT, FUNCTION };
   enum DataType {
+    BOOLEAN,
     INTEGER,
     DOUBLE,
-    BOOLEAN,
     CHAR,
     STRING,
     HEXCODE,
