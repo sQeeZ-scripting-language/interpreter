@@ -5,6 +5,8 @@
 #include "parser/ast_nodes.hpp"
 
 #include "interpreter/expressions/assignment_expression.hpp"
+#include "interpreter/expressions/callback_function_expression.hpp"
+#include "interpreter/expressions/ternary_expression.hpp"
 #include "interpreter/expressions/binary_expression.hpp"
 #include "interpreter/expressions/call_expression.hpp"
 #include "interpreter/expressions/literal_expression.hpp"
