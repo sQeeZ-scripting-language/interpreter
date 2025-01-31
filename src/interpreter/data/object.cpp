@@ -30,7 +30,14 @@ Storage::DataWrapper Object::hasKey(std::string method, Expr *caller, Storage::D
 }
 
 Storage::DataWrapper Object::keys(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
-    return Storage::DataWrapper();
+    if (args.size() != 0) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    std::vector<Storage::DataWrapper> keys;
+    for (const auto &entry : *callerValue.data._object) {
+        keys.push_back(Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(entry.first)));
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(keys));
 }
 
 Storage::DataWrapper Object::values(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
