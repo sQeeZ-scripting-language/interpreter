@@ -732,4 +732,3 @@ Storage::DataWrapper Array::flattenArray(Storage::DataWrapper array, int depth) 
     }
     return result;
 }
-
