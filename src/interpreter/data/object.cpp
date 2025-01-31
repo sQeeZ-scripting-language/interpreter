@@ -52,7 +52,17 @@ Storage::DataWrapper Object::values(std::string method, Expr *caller, Storage::D
 }
 
 Storage::DataWrapper Object::entries(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
-    return Storage::DataWrapper();
+    if (args.size() != 0) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    std::vector<Storage::DataWrapper> keys;
+    for (const auto &entry : *callerValue.data._object) {
+        std::vector<Storage::DataWrapper> entryData;
+        entryData.push_back(Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::STRING, new std::string(entry.first)));
+        entryData.push_back(Storage::DataWrapper(Storage::WrapperType::VALUE, entry.second.dataType, entry.second.data));
+        keys.push_back(Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(entryData)));
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::ARRAY, new std::vector<Storage::DataWrapper>(keys));
 }
 
 Storage::DataWrapper Object::get(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
