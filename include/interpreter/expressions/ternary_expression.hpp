@@ -8,7 +8,7 @@
 class TernaryExpression {
 public:
   TernaryExpression(TernaryExpr *expressionNode,
-                   std::vector<std::shared_ptr<Storage>> storage);
+                    std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper execute();
 
 private:

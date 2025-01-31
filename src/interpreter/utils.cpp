@@ -15,13 +15,15 @@ Storage::DataWrapper _boolean(bool value) {
                               Storage::DataType::BOOLEAN, value);
 }
 
-bool checkTrueishnessOfExpression(const std::unique_ptr<Expr> &expr,
-                      std::vector<std::shared_ptr<Storage>> storage) {
+bool checkTrueishnessOfExpression(
+    const std::unique_ptr<Expr> &expr,
+    std::vector<std::shared_ptr<Storage>> storage) {
   Storage::DataWrapper datawrapper = Expression(expr.get(), storage).execute();
   return checkTrueishness(datawrapper, storage);
 }
 
-bool checkTrueishness(Storage::DataWrapper datawrapper, std::vector<std::shared_ptr<Storage>> storage) {
+bool checkTrueishness(Storage::DataWrapper datawrapper,
+                      std::vector<std::shared_ptr<Storage>> storage) {
   switch (datawrapper.dataType) {
   case Storage::DataType::BOOLEAN:
     return datawrapper.data._bool;

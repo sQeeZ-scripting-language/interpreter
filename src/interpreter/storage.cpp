@@ -36,7 +36,8 @@ Storage::DataWrapper::DataWrapper(const DataWrapper &other)
     data._string = new std::string(*other.data._string);
   } else if (dataType == DataType::FUNCTION && other.data._function) {
     data._function = other.data._function;
-  } else if (dataType == DataType::CALLBACK_FUNCTION && other.data._callbackFunction) {
+  } else if (dataType == DataType::CALLBACK_FUNCTION &&
+             other.data._callbackFunction) {
     data._callbackFunction = other.data._callbackFunction;
   } else {
     data = other.data;

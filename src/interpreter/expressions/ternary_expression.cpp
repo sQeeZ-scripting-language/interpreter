@@ -5,10 +5,16 @@ TernaryExpression::TernaryExpression(
     : expressionNode(expressionNode), storage(std::move(storage)) {}
 
 Storage::DataWrapper TernaryExpression::execute() {
-    Storage::DataWrapper condition = Expression(dynamic_cast<Expr *>(expressionNode->condition.get()), storage).execute();
-    if (checkTrueishness(condition, storage)) {
-        return Expression(dynamic_cast<Expr *>(expressionNode->trueExpr.get()), storage).execute();
-    } else {
-        return Expression(dynamic_cast<Expr *>(expressionNode->falseExpr.get()), storage).execute();
-    }
+  Storage::DataWrapper condition =
+      Expression(dynamic_cast<Expr *>(expressionNode->condition.get()), storage)
+          .execute();
+  if (checkTrueishness(condition, storage)) {
+    return Expression(dynamic_cast<Expr *>(expressionNode->trueExpr.get()),
+                      storage)
+        .execute();
+  } else {
+    return Expression(dynamic_cast<Expr *>(expressionNode->falseExpr.get()),
+                      storage)
+        .execute();
+  }
 }

@@ -32,7 +32,8 @@ Storage::DataWrapper LoopStatement::execute() {
   } else if (std::holds_alternative<ForOfStmt *>(loopNode)) {
     return executeForOfLoop();
   }
-  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeWhileLoop() {
@@ -42,13 +43,15 @@ Storage::DataWrapper LoopStatement::executeWhileLoop() {
     for (const auto &stmt : whileLoop->body) {
       if (stmt->kind == NodeType::ReturnStmt) {
         storage.pop_back();
-        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
       }
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();
   }
-  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeDoWhileLoop() {
@@ -58,13 +61,15 @@ Storage::DataWrapper LoopStatement::executeDoWhileLoop() {
     for (const auto &stmt : doWhileLoop->body) {
       if (stmt->kind == NodeType::ReturnStmt) {
         storage.pop_back();
-        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
       }
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();
   } while (checkTrueishnessOfExpression(doWhileLoop->condition, storage));
-  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeForLoop() {
@@ -79,7 +84,8 @@ Storage::DataWrapper LoopStatement::executeForLoop() {
       if (stmt->kind == NodeType::ReturnStmt) {
         storage.pop_back();
         storage.pop_back();
-        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
       }
       Statement(stmt.get(), storage).execute();
     }
@@ -89,7 +95,8 @@ Storage::DataWrapper LoopStatement::executeForLoop() {
     storage.pop_back();
   }
   storage.pop_back();
-  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeForOfLoop() {
@@ -110,13 +117,15 @@ Storage::DataWrapper LoopStatement::executeForOfLoop() {
     for (const auto &stmt : forOfLoop->body) {
       if (stmt->kind == NodeType::ReturnStmt) {
         storage.pop_back();
-        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
       }
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();
   }
-  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::_NULL, 0);
 }
 
 Storage::DataWrapper LoopStatement::executeForInLoop() {
@@ -143,11 +152,13 @@ Storage::DataWrapper LoopStatement::executeForInLoop() {
     for (const auto &stmt : forInLoop->body) {
       if (stmt->kind == NodeType::ReturnStmt) {
         storage.pop_back();
-        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
       }
       Statement(stmt.get(), storage).execute();
     }
     storage.pop_back();
   }
-  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::_NULL, 0);
 }

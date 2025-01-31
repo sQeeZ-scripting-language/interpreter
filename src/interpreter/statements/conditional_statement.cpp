@@ -12,7 +12,8 @@ Storage::DataWrapper ConditionalStatement::execute() {
     for (const auto &stmt : conditionalNode->ifClause.second) {
       if (stmt->kind == NodeType::ReturnStmt) {
         storage.pop_back();
-        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
       }
       Statement(stmt.get(), storage).execute();
     }
@@ -23,7 +24,9 @@ Storage::DataWrapper ConditionalStatement::execute() {
         for (const auto &stmt : elifClause.second) {
           if (stmt->kind == NodeType::ReturnStmt) {
             storage.pop_back();
-            return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+            return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()),
+                                   storage)
+                .execute();
           }
           Statement(stmt.get(), storage).execute();
         }
@@ -36,11 +39,13 @@ Storage::DataWrapper ConditionalStatement::execute() {
     for (const auto &stmt : conditionalNode->elseBody) {
       if (stmt->kind == NodeType::ReturnStmt) {
         storage.pop_back();
-        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage).execute();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
       }
       Statement(stmt.get(), storage).execute();
     }
   }
   storage.pop_back();
-  return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::_NULL, 0);
 }

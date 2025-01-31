@@ -77,11 +77,13 @@ Storage::DataWrapper BinaryExpression::execute() {
               Expression(expressionNode->right.get(), storage).execute(),
               true));
     case LogicalToken::AND:
-      return _boolean(checkTrueishnessOfExpression(expressionNode->left, storage) &&
-                      checkTrueishnessOfExpression(expressionNode->right, storage));
+      return _boolean(
+          checkTrueishnessOfExpression(expressionNode->left, storage) &&
+          checkTrueishnessOfExpression(expressionNode->right, storage));
     case LogicalToken::OR:
-      return _boolean(checkTrueishnessOfExpression(expressionNode->left, storage) ||
-                      checkTrueishnessOfExpression(expressionNode->right, storage));
+      return _boolean(
+          checkTrueishnessOfExpression(expressionNode->left, storage) ||
+          checkTrueishnessOfExpression(expressionNode->right, storage));
     default:
       throw std::runtime_error("Unsupported logical operator.");
     }
