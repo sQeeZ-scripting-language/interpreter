@@ -66,5 +66,15 @@ Storage::DataWrapper Object::entries(std::string method, Expr *caller, Storage::
 }
 
 Storage::DataWrapper Object::get(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
-    return Storage::DataWrapper();
+    if (args.size() != 1) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING) {
+        throw std::logic_error("Invalid arguments!");
+    }
+    auto it = callerValue.data._object->find(*Expression(args[0].get(), storage).execute().data._string);
+    if (it == callerValue.data._object->end()) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, it->second.dataType, it->second.data);
 }
