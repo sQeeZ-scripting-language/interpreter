@@ -20,7 +20,13 @@ Storage::DataWrapper Object::callMethod(std::string method, Expr *caller, const 
 }
 
 Storage::DataWrapper Object::hasKey(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
-    return Storage::DataWrapper();
+    if (args.size() != 1) {
+        throw std::logic_error("Invalid number of arguments!");
+    }
+    if (Expression(args[0].get(), storage).execute().dataType != Storage::DataType::STRING) {
+        throw std::logic_error("Invalid arguments!");
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN, callerValue.data._object->find(*Expression(args[0].get(), storage).execute().data._string) != callerValue.data._object->end());
 }
 
 Storage::DataWrapper Object::keys(std::string method, Expr *caller, Storage::DataWrapper callerValue, const std::vector<std::unique_ptr<Expr>>& args, std::vector<std::shared_ptr<Storage>> storage) {
