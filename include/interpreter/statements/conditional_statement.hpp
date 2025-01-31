@@ -11,7 +11,7 @@ class ConditionalStatement {
 public:
   ConditionalStatement(ConditionalStmt *conditionalNode,
                        std::vector<std::shared_ptr<Storage>> storage);
-  void execute();
+  Storage::DataWrapper execute();
 
 private:
   ConditionalStmt *conditionalNode;

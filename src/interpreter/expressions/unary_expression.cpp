@@ -37,7 +37,8 @@ Storage::DataWrapper UnaryExpression::execute() {
     }
   } else if (expressionNode->operator_.tag == Token::TypeTag::LOGICAL &&
              expressionNode->operator_.type.logicalToken == LogicalToken::NOT) {
-    return _boolean(!checkTrueishness(expressionNode->operand, storage));
+    return _boolean(
+        !checkTrueishnessOfExpression(expressionNode->operand, storage));
   } else {
     throw std::runtime_error("Unsupported unary expression.");
   }

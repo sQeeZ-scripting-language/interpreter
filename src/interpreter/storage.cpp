@@ -10,6 +10,7 @@ Storage::Data::Data(std::vector<DataWrapper> *value) : _array(value) {}
 Storage::Data::Data(std::map<std::string, DataWrapper> *value)
     : _object(value) {}
 Storage::Data::Data(FunctionDeclaration *value) : _function(value) {}
+Storage::Data::Data(CallbackFunctionExpr *value) : _callbackFunction(value) {}
 Storage::Data::~Data() {}
 
 Storage::DataWrapper::DataWrapper()
@@ -22,6 +23,8 @@ Storage::DataWrapper::DataWrapper(WrapperType st, DataType dt,
     data._string = new std::string(*value._string);
   } else if (dt == DataType::FUNCTION && value._function) {
     data._function = value._function;
+  } else if (dt == DataType::CALLBACK_FUNCTION && value._callbackFunction) {
+    data._callbackFunction = value._callbackFunction;
   } else {
     data = value;
   }
@@ -33,6 +36,9 @@ Storage::DataWrapper::DataWrapper(const DataWrapper &other)
     data._string = new std::string(*other.data._string);
   } else if (dataType == DataType::FUNCTION && other.data._function) {
     data._function = other.data._function;
+  } else if (dataType == DataType::CALLBACK_FUNCTION &&
+             other.data._callbackFunction) {
+    data._callbackFunction = other.data._callbackFunction;
   } else {
     data = other.data;
   }
@@ -78,6 +84,52 @@ void Storage::DataWrapper::clear() {
     delete data._string;
     data._string = nullptr;
   }
+}
+
+bool Storage::DataWrapper::equals(const DataWrapper &other) const {
+  if (dataType != other.dataType) {
+    return false;
+  }
+  switch (dataType) {
+  case DataType::INTEGER:
+    return data._int == other.data._int;
+  case DataType::DOUBLE:
+    return data._double == other.data._double;
+  case DataType::BOOLEAN:
+    return data._bool == other.data._bool;
+  case DataType::CHAR:
+    return data._char == other.data._char;
+  case DataType::STRING:
+  case DataType::HEXCODE:
+    return *data._string == *other.data._string;
+  case DataType::ARRAY:
+    if (data._array->size() != other.data._array->size()) {
+      return false;
+    }
+    for (size_t i = 0; i < data._array->size(); ++i) {
+      if (!data._array->at(i).equals(other.data._array->at(i))) {
+        return false;
+      }
+    }
+    return true;
+  case DataType::OBJECT:
+    if (data._object->size() != other.data._object->size()) {
+      return false;
+    }
+    for (const auto &entry : *data._object) {
+      if (!entry.second.equals(other.data._object->at(entry.first))) {
+        return false;
+      }
+    }
+    return true;
+  case DataType::FUNCTION:
+    return data._function == other.data._function;
+  case DataType::CALLBACK_FUNCTION:
+    return data._callbackFunction == other.data._callbackFunction;
+  case DataType::_NULL:
+    return true;
+  }
+  return false;
 }
 
 void Storage::setValue(const std::string &name, DataWrapper dataWrapper) {

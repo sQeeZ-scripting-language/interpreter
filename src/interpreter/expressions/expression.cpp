@@ -11,6 +11,9 @@ Storage::DataWrapper Expression::execute() {
     AssignmentExpression(exprNode, storage).execute();
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                 Storage::DataType::_NULL, 0);
+  case NodeType::TernaryExpr:
+    return TernaryExpression(dynamic_cast<TernaryExpr *>(exprNode), storage)
+        .execute();
   case NodeType::BinaryExpr:
     return BinaryExpression(dynamic_cast<BinaryExpr *>(exprNode), storage)
         .execute();
@@ -22,6 +25,10 @@ Storage::DataWrapper Expression::execute() {
         .execute();
   case NodeType::MemberExpr:
     return MemberExpression(dynamic_cast<MemberExpr *>(exprNode), storage)
+        .execute();
+  case NodeType::CallbackFunctionExpr:
+    return CallbackFunctionExpression(
+               dynamic_cast<CallbackFunctionExpr *>(exprNode), storage)
         .execute();
   default:
     return LiteralExpression(exprNode, storage).execute();

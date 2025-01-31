@@ -1,6 +1,8 @@
 #ifndef CALL_EXPRESSION_HPP
 #define CALL_EXPRESSION_HPP
 
+#include "interpreter/data/array.hpp"
+#include "interpreter/data/object.hpp"
 #include "interpreter/expressions/expression.hpp"
 #include "interpreter/statements/statement.hpp"
 #include "interpreter/storage.hpp"

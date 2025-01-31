@@ -15,9 +15,15 @@ Storage::DataWrapper _boolean(bool value) {
                               Storage::DataType::BOOLEAN, value);
 }
 
-bool checkTrueishness(const std::unique_ptr<Expr> &expr,
-                      std::vector<std::shared_ptr<Storage>> storage) {
+bool checkTrueishnessOfExpression(
+    const std::unique_ptr<Expr> &expr,
+    std::vector<std::shared_ptr<Storage>> storage) {
   Storage::DataWrapper datawrapper = Expression(expr.get(), storage).execute();
+  return checkTrueishness(datawrapper, storage);
+}
+
+bool checkTrueishness(Storage::DataWrapper datawrapper,
+                      std::vector<std::shared_ptr<Storage>> storage) {
   switch (datawrapper.dataType) {
   case Storage::DataType::BOOLEAN:
     return datawrapper.data._bool;
@@ -321,4 +327,40 @@ void handleException(const std::exception &e) {
 
   std::cerr << "\033[1;30m\033[41m[sQeeZ]: Exception of type: " << exceptionType
             << " - Message: " << e.what() << "\033[0m" << std::endl;
+}
+
+std::string getPrintableValue(Storage::DataWrapper value) {
+  std::string result = "";
+  switch (value.dataType) {
+  case Storage::DataType::INTEGER:
+    return std::to_string(value.data._int);
+  case Storage::DataType::DOUBLE:
+    return std::to_string(value.data._double);
+  case Storage::DataType::BOOLEAN:
+    return value.data._bool ? "true" : "false";
+  case Storage::DataType::CHAR:
+    return std::string(1, value.data._char);
+  case Storage::DataType::STRING:
+  case Storage::DataType::HEXCODE:
+    return *(value.data._string);
+  case Storage::DataType::ARRAY:
+    result = "[";
+    for (const auto &element : *(value.data._array)) {
+      result += getPrintableValue(element) +
+                (&element != &value.data._array->back() ? ", " : "");
+    }
+    return result + "]";
+  case Storage::DataType::OBJECT:
+    result = "{";
+    for (auto it = value.data._object->begin(); it != value.data._object->end();
+         ++it) {
+      result += it->first + ": " + getPrintableValue(it->second) +
+                (std::next(it) != value.data._object->end() ? ", " : "");
+    }
+    return result + "}";
+  case Storage::DataType::_NULL:
+    return "null";
+  default:
+    throw std::invalid_argument("Unknown data type!");
+  }
 }

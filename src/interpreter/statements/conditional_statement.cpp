@@ -5,18 +5,29 @@ ConditionalStatement::ConditionalStatement(
     std::vector<std::shared_ptr<Storage>> storage)
     : conditionalNode(conditionalNode), storage(std::move(storage)) {}
 
-void ConditionalStatement::execute() {
+Storage::DataWrapper ConditionalStatement::execute() {
   bool executed = false;
   storage.push_back(std::make_shared<Storage>());
-  if (checkTrueishness(conditionalNode->ifClause.first, storage)) {
+  if (checkTrueishnessOfExpression(conditionalNode->ifClause.first, storage)) {
     for (const auto &stmt : conditionalNode->ifClause.second) {
+      if (stmt->kind == NodeType::ReturnStmt) {
+        storage.pop_back();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
+      }
       Statement(stmt.get(), storage).execute();
     }
     executed = true;
   } else if (!conditionalNode->elifClauses.empty()) {
     for (const auto &elifClause : conditionalNode->elifClauses) {
-      if (checkTrueishness(elifClause.first, storage)) {
+      if (checkTrueishnessOfExpression(elifClause.first, storage)) {
         for (const auto &stmt : elifClause.second) {
+          if (stmt->kind == NodeType::ReturnStmt) {
+            storage.pop_back();
+            return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()),
+                                   storage)
+                .execute();
+          }
           Statement(stmt.get(), storage).execute();
         }
         executed = true;
@@ -26,8 +37,15 @@ void ConditionalStatement::execute() {
   }
   if (!executed && !conditionalNode->elseBody.empty()) {
     for (const auto &stmt : conditionalNode->elseBody) {
+      if (stmt->kind == NodeType::ReturnStmt) {
+        storage.pop_back();
+        return ReturnStatement(dynamic_cast<ReturnStmt *>(stmt.get()), storage)
+            .execute();
+      }
       Statement(stmt.get(), storage).execute();
     }
   }
   storage.pop_back();
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::_NULL, 0);
 }
