@@ -8,13 +8,17 @@ void LogStatement::execute() {
   if (logNode->logType.tag != Token::TypeTag::LOG) {
     throw std::logic_error("Expected log token.");
   }
-  if (!logNode->message) {
+  if (logNode->message.size() <= 0) {
     return;
   }
 
-  std::string printableValue = getPrintableValue(
-      Expression(dynamic_cast<Expr *>(logNode->message.get()), storage)
-          .execute());
+  std::string printableValue = "";
+  for (int i = 0; i < logNode->message.size(); i++) {
+    if (i > 0) {
+      printableValue += ", ";
+    }
+    printableValue += getPrintableValue(Expression(dynamic_cast<Expr *>(logNode->message[i].get()), storage).execute());
+  }
 
   switch (logNode->logType.type.logToken) {
   case LogToken::BASIC:
