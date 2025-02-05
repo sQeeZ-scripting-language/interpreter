@@ -23,6 +23,7 @@ public:
     OBJECT,
     FUNCTION,
     CALLBACK_FUNCTION,
+    SHORT_NOTATION_OPERATION,
     _NULL
   };
 
@@ -38,6 +39,7 @@ public:
     std::map<std::string, DataWrapper> *_object;
     FunctionDeclaration *_function;
     CallbackFunctionExpr *_callbackFunction;
+    ShortOperationLiteral *_shortOperation;
 
     Data();
     Data(int value);
@@ -49,6 +51,7 @@ public:
     Data(std::map<std::string, DataWrapper> *value);
     Data(FunctionDeclaration *value);
     Data(CallbackFunctionExpr *value);
+    Data(ShortOperationLiteral *value);
     ~Data();
   };
 

@@ -11,6 +11,7 @@ Storage::Data::Data(std::map<std::string, DataWrapper> *value)
     : _object(value) {}
 Storage::Data::Data(FunctionDeclaration *value) : _function(value) {}
 Storage::Data::Data(CallbackFunctionExpr *value) : _callbackFunction(value) {}
+Storage::Data::Data(ShortOperationLiteral *value) : _shortOperation(value) {}
 Storage::Data::~Data() {}
 
 Storage::DataWrapper::DataWrapper()
@@ -25,6 +26,8 @@ Storage::DataWrapper::DataWrapper(WrapperType st, DataType dt,
     data._function = value._function;
   } else if (dt == DataType::CALLBACK_FUNCTION && value._callbackFunction) {
     data._callbackFunction = value._callbackFunction;
+  } else if (dt == DataType::SHORT_NOTATION_OPERATION && value._shortOperation) {
+    data._shortOperation = value._shortOperation;
   } else {
     data = value;
   }
@@ -39,6 +42,9 @@ Storage::DataWrapper::DataWrapper(const DataWrapper &other)
   } else if (dataType == DataType::CALLBACK_FUNCTION &&
              other.data._callbackFunction) {
     data._callbackFunction = other.data._callbackFunction;
+  } else if (dataType == DataType::SHORT_NOTATION_OPERATION &&
+             other.data._shortOperation) {
+    data._shortOperation = other.data._shortOperation;
   } else {
     data = other.data;
   }
@@ -58,6 +64,14 @@ Storage::DataWrapper::operator=(const DataWrapper &other) {
     dataType = other.dataType;
     if (dataType == DataType::STRING || dataType == DataType::HEXCODE) {
       data._string = new std::string(*other.data._string);
+    } else if (dataType == DataType::FUNCTION && other.data._function) {
+      data._function = other.data._function;
+    } else if (dataType == DataType::CALLBACK_FUNCTION &&
+               other.data._callbackFunction) {
+      data._callbackFunction = other.data._callbackFunction;
+    } else if (dataType == DataType::SHORT_NOTATION_OPERATION &&
+               other.data._shortOperation) {
+      data._shortOperation = other.data._shortOperation;
     } else {
       data = other.data;
     }
@@ -83,6 +97,21 @@ void Storage::DataWrapper::clear() {
   if (dataType == DataType::STRING || dataType == DataType::HEXCODE) {
     delete data._string;
     data._string = nullptr;
+  } else if (dataType == DataType::ARRAY) {
+    delete data._array;
+    data._array = nullptr;
+  } else if (dataType == DataType::OBJECT) {
+    delete data._object;
+    data._object = nullptr;
+  } else if (dataType == DataType::FUNCTION) {
+    delete data._function;
+    data._function = nullptr;
+  } else if (dataType == DataType::CALLBACK_FUNCTION) {
+    delete data._callbackFunction;
+    data._callbackFunction = nullptr;
+  } else if (dataType == DataType::SHORT_NOTATION_OPERATION) {
+    delete data._shortOperation;
+    data._shortOperation = nullptr;
   }
 }
 
@@ -126,6 +155,8 @@ bool Storage::DataWrapper::equals(const DataWrapper &other) const {
     return data._function == other.data._function;
   case DataType::CALLBACK_FUNCTION:
     return data._callbackFunction == other.data._callbackFunction;
+  case DataType::SHORT_NOTATION_OPERATION:
+    return data._shortOperation == other.data._shortOperation;
   case DataType::_NULL:
     return true;
   }

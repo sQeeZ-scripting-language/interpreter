@@ -30,6 +30,10 @@ Storage::DataWrapper Expression::execute() {
     return CallbackFunctionExpression(
                dynamic_cast<CallbackFunctionExpr *>(exprNode), storage)
         .execute();
+  case NodeType::ShortOperationLiteral:
+    return ShortOperationExpression(
+               dynamic_cast<ShortOperationLiteral *>(exprNode), storage)
+        .execute();
   default:
     return LiteralExpression(exprNode, storage).execute();
   }

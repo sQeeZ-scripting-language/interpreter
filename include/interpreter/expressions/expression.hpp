@@ -10,6 +10,7 @@
 #include "interpreter/expressions/callback_function_expression.hpp"
 #include "interpreter/expressions/literal_expression.hpp"
 #include "interpreter/expressions/member_expression.hpp"
+#include "interpreter/expressions/short_operation_expression.hpp"
 #include "interpreter/expressions/ternary_expression.hpp"
 #include "interpreter/expressions/unary_expression.hpp"
 
