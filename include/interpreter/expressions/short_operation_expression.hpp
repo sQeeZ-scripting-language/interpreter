@@ -10,12 +10,13 @@
 
 class ShortOperationExpression {
 public:
-  ShortOperationExpression(ShortOperationLiteral *expressionNode,
-                             std::vector<std::shared_ptr<Storage>> storage);
+  ShortOperationExpression(ShortOperationExpr *expressionNode,
+                           std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper execute();
+  Storage::DataWrapper executeExpression(Storage::DataWrapper leftValue);
 
 private:
-  ShortOperationLiteral *expressionNode;
+  ShortOperationExpr *expressionNode;
   std::vector<std::shared_ptr<Storage>> storage;
 };
 

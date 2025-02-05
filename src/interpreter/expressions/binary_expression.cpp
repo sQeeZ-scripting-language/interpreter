@@ -379,7 +379,7 @@ Storage::DataWrapper BinaryExpression::stringAddition(std::string left,
                                                       std::string right) {
   return Storage::DataWrapper(Storage::WrapperType::VALUE,
                               Storage::DataType::STRING,
-                              new std::string(left + right));
+                              static_cast<void*>(new std::string(left + right)));
 }
 
 Storage::DataWrapper BinaryExpression::stringMultiplication(std::string value,
@@ -390,5 +390,5 @@ Storage::DataWrapper BinaryExpression::stringMultiplication(std::string value,
   }
   return Storage::DataWrapper(Storage::WrapperType::VALUE,
                               Storage::DataType::STRING,
-                              new std::string(result));
+                              static_cast<void*>(new std::string(result)));
 }
