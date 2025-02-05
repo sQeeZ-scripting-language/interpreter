@@ -595,38 +595,50 @@ Array::every(std::string method, Expr *caller, Storage::DataWrapper callerValue,
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
-    throw std::logic_error("Invalid arguments!");
-  }
-  if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
-    throw std::logic_error("Invalid number of parameters!");
-  }
-  if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
-            Token::TypeTag::DATA &&
-        callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-            DataToken::IDENTIFIER)) {
-    throw std::logic_error("Invalid parameter!");
-  }
-  if (callerValue.data._array->empty()) {
+
+  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+      if (!checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(callerValue.data._array->at(i)), storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    Storage::DataType::BOOLEAN, false);
+      }
+    }
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                 Storage::DataType::BOOLEAN, true);
-  }
-  for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
-    std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
-    parameterStorage->setValue(
-        callbackFunction.data._callbackFunction->parameters[0].value,
-        callerValue.data._array->at(i));
-    Storage::DataWrapper returnValue =
-        CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                   storage)
-            .executeBody(parameterStorage);
-    if (!checkTrueishness(returnValue, storage)) {
-      return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                  Storage::DataType::BOOLEAN, false);
+  } else {
+    if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
+      throw std::logic_error("Invalid arguments!");
     }
+    if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
+      throw std::logic_error("Invalid number of parameters!");
+    }
+    if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
+              Token::TypeTag::DATA &&
+          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
+              DataToken::IDENTIFIER)) {
+      throw std::logic_error("Invalid parameter!");
+    }
+    if (callerValue.data._array->empty()) {
+      return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                  Storage::DataType::BOOLEAN, true);
+    }
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+      std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
+      parameterStorage->setValue(
+          callbackFunction.data._callbackFunction->parameters[0].value,
+          callerValue.data._array->at(i));
+      Storage::DataWrapper returnValue =
+          CallbackFunctionExpression(callbackFunction.data._callbackFunction,
+                                    storage)
+              .executeBody(parameterStorage);
+      if (!checkTrueishness(returnValue, storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    Storage::DataType::BOOLEAN, false);
+      }
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                Storage::DataType::BOOLEAN, true); 
   }
-  return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                              Storage::DataType::BOOLEAN, true);
 }
 
 Storage::DataWrapper
@@ -638,38 +650,49 @@ Array::some(std::string method, Expr *caller, Storage::DataWrapper callerValue,
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
-    throw std::logic_error("Invalid arguments!");
-  }
-  if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
-    throw std::logic_error("Invalid number of parameters!");
-  }
-  if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
-            Token::TypeTag::DATA &&
-        callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-            DataToken::IDENTIFIER)) {
-    throw std::logic_error("Invalid parameter!");
-  }
-  if (callerValue.data._array->empty()) {
+  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(callerValue.data._array->at(i)), storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    Storage::DataType::BOOLEAN, true);
+      }
+    }
+    return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                Storage::DataType::BOOLEAN, false);
+  } else {
+    if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
+      throw std::logic_error("Invalid arguments!");
+    }
+    if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
+      throw std::logic_error("Invalid number of parameters!");
+    }
+    if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
+              Token::TypeTag::DATA &&
+          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
+              DataToken::IDENTIFIER)) {
+      throw std::logic_error("Invalid parameter!");
+    }
+    if (callerValue.data._array->empty()) {
+      return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                  Storage::DataType::BOOLEAN, false);
+    }
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+      std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
+      parameterStorage->setValue(
+          callbackFunction.data._callbackFunction->parameters[0].value,
+          callerValue.data._array->at(i));
+      Storage::DataWrapper returnValue =
+          CallbackFunctionExpression(callbackFunction.data._callbackFunction,
+                                    storage)
+              .executeBody(parameterStorage);
+      if (checkTrueishness(returnValue, storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    Storage::DataType::BOOLEAN, true);
+      }
+    }
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                 Storage::DataType::BOOLEAN, false);
   }
-  for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
-    std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
-    parameterStorage->setValue(
-        callbackFunction.data._callbackFunction->parameters[0].value,
-        callerValue.data._array->at(i));
-    Storage::DataWrapper returnValue =
-        CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                   storage)
-            .executeBody(parameterStorage);
-    if (checkTrueishness(returnValue, storage)) {
-      return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                  Storage::DataType::BOOLEAN, true);
-    }
-  }
-  return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                              Storage::DataType::BOOLEAN, false);
 }
 
 Storage::DataWrapper
