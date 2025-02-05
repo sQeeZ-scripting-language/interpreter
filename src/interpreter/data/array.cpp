@@ -595,7 +595,6 @@ Array::every(std::string method, Expr *caller, Storage::DataWrapper callerValue,
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-
   if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
       if (!checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(callerValue.data._array->at(i)), storage)) {
@@ -702,37 +701,47 @@ Array::find(std::string method, Expr *caller, Storage::DataWrapper callerValue,
   if (args.size() != 1) {
     throw std::logic_error("Invalid number of arguments!");
   }
+  if (callerValue.data._array->empty()) {
+      return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                  Storage::DataType::_NULL, 0);
+  }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
-    throw std::logic_error("Invalid arguments!");
-  }
-  if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
-    throw std::logic_error("Invalid number of parameters!");
-  }
-  if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
-            Token::TypeTag::DATA &&
-        callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-            DataToken::IDENTIFIER)) {
-    throw std::logic_error("Invalid parameter!");
-  }
-  if (callerValue.data._array->empty()) {
-    return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                Storage::DataType::_NULL, 0);
-  }
-  for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
-    std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
-    parameterStorage->setValue(
-        callbackFunction.data._callbackFunction->parameters[0].value,
-        callerValue.data._array->at(i));
-    Storage::DataWrapper returnValue =
-        CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                   storage)
-            .executeBody(parameterStorage);
-    if (checkTrueishness(returnValue, storage)) {
-      return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                  callerValue.data._array->at(i).dataType,
-                                  callerValue.data._array->at(i).data);
+  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(callerValue.data._array->at(i)), storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    callerValue.data._array->at(i).dataType,
+                                    callerValue.data._array->at(i).data);
+      }
+    }
+  } else {
+    if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
+      throw std::logic_error("Invalid arguments!");
+    }
+    if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
+      throw std::logic_error("Invalid number of parameters!");
+    }
+    if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
+              Token::TypeTag::DATA &&
+          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
+              DataToken::IDENTIFIER)) {
+      throw std::logic_error("Invalid parameter!");
+    }
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+      std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
+      parameterStorage->setValue(
+          callbackFunction.data._callbackFunction->parameters[0].value,
+          callerValue.data._array->at(i));
+      Storage::DataWrapper returnValue =
+          CallbackFunctionExpression(callbackFunction.data._callbackFunction,
+                                    storage)
+              .executeBody(parameterStorage);
+      if (checkTrueishness(returnValue, storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    callerValue.data._array->at(i).dataType,
+                                    callerValue.data._array->at(i).data);
+      }
     }
   }
   return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -747,36 +756,44 @@ Array::findIndex(std::string method, Expr *caller,
   if (args.size() != 1) {
     throw std::logic_error("Invalid number of arguments!");
   }
+  if (callerValue.data._array->empty()) {
+      return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                  Storage::DataType::INTEGER, -1);
+  }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
-    throw std::logic_error("Invalid arguments!");
-  }
-  if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
-    throw std::logic_error("Invalid number of parameters!");
-  }
-  if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
-            Token::TypeTag::DATA &&
-        callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-            DataToken::IDENTIFIER)) {
-    throw std::logic_error("Invalid parameter!");
-  }
-  if (callerValue.data._array->empty()) {
-    return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                Storage::DataType::INTEGER, -1);
-  }
-  for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
-    std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
-    parameterStorage->setValue(
-        callbackFunction.data._callbackFunction->parameters[0].value,
-        callerValue.data._array->at(i));
-    Storage::DataWrapper returnValue =
-        CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                   storage)
-            .executeBody(parameterStorage);
-    if (checkTrueishness(returnValue, storage)) {
-      return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                  Storage::DataType::INTEGER, i);
+  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(callerValue.data._array->at(i)), storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, i);
+      }
+    }
+  } else {
+    if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
+      throw std::logic_error("Invalid arguments!");
+    }
+    if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
+      throw std::logic_error("Invalid number of parameters!");
+    }
+    if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
+              Token::TypeTag::DATA &&
+          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
+              DataToken::IDENTIFIER)) {
+      throw std::logic_error("Invalid parameter!");
+    }
+    for (int i = 0; i < static_cast<int>(callerValue.data._array->size()); ++i) {
+      std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
+      parameterStorage->setValue(
+          callbackFunction.data._callbackFunction->parameters[0].value,
+          callerValue.data._array->at(i));
+      Storage::DataWrapper returnValue =
+          CallbackFunctionExpression(callbackFunction.data._callbackFunction,
+                                    storage)
+              .executeBody(parameterStorage);
+      if (checkTrueishness(returnValue, storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    Storage::DataType::INTEGER, i);
+      }
     }
   }
   return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -791,38 +808,49 @@ Array::findLast(std::string method, Expr *caller,
   if (args.size() != 1) {
     throw std::logic_error("Invalid number of arguments!");
   }
-  Storage::DataWrapper callbackFunction =
-      Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
-    throw std::logic_error("Invalid arguments!");
-  }
-  if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
-    throw std::logic_error("Invalid number of parameters!");
-  }
-  if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
-            Token::TypeTag::DATA &&
-        callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-            DataToken::IDENTIFIER)) {
-    throw std::logic_error("Invalid parameter!");
-  }
   if (callerValue.data._array->empty()) {
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                 Storage::DataType::_NULL, 0);
   }
-  for (int i = static_cast<int>(callerValue.data._array->size()) - 1; i >= 0;
-       --i) {
-    std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
-    parameterStorage->setValue(
-        callbackFunction.data._callbackFunction->parameters[0].value,
-        callerValue.data._array->at(i));
-    Storage::DataWrapper returnValue =
-        CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                   storage)
-            .executeBody(parameterStorage);
-    if (checkTrueishness(returnValue, storage)) {
-      return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                  callerValue.data._array->at(i).dataType,
-                                  callerValue.data._array->at(i).data);
+  Storage::DataWrapper callbackFunction =
+      Expression(args[0].get(), storage).execute();
+  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+    for (int i = static_cast<int>(callerValue.data._array->size()) - 1; i >= 0;
+        --i) {
+      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(callerValue.data._array->at(i)), storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    callerValue.data._array->at(i).dataType,
+                                    callerValue.data._array->at(i).data);
+      }
+    }
+  } else {
+    if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
+      throw std::logic_error("Invalid arguments!");
+    }
+    if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
+      throw std::logic_error("Invalid number of parameters!");
+    }
+    if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
+              Token::TypeTag::DATA &&
+          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
+              DataToken::IDENTIFIER)) {
+      throw std::logic_error("Invalid parameter!");
+    }
+    for (int i = static_cast<int>(callerValue.data._array->size()) - 1; i >= 0;
+        --i) {
+      std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
+      parameterStorage->setValue(
+          callbackFunction.data._callbackFunction->parameters[0].value,
+          callerValue.data._array->at(i));
+      Storage::DataWrapper returnValue =
+          CallbackFunctionExpression(callbackFunction.data._callbackFunction,
+                                    storage)
+              .executeBody(parameterStorage);
+      if (checkTrueishness(returnValue, storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    callerValue.data._array->at(i).dataType,
+                                    callerValue.data._array->at(i).data);
+      }
     }
   }
   return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -837,37 +865,46 @@ Array::findLastIndex(std::string method, Expr *caller,
   if (args.size() != 1) {
     throw std::logic_error("Invalid number of arguments!");
   }
-  Storage::DataWrapper callbackFunction =
-      Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
-    throw std::logic_error("Invalid arguments!");
-  }
-  if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
-    throw std::logic_error("Invalid number of parameters!");
-  }
-  if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
-            Token::TypeTag::DATA &&
-        callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-            DataToken::IDENTIFIER)) {
-    throw std::logic_error("Invalid parameter!");
-  }
   if (callerValue.data._array->empty()) {
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                 Storage::DataType::INTEGER, -1);
   }
-  for (int i = static_cast<int>(callerValue.data._array->size()) - 1; i >= 0;
-       --i) {
-    std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
-    parameterStorage->setValue(
-        callbackFunction.data._callbackFunction->parameters[0].value,
-        callerValue.data._array->at(i));
-    Storage::DataWrapper returnValue =
-        CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                   storage)
-            .executeBody(parameterStorage);
-    if (checkTrueishness(returnValue, storage)) {
-      return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                  Storage::DataType::INTEGER, i);
+  Storage::DataWrapper callbackFunction =
+      Expression(args[0].get(), storage).execute();
+  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+    for (int i = static_cast<int>(callerValue.data._array->size()) - 1; i >= 0;
+        --i) {
+      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(callerValue.data._array->at(i)), storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, i);
+      }
+    }
+  } else {
+    if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
+      throw std::logic_error("Invalid arguments!");
+    }
+    if (callbackFunction.data._callbackFunction->parameters.size() != 1) {
+      throw std::logic_error("Invalid number of parameters!");
+    }
+    if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
+              Token::TypeTag::DATA &&
+          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
+              DataToken::IDENTIFIER)) {
+      throw std::logic_error("Invalid parameter!");
+    }
+    for (int i = static_cast<int>(callerValue.data._array->size()) - 1; i >= 0;
+        --i) {
+      std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
+      parameterStorage->setValue(
+          callbackFunction.data._callbackFunction->parameters[0].value,
+          callerValue.data._array->at(i));
+      Storage::DataWrapper returnValue =
+          CallbackFunctionExpression(callbackFunction.data._callbackFunction,
+                                    storage)
+              .executeBody(parameterStorage);
+      if (checkTrueishness(returnValue, storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    Storage::DataType::INTEGER, i);
+      }
     }
   }
   return Storage::DataWrapper(Storage::WrapperType::VALUE,
