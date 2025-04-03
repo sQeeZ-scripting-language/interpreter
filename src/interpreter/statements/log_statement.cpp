@@ -17,7 +17,9 @@ void LogStatement::execute() {
     if (i > 0) {
       printableValue += ", ";
     }
-    printableValue += getPrintableValue(Expression(dynamic_cast<Expr *>(logNode->message[i].get()), storage).execute());
+    printableValue += getPrintableValue(
+        Expression(dynamic_cast<Expr *>(logNode->message[i].get()), storage)
+            .execute());
   }
 
   switch (logNode->logType.type.logToken) {

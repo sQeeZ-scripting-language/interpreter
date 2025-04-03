@@ -39,7 +39,7 @@ public:
     std::map<std::string, DataWrapper> *_object;
     FunctionDeclaration *_function;
     CallbackFunctionExpr *_callbackFunction;
-    ShortOperationLiteral *_shortOperation;
+    ShortOperationExpr *_shortOperation;
 
     Data();
     Data(int value);
@@ -51,7 +51,7 @@ public:
     Data(std::map<std::string, DataWrapper> *value);
     Data(FunctionDeclaration *value);
     Data(CallbackFunctionExpr *value);
-    Data(ShortOperationLiteral *value);
+    Data(ShortOperationExpr *value);
     ~Data();
   };
 

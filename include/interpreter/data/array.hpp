@@ -43,10 +43,11 @@ enum class ArrayMethod {
 
 class Array {
 public:
-  Storage::DataWrapper
-  callMethod(std::string method, Expr *caller,
-             const std::vector<std::unique_ptr<Expr>> args,
-             std::vector<std::shared_ptr<Storage>> storage);
+  Storage::DataWrapper callMethod(std::string method,
+                                  Storage::DataWrapper caller,
+                                  const std::vector<std::unique_ptr<Expr>> args,
+                                  std::vector<std::shared_ptr<Storage>> storage,
+                                  std::string identifier);
 
 private:
   inline static const std::unordered_map<std::string, ArrayMethod>
@@ -78,114 +79,96 @@ private:
                          {"flatMap", ArrayMethod::FLAT_MAP},
                          {"forEach", ArrayMethod::FOR_EACH}};
 
-  Storage::DataWrapper length(std::string method, Expr *caller,
-                              Storage::DataWrapper callerValue,
+  Storage::DataWrapper length(std::string method, Storage::DataWrapper caller,
                               const std::vector<std::unique_ptr<Expr>> &args,
                               std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper push(std::string method, Expr *caller,
-                            Storage::DataWrapper callerValue,
+  Storage::DataWrapper push(std::string method, Storage::DataWrapper caller,
                             const std::vector<std::unique_ptr<Expr>> &args,
-                            std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper pop(std::string method, Expr *caller,
-                           Storage::DataWrapper callerValue,
+                            std::vector<std::shared_ptr<Storage>> storage,
+                            std::string identifier);
+  Storage::DataWrapper pop(std::string method, Storage::DataWrapper caller,
                            const std::vector<std::unique_ptr<Expr>> &args,
-                           std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper shift(std::string method, Expr *caller,
-                             Storage::DataWrapper callerValue,
+                           std::vector<std::shared_ptr<Storage>> storage,
+                           std::string identifier);
+  Storage::DataWrapper shift(std::string method, Storage::DataWrapper caller,
                              const std::vector<std::unique_ptr<Expr>> &args,
-                             std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper unshift(std::string method, Expr *caller,
-                               Storage::DataWrapper callerValue,
+                             std::vector<std::shared_ptr<Storage>> storage,
+                             std::string identifier);
+  Storage::DataWrapper unshift(std::string method, Storage::DataWrapper caller,
                                const std::vector<std::unique_ptr<Expr>> &args,
-                               std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper splice(std::string method, Expr *caller,
-                              Storage::DataWrapper callerValue,
+                               std::vector<std::shared_ptr<Storage>> storage,
+                               std::string identifier);
+  Storage::DataWrapper splice(std::string method, Storage::DataWrapper caller,
+                              const std::vector<std::unique_ptr<Expr>> &args,
+                              std::vector<std::shared_ptr<Storage>> storage,
+                              std::string identifier);
+  Storage::DataWrapper reverse(std::string method, Storage::DataWrapper caller,
+                               const std::vector<std::unique_ptr<Expr>> &args,
+                               std::vector<std::shared_ptr<Storage>> storage,
+                               std::string identifier);
+  Storage::DataWrapper sort(std::string method, Storage::DataWrapper caller,
+                            const std::vector<std::unique_ptr<Expr>> &args,
+                            std::vector<std::shared_ptr<Storage>> storage,
+                            std::string identifier);
+  Storage::DataWrapper fill(std::string method, Storage::DataWrapper caller,
+                            const std::vector<std::unique_ptr<Expr>> &args,
+                            std::vector<std::shared_ptr<Storage>> storage,
+                            std::string identifier);
+  Storage::DataWrapper concat(std::string method, Storage::DataWrapper caller,
                               const std::vector<std::unique_ptr<Expr>> &args,
                               std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper reverse(std::string method, Expr *caller,
-                               Storage::DataWrapper callerValue,
-                               const std::vector<std::unique_ptr<Expr>> &args,
-                               std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper sort(std::string method, Expr *caller,
-                            Storage::DataWrapper callerValue,
-                            const std::vector<std::unique_ptr<Expr>> &args,
-                            std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper fill(std::string method, Expr *caller,
-                            Storage::DataWrapper callerValue,
-                            const std::vector<std::unique_ptr<Expr>> &args,
-                            std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper concat(std::string method, Expr *caller,
-                              Storage::DataWrapper callerValue,
-                              const std::vector<std::unique_ptr<Expr>> &args,
-                              std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper slice(std::string method, Expr *caller,
-                             Storage::DataWrapper callerValue,
+  Storage::DataWrapper slice(std::string method, Storage::DataWrapper caller,
                              const std::vector<std::unique_ptr<Expr>> &args,
                              std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper includes(std::string method, Expr *caller,
-                                Storage::DataWrapper callerValue,
+  Storage::DataWrapper includes(std::string method, Storage::DataWrapper caller,
                                 const std::vector<std::unique_ptr<Expr>> &args,
                                 std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper indexOf(std::string method, Expr *caller,
-                               Storage::DataWrapper callerValue,
+  Storage::DataWrapper indexOf(std::string method, Storage::DataWrapper caller,
                                const std::vector<std::unique_ptr<Expr>> &args,
                                std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper
-  lastIndexOf(std::string method, Expr *caller,
-              Storage::DataWrapper callerValue,
+  lastIndexOf(std::string method, Storage::DataWrapper caller,
               const std::vector<std::unique_ptr<Expr>> &args,
               std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper join(std::string method, Expr *caller,
-                            Storage::DataWrapper callerValue,
+  Storage::DataWrapper join(std::string method, Storage::DataWrapper caller,
                             const std::vector<std::unique_ptr<Expr>> &args,
                             std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper every(std::string method, Expr *caller,
-                             Storage::DataWrapper callerValue,
+  Storage::DataWrapper every(std::string method, Storage::DataWrapper caller,
                              const std::vector<std::unique_ptr<Expr>> &args,
                              std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper some(std::string method, Expr *caller,
-                            Storage::DataWrapper callerValue,
+  Storage::DataWrapper some(std::string method, Storage::DataWrapper caller,
                             const std::vector<std::unique_ptr<Expr>> &args,
                             std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper find(std::string method, Expr *caller,
-                            Storage::DataWrapper callerValue,
+  Storage::DataWrapper find(std::string method, Storage::DataWrapper caller,
                             const std::vector<std::unique_ptr<Expr>> &args,
                             std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper findIndex(std::string method, Expr *caller,
-                                 Storage::DataWrapper callerValue,
+  Storage::DataWrapper findIndex(std::string method,
+                                 Storage::DataWrapper caller,
                                  const std::vector<std::unique_ptr<Expr>> &args,
                                  std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper findLast(std::string method, Expr *caller,
-                                Storage::DataWrapper callerValue,
+  Storage::DataWrapper findLast(std::string method, Storage::DataWrapper caller,
                                 const std::vector<std::unique_ptr<Expr>> &args,
                                 std::vector<std::shared_ptr<Storage>> storage);
   Storage::DataWrapper
-  findLastIndex(std::string method, Expr *caller,
-                Storage::DataWrapper callerValue,
+  findLastIndex(std::string method, Storage::DataWrapper caller,
                 const std::vector<std::unique_ptr<Expr>> &args,
                 std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper filter(std::string method, Expr *caller,
-                              Storage::DataWrapper callerValue,
+  Storage::DataWrapper filter(std::string method, Storage::DataWrapper caller,
                               const std::vector<std::unique_ptr<Expr>> &args,
                               std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper map(std::string method, Expr *caller,
-                           Storage::DataWrapper callerValue,
+  Storage::DataWrapper map(std::string method, Storage::DataWrapper caller,
                            const std::vector<std::unique_ptr<Expr>> &args,
                            std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper reduce(std::string method, Expr *caller,
-                              Storage::DataWrapper callerValue,
+  Storage::DataWrapper reduce(std::string method, Storage::DataWrapper caller,
                               const std::vector<std::unique_ptr<Expr>> &args,
                               std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper flat(std::string method, Expr *caller,
-                            Storage::DataWrapper callerValue,
+  Storage::DataWrapper flat(std::string method, Storage::DataWrapper caller,
                             const std::vector<std::unique_ptr<Expr>> &args,
                             std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper flatMap(std::string method, Expr *caller,
-                               Storage::DataWrapper callerValue,
+  Storage::DataWrapper flatMap(std::string method, Storage::DataWrapper caller,
                                const std::vector<std::unique_ptr<Expr>> &args,
                                std::vector<std::shared_ptr<Storage>> storage);
-  Storage::DataWrapper forEach(std::string method, Expr *caller,
-                               Storage::DataWrapper callerValue,
+  Storage::DataWrapper forEach(std::string method, Storage::DataWrapper caller,
                                const std::vector<std::unique_ptr<Expr>> &args,
                                std::vector<std::shared_ptr<Storage>> storage);
 
