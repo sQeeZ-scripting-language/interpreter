@@ -18,34 +18,36 @@ ShortOperationExpression::executeExpression(Storage::DataWrapper leftValue) {
   switch (expressionNode->operation.tag) {
   case Token::TypeTag::LOGICAL:
     if (expressionNode->operation.type.logicalToken == LogicalToken::GREATER) {
-      return Storage::DataWrapper(
-          Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN,
-          checkGreater(leftValue, rightValue));
+      return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                  Storage::DataType::BOOLEAN,
+                                  checkGreater(leftValue, rightValue));
     } else if (expressionNode->operation.type.logicalToken ==
                LogicalToken::LESS) {
-      return Storage::DataWrapper(
-          Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN,
-          checkGreater(rightValue, leftValue));
+      return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                  Storage::DataType::BOOLEAN,
+                                  checkGreater(rightValue, leftValue));
     } else if (expressionNode->operation.type.logicalToken ==
                LogicalToken::GREATER_EQUAL) {
       return Storage::DataWrapper(
           Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN,
-          checkGreater(leftValue, rightValue) || checkEquality(leftValue, rightValue, true));
+          checkGreater(leftValue, rightValue) ||
+              checkEquality(leftValue, rightValue, true));
     } else if (expressionNode->operation.type.logicalToken ==
                LogicalToken::LESS_EQUAL) {
       return Storage::DataWrapper(
           Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN,
-          checkGreater(rightValue, leftValue) || checkEquality(leftValue, rightValue, true));
+          checkGreater(rightValue, leftValue) ||
+              checkEquality(leftValue, rightValue, true));
     } else if (expressionNode->operation.type.logicalToken ==
                LogicalToken::EQUAL) {
-      return Storage::DataWrapper(
-          Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN,
-          checkEquality(leftValue, rightValue, true));
+      return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                  Storage::DataType::BOOLEAN,
+                                  checkEquality(leftValue, rightValue, true));
     } else if (expressionNode->operation.type.logicalToken ==
                LogicalToken::NOT_EQUAL) {
-      return Storage::DataWrapper(
-          Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN,
-          checkEquality(leftValue, rightValue, false));
+      return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                  Storage::DataType::BOOLEAN,
+                                  checkEquality(leftValue, rightValue, false));
     } else {
       throw std::invalid_argument("Invalid logical operation: " +
                                   expressionNode->operation.value);
@@ -54,22 +56,22 @@ ShortOperationExpression::executeExpression(Storage::DataWrapper leftValue) {
   case Token::TypeTag::OPERATOR:
     if (expressionNode->operation.type.operatorToken ==
         OperatorToken::ADDITION) {
-        return BinaryExpression::addition(leftValue, rightValue);
+      return BinaryExpression::addition(leftValue, rightValue);
     } else if (expressionNode->operation.type.operatorToken ==
                OperatorToken::SUBTRACTION) {
-        return BinaryExpression::subtraction(leftValue, rightValue);
+      return BinaryExpression::subtraction(leftValue, rightValue);
     } else if (expressionNode->operation.type.operatorToken ==
                OperatorToken::MULTIPLICATION) {
-        return BinaryExpression::multiplication(leftValue, rightValue);
+      return BinaryExpression::multiplication(leftValue, rightValue);
     } else if (expressionNode->operation.type.operatorToken ==
                OperatorToken::DIVISION) {
-        return BinaryExpression::division(leftValue, rightValue);
+      return BinaryExpression::division(leftValue, rightValue);
     } else if (expressionNode->operation.type.operatorToken ==
                OperatorToken::MODULUS) {
-        return BinaryExpression::modulus(leftValue, rightValue);
+      return BinaryExpression::modulus(leftValue, rightValue);
     } else if (expressionNode->operation.type.operatorToken ==
                OperatorToken::POTENTIATION) {
-        return BinaryExpression::potentiation(leftValue, rightValue);
+      return BinaryExpression::potentiation(leftValue, rightValue);
     } else {
       throw std::invalid_argument("Invalid operator operation: " +
                                   expressionNode->operation.value);
@@ -81,5 +83,6 @@ ShortOperationExpression::executeExpression(Storage::DataWrapper leftValue) {
     throw std::invalid_argument("Invalid short operation: " +
                                 expressionNode->operation.value);
   }
-  throw std::invalid_argument("Invalid short operation: " + expressionNode->operation.value);
+  throw std::invalid_argument("Invalid short operation: " +
+                              expressionNode->operation.value);
 }

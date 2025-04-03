@@ -71,11 +71,13 @@ Storage::DataWrapper CallExpression::methodCall() {
   } else if (caller.dataType == Storage::DataType::ARRAY) {
     Array array;
     std::string identifier = "";
-    if (auto *identifierNode = dynamic_cast<Identifier *>(expressionNode->caller.get())) {
+    if (auto *identifierNode =
+            dynamic_cast<Identifier *>(expressionNode->caller.get())) {
       identifier = identifierNode->identifier.value;
     }
     return array.callMethod(
-        dynamic_cast<Identifier *>(expressionNode->method.get())->identifier.value,
+        dynamic_cast<Identifier *>(expressionNode->method.get())
+            ->identifier.value,
         caller, std::move(expressionNode->args), storage, identifier);
   } else {
     throw std::runtime_error("Invalid method call!");

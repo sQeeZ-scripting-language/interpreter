@@ -3,7 +3,8 @@
 Storage::DataWrapper
 Array::callMethod(std::string method, Storage::DataWrapper caller,
                   const std::vector<std::unique_ptr<Expr>> args,
-                  std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+                  std::vector<std::shared_ptr<Storage>> storage,
+                  std::string identifier) {
   switch (stringToEnumMap.at(method)) {
   case ArrayMethod::LENGTH:
     return length(method, caller, args, storage);
@@ -71,20 +72,20 @@ Array::length(std::string method, Storage::DataWrapper caller,
   if (args.size() != 0) {
     throw std::logic_error("Invalid number of arguments!");
   }
-  return Storage::DataWrapper(
-      Storage::WrapperType::VALUE, Storage::DataType::INTEGER,
-      static_cast<int>(caller.data._array->size()));
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::INTEGER,
+                              static_cast<int>(caller.data._array->size()));
 }
 
-Storage::DataWrapper
-Array::push(std::string method, Storage::DataWrapper caller,
-            const std::vector<std::unique_ptr<Expr>> &args,
-            std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+Storage::DataWrapper Array::push(std::string method,
+                                 Storage::DataWrapper caller,
+                                 const std::vector<std::unique_ptr<Expr>> &args,
+                                 std::vector<std::shared_ptr<Storage>> storage,
+                                 std::string identifier) {
   if (args.size() != 1) {
     throw std::logic_error("Invalid number of arguments!");
   }
-  caller.data._array->push_back(
-      Expression(args[0].get(), storage).execute());
+  caller.data._array->push_back(Expression(args[0].get(), storage).execute());
   if (!identifier.empty()) {
     int keyIndex = storageKeyIndex(storage, identifier);
     if (keyIndex == -1) {
@@ -92,14 +93,15 @@ Array::push(std::string method, Storage::DataWrapper caller,
     }
     storage[keyIndex]->updateValue(identifier, caller);
   }
-  return Storage::DataWrapper(
-      Storage::WrapperType::VALUE, Storage::DataType::INTEGER,
-      static_cast<int>(caller.data._array->size()));
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::INTEGER,
+                              static_cast<int>(caller.data._array->size()));
 }
 
 Storage::DataWrapper Array::pop(std::string method, Storage::DataWrapper caller,
                                 const std::vector<std::unique_ptr<Expr>> &args,
-                                std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+                                std::vector<std::shared_ptr<Storage>> storage,
+                                std::string identifier) {
   Storage::DataWrapper tmpValue = Storage::DataWrapper(
       Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
   if (args.size() != 0) {
@@ -123,7 +125,8 @@ Storage::DataWrapper Array::pop(std::string method, Storage::DataWrapper caller,
 Storage::DataWrapper
 Array::shift(std::string method, Storage::DataWrapper caller,
              const std::vector<std::unique_ptr<Expr>> &args,
-             std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+             std::vector<std::shared_ptr<Storage>> storage,
+             std::string identifier) {
   Storage::DataWrapper tmpValue = Storage::DataWrapper(
       Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
   if (args.size() != 0) {
@@ -144,14 +147,16 @@ Array::shift(std::string method, Storage::DataWrapper caller,
   return tmpValue;
 }
 
-Storage::DataWrapper Array::unshift(std::string method, Storage::DataWrapper caller,
+Storage::DataWrapper
+Array::unshift(std::string method, Storage::DataWrapper caller,
                const std::vector<std::unique_ptr<Expr>> &args,
-               std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+               std::vector<std::shared_ptr<Storage>> storage,
+               std::string identifier) {
   if (args.size() != 1) {
     throw std::logic_error("Invalid number of arguments!");
   }
   caller.data._array->insert(caller.data._array->begin(),
-                                  Expression(args[0].get(), storage).execute());
+                             Expression(args[0].get(), storage).execute());
   if (!identifier.empty()) {
     int keyIndex = storageKeyIndex(storage, identifier);
     if (keyIndex == -1) {
@@ -159,14 +164,16 @@ Storage::DataWrapper Array::unshift(std::string method, Storage::DataWrapper cal
     }
     storage[keyIndex]->updateValue(identifier, caller);
   }
-  return Storage::DataWrapper(
-      Storage::WrapperType::VALUE, Storage::DataType::INTEGER,
-      static_cast<int>(caller.data._array->size()));
+  return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                              Storage::DataType::INTEGER,
+                              static_cast<int>(caller.data._array->size()));
 }
 
-Storage::DataWrapper Array::splice(std::string method, Storage::DataWrapper caller,
+Storage::DataWrapper
+Array::splice(std::string method, Storage::DataWrapper caller,
               const std::vector<std::unique_ptr<Expr>> &args,
-              std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+              std::vector<std::shared_ptr<Storage>> storage,
+              std::string identifier) {
   Storage::DataWrapper tmpValue = Storage::DataWrapper(
       Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
   std::vector<Storage::DataWrapper> tmpElements, tmpDeletedElements;
@@ -207,11 +214,10 @@ Storage::DataWrapper Array::splice(std::string method, Storage::DataWrapper call
     tmpDeletedElements.push_back(caller.data._array->at(start + i));
   }
   caller.data._array->erase(caller.data._array->begin() + start,
-                                 caller.data._array->begin() + start +
-                                     count);
+                            caller.data._array->begin() + start + count);
   for (int i = 0; i < static_cast<int>(tmpElements.size()); ++i) {
-    caller.data._array->insert(
-        caller.data._array->begin() + start + i, tmpElements[i]);
+    caller.data._array->insert(caller.data._array->begin() + start + i,
+                               tmpElements[i]);
   }
   if (!identifier.empty()) {
     int keyIndex = storageKeyIndex(storage, identifier);
@@ -225,14 +231,15 @@ Storage::DataWrapper Array::splice(std::string method, Storage::DataWrapper call
       new std::vector<Storage::DataWrapper>(tmpDeletedElements));
 }
 
-Storage::DataWrapper Array::reverse(std::string method, Storage::DataWrapper caller,
+Storage::DataWrapper
+Array::reverse(std::string method, Storage::DataWrapper caller,
                const std::vector<std::unique_ptr<Expr>> &args,
-               std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+               std::vector<std::shared_ptr<Storage>> storage,
+               std::string identifier) {
   if (args.size() != 0) {
     throw std::logic_error("Invalid number of arguments!");
   }
-  std::reverse(caller.data._array->begin(),
-               caller.data._array->end());
+  std::reverse(caller.data._array->begin(), caller.data._array->end());
   if (!identifier.empty()) {
     int keyIndex = storageKeyIndex(storage, identifier);
     if (keyIndex == -1) {
@@ -243,10 +250,11 @@ Storage::DataWrapper Array::reverse(std::string method, Storage::DataWrapper cal
   return caller;
 }
 
-Storage::DataWrapper
-Array::sort(std::string method, Storage::DataWrapper caller,
-            const std::vector<std::unique_ptr<Expr>> &args,
-            std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+Storage::DataWrapper Array::sort(std::string method,
+                                 Storage::DataWrapper caller,
+                                 const std::vector<std::unique_ptr<Expr>> &args,
+                                 std::vector<std::shared_ptr<Storage>> storage,
+                                 std::string identifier) {
   if (args.size() != 0) {
     throw std::logic_error("Invalid number of arguments!");
   }
@@ -290,10 +298,11 @@ Array::sort(std::string method, Storage::DataWrapper caller,
   return caller;
 }
 
-Storage::DataWrapper
-Array::fill(std::string method, Storage::DataWrapper caller,
-            const std::vector<std::unique_ptr<Expr>> &args,
-            std::vector<std::shared_ptr<Storage>> storage, std::string identifier) {
+Storage::DataWrapper Array::fill(std::string method,
+                                 Storage::DataWrapper caller,
+                                 const std::vector<std::unique_ptr<Expr>> &args,
+                                 std::vector<std::shared_ptr<Storage>> storage,
+                                 std::string identifier) {
   Storage::DataWrapper tmpValue = Storage::DataWrapper(
       Storage::WrapperType::VALUE, Storage::DataType::_NULL, 0);
   int start, end;
@@ -340,8 +349,7 @@ Array::fill(std::string method, Storage::DataWrapper caller,
     end = Expression(args[2].get(), storage).execute().data._int;
   }
   for (int i = start; i < end; ++i) {
-    caller.data._array->at(i) =
-        Expression(args[0].get(), storage).execute();
+    caller.data._array->at(i) = Expression(args[0].get(), storage).execute();
   }
   if (!identifier.empty()) {
     int keyIndex = storageKeyIndex(storage, identifier);
@@ -532,8 +540,7 @@ Array::lastIndexOf(std::string method, Storage::DataWrapper caller,
           Storage::DataType::_NULL) {
     throw std::logic_error("Invalid arguments!");
   }
-  for (int i = static_cast<int>(caller.data._array->size()) - 1; i >= 0;
-       --i) {
+  for (int i = static_cast<int>(caller.data._array->size()) - 1; i >= 0; --i) {
     if (caller.data._array->at(i).equals(
             Expression(args[0].get(), storage).execute())) {
       return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -580,9 +587,13 @@ Array::every(std::string method, Storage::DataWrapper caller,
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+  if (callbackFunction.dataType ==
+      Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
-      if (!checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(caller.data._array->at(i)), storage)) {
+      if (!checkTrueishness(ShortOperationExpression(
+                                callbackFunction.data._shortOperation, storage)
+                                .executeExpression(caller.data._array->at(i)),
+                            storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                     Storage::DataType::BOOLEAN, false);
       }
@@ -598,8 +609,8 @@ Array::every(std::string method, Storage::DataWrapper caller,
     }
     if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
               Token::TypeTag::DATA &&
-          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-              DataToken::IDENTIFIER)) {
+          callbackFunction.data._callbackFunction->parameters[0]
+                  .type.dataToken == DataToken::IDENTIFIER)) {
       throw std::logic_error("Invalid parameter!");
     }
     if (caller.data._array->empty()) {
@@ -613,7 +624,7 @@ Array::every(std::string method, Storage::DataWrapper caller,
           caller.data._array->at(i));
       Storage::DataWrapper returnValue =
           CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                    storage)
+                                     storage)
               .executeBody(parameterStorage);
       if (!checkTrueishness(returnValue, storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -621,7 +632,7 @@ Array::every(std::string method, Storage::DataWrapper caller,
       }
     }
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                Storage::DataType::BOOLEAN, true); 
+                                Storage::DataType::BOOLEAN, true);
   }
 }
 
@@ -634,9 +645,13 @@ Array::some(std::string method, Storage::DataWrapper caller,
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+  if (callbackFunction.dataType ==
+      Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
-      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(caller.data._array->at(i)), storage)) {
+      if (checkTrueishness(ShortOperationExpression(
+                               callbackFunction.data._shortOperation, storage)
+                               .executeExpression(caller.data._array->at(i)),
+                           storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                     Storage::DataType::BOOLEAN, true);
       }
@@ -652,8 +667,8 @@ Array::some(std::string method, Storage::DataWrapper caller,
     }
     if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
               Token::TypeTag::DATA &&
-          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-              DataToken::IDENTIFIER)) {
+          callbackFunction.data._callbackFunction->parameters[0]
+                  .type.dataToken == DataToken::IDENTIFIER)) {
       throw std::logic_error("Invalid parameter!");
     }
     if (caller.data._array->empty()) {
@@ -667,7 +682,7 @@ Array::some(std::string method, Storage::DataWrapper caller,
           caller.data._array->at(i));
       Storage::DataWrapper returnValue =
           CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                    storage)
+                                     storage)
               .executeBody(parameterStorage);
       if (checkTrueishness(returnValue, storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -687,14 +702,18 @@ Array::find(std::string method, Storage::DataWrapper caller,
     throw std::logic_error("Invalid number of arguments!");
   }
   if (caller.data._array->empty()) {
-      return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                  Storage::DataType::_NULL, 0);
+    return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                Storage::DataType::_NULL, 0);
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+  if (callbackFunction.dataType ==
+      Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
-      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(caller.data._array->at(i)), storage)) {
+      if (checkTrueishness(ShortOperationExpression(
+                               callbackFunction.data._shortOperation, storage)
+                               .executeExpression(caller.data._array->at(i)),
+                           storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                     caller.data._array->at(i).dataType,
                                     caller.data._array->at(i).data);
@@ -709,8 +728,8 @@ Array::find(std::string method, Storage::DataWrapper caller,
     }
     if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
               Token::TypeTag::DATA &&
-          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-              DataToken::IDENTIFIER)) {
+          callbackFunction.data._callbackFunction->parameters[0]
+                  .type.dataToken == DataToken::IDENTIFIER)) {
       throw std::logic_error("Invalid parameter!");
     }
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
@@ -720,7 +739,7 @@ Array::find(std::string method, Storage::DataWrapper caller,
           caller.data._array->at(i));
       Storage::DataWrapper returnValue =
           CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                    storage)
+                                     storage)
               .executeBody(parameterStorage);
       if (checkTrueishness(returnValue, storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -741,15 +760,20 @@ Array::findIndex(std::string method, Storage::DataWrapper caller,
     throw std::logic_error("Invalid number of arguments!");
   }
   if (caller.data._array->empty()) {
-      return Storage::DataWrapper(Storage::WrapperType::VALUE,
-                                  Storage::DataType::INTEGER, -1);
+    return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                Storage::DataType::INTEGER, -1);
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+  if (callbackFunction.dataType ==
+      Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
-      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(caller.data._array->at(i)), storage)) {
-        return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, i);
+      if (checkTrueishness(ShortOperationExpression(
+                               callbackFunction.data._shortOperation, storage)
+                               .executeExpression(caller.data._array->at(i)),
+                           storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    Storage::DataType::INTEGER, i);
       }
     }
   } else {
@@ -761,8 +785,8 @@ Array::findIndex(std::string method, Storage::DataWrapper caller,
     }
     if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
               Token::TypeTag::DATA &&
-          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-              DataToken::IDENTIFIER)) {
+          callbackFunction.data._callbackFunction->parameters[0]
+                  .type.dataToken == DataToken::IDENTIFIER)) {
       throw std::logic_error("Invalid parameter!");
     }
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
@@ -772,7 +796,7 @@ Array::findIndex(std::string method, Storage::DataWrapper caller,
           caller.data._array->at(i));
       Storage::DataWrapper returnValue =
           CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                    storage)
+                                     storage)
               .executeBody(parameterStorage);
       if (checkTrueishness(returnValue, storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -797,10 +821,14 @@ Array::findLast(std::string method, Storage::DataWrapper caller,
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+  if (callbackFunction.dataType ==
+      Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = static_cast<int>(caller.data._array->size()) - 1; i >= 0;
-        --i) {
-      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(caller.data._array->at(i)), storage)) {
+         --i) {
+      if (checkTrueishness(ShortOperationExpression(
+                               callbackFunction.data._shortOperation, storage)
+                               .executeExpression(caller.data._array->at(i)),
+                           storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                     caller.data._array->at(i).dataType,
                                     caller.data._array->at(i).data);
@@ -815,19 +843,19 @@ Array::findLast(std::string method, Storage::DataWrapper caller,
     }
     if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
               Token::TypeTag::DATA &&
-          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-              DataToken::IDENTIFIER)) {
+          callbackFunction.data._callbackFunction->parameters[0]
+                  .type.dataToken == DataToken::IDENTIFIER)) {
       throw std::logic_error("Invalid parameter!");
     }
     for (int i = static_cast<int>(caller.data._array->size()) - 1; i >= 0;
-        --i) {
+         --i) {
       std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
       parameterStorage->setValue(
           callbackFunction.data._callbackFunction->parameters[0].value,
           caller.data._array->at(i));
       Storage::DataWrapper returnValue =
           CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                    storage)
+                                     storage)
               .executeBody(parameterStorage);
       if (checkTrueishness(returnValue, storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -853,11 +881,16 @@ Array::findLastIndex(std::string method, Storage::DataWrapper caller,
   }
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
-  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+  if (callbackFunction.dataType ==
+      Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = static_cast<int>(caller.data._array->size()) - 1; i >= 0;
-        --i) {
-      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(caller.data._array->at(i)), storage)) {
-        return Storage::DataWrapper(Storage::WrapperType::VALUE, Storage::DataType::INTEGER, i);
+         --i) {
+      if (checkTrueishness(ShortOperationExpression(
+                               callbackFunction.data._shortOperation, storage)
+                               .executeExpression(caller.data._array->at(i)),
+                           storage)) {
+        return Storage::DataWrapper(Storage::WrapperType::VALUE,
+                                    Storage::DataType::INTEGER, i);
       }
     }
   } else {
@@ -869,19 +902,19 @@ Array::findLastIndex(std::string method, Storage::DataWrapper caller,
     }
     if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
               Token::TypeTag::DATA &&
-          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-              DataToken::IDENTIFIER)) {
+          callbackFunction.data._callbackFunction->parameters[0]
+                  .type.dataToken == DataToken::IDENTIFIER)) {
       throw std::logic_error("Invalid parameter!");
     }
     for (int i = static_cast<int>(caller.data._array->size()) - 1; i >= 0;
-        --i) {
+         --i) {
       std::shared_ptr<Storage> parameterStorage = std::make_shared<Storage>();
       parameterStorage->setValue(
           callbackFunction.data._callbackFunction->parameters[0].value,
           caller.data._array->at(i));
       Storage::DataWrapper returnValue =
           CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                    storage)
+                                     storage)
               .executeBody(parameterStorage);
       if (checkTrueishness(returnValue, storage)) {
         return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -908,10 +941,14 @@ Array::filter(std::string method, Storage::DataWrapper caller,
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
   std::vector<Storage::DataWrapper> tmpElements =
-        std::vector<Storage::DataWrapper>();
-  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+      std::vector<Storage::DataWrapper>();
+  if (callbackFunction.dataType ==
+      Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
-      if (checkTrueishness(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(caller.data._array->at(i)), storage)) {
+      if (checkTrueishness(ShortOperationExpression(
+                               callbackFunction.data._shortOperation, storage)
+                               .executeExpression(caller.data._array->at(i)),
+                           storage)) {
         tmpElements.push_back(caller.data._array->at(i));
       }
     }
@@ -924,8 +961,8 @@ Array::filter(std::string method, Storage::DataWrapper caller,
     }
     if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
               Token::TypeTag::DATA &&
-          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-              DataToken::IDENTIFIER)) {
+          callbackFunction.data._callbackFunction->parameters[0]
+                  .type.dataToken == DataToken::IDENTIFIER)) {
       throw std::logic_error("Invalid parameter!");
     }
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
@@ -935,7 +972,7 @@ Array::filter(std::string method, Storage::DataWrapper caller,
           caller.data._array->at(i));
       Storage::DataWrapper returnValue =
           CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                    storage)
+                                     storage)
               .executeBody(parameterStorage);
       if (checkTrueishness(returnValue, storage)) {
         tmpElements.push_back(caller.data._array->at(i));
@@ -956,10 +993,13 @@ Storage::DataWrapper Array::map(std::string method, Storage::DataWrapper caller,
   Storage::DataWrapper callbackFunction =
       Expression(args[0].get(), storage).execute();
   std::vector<Storage::DataWrapper> tmpElements =
-        std::vector<Storage::DataWrapper>();
-  if (callbackFunction.dataType == Storage::DataType::SHORT_NOTATION_OPERATION) {
+      std::vector<Storage::DataWrapper>();
+  if (callbackFunction.dataType ==
+      Storage::DataType::SHORT_NOTATION_OPERATION) {
     for (int i = 0; i < static_cast<int>(caller.data._array->size()); ++i) {
-      tmpElements.push_back(ShortOperationExpression(callbackFunction.data._shortOperation, storage).executeExpression(caller.data._array->at(i)));
+      tmpElements.push_back(ShortOperationExpression(
+                                callbackFunction.data._shortOperation, storage)
+                                .executeExpression(caller.data._array->at(i)));
     }
   } else {
     if (callbackFunction.dataType != Storage::DataType::CALLBACK_FUNCTION) {
@@ -970,8 +1010,8 @@ Storage::DataWrapper Array::map(std::string method, Storage::DataWrapper caller,
     }
     if (!(callbackFunction.data._callbackFunction->parameters[0].tag ==
               Token::TypeTag::DATA &&
-          callbackFunction.data._callbackFunction->parameters[0].type.dataToken ==
-              DataToken::IDENTIFIER)) {
+          callbackFunction.data._callbackFunction->parameters[0]
+                  .type.dataToken == DataToken::IDENTIFIER)) {
       throw std::logic_error("Invalid parameter!");
     }
     if (caller.data._array->empty()) {
@@ -986,14 +1026,14 @@ Storage::DataWrapper Array::map(std::string method, Storage::DataWrapper caller,
           caller.data._array->at(i));
       Storage::DataWrapper returnValue =
           CallbackFunctionExpression(callbackFunction.data._callbackFunction,
-                                    storage)
+                                     storage)
               .executeBody(parameterStorage);
       tmpElements.push_back(returnValue);
     }
   }
   return Storage::DataWrapper(
-        Storage::WrapperType::VALUE, Storage::DataType::ARRAY,
-        new std::vector<Storage::DataWrapper>(tmpElements));
+      Storage::WrapperType::VALUE, Storage::DataType::ARRAY,
+      new std::vector<Storage::DataWrapper>(tmpElements));
 }
 
 Storage::DataWrapper
