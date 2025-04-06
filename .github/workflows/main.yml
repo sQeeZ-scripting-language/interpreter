@@ -35,6 +35,10 @@ jobs:
       run: |
         choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
 
+    - name: Install Node.js dependencies
+      shell: bash
+      run: npm ci
+
     - name: Check code style
       shell: bash
       run: |
@@ -88,7 +92,7 @@ jobs:
         TEMP_DIR=$(mktemp -d "/tmp/lexer-XXXXXX")
 
         curl --retry 5 -L -o "$TEMP_DIR/sQeeZ-Lexer.zip" "$ZIP_URL"
-        unzip "$TEMP_DIR/sQeeZ-Lexer.zip" -d "$REPO_DIR" || { echo "Unzipping failed"; exit 1; }
+        unzip "$TEMP_DIR/sQeeZ-Lexer.zip" -d "$REPO_DIR"
 
         mv "$REPO_DIR/"*/libsQeeZ-Lexer-Lib.a "$REPO_DIR/"
         mv "$REPO_DIR/lexer/"* "$INCLUDE_DIR/"
@@ -293,37 +297,46 @@ jobs:
 
         echo "Latest files have been downloaded and extracted to $REPO_DIR."
 
+    - name: Build Node
+      if: matrix.os != 'windows-latest'
+      shell: bash
+      run: npx cmake-js compile --CDNODE=true
+
     - name: Build
       shell: bash
       run: |
-        mkdir build
-        cd build
+        mkdir build-interpreter
+        cd build-interpreter
         cmake ..
         cmake --build .
 
     - name: Run tests
       shell: bash
       run: |
-        cd build
+        cd build-interpreter
         ctest
 
     - name: Move build artifacts to a temporary directory
       if: matrix.os != 'windows-latest'
       run: |
         mkdir -p temp-artifacts
-        cp build/libsQeeZ-Interpreter-Lib.a temp-artifacts/
-        cp build/sQeeZ-Interpreter-Exe temp-artifacts/
+        cp build-interpreter/libsQeeZ-Interpreter-Lib.a temp-artifacts/
+        cp build-interpreter/sQeeZ-Interpreter-Exe temp-artifacts/
+        cp build/Release/sQeeZ-Interpreter-Node.node temp-artifacts/
 
     - name: Move build artifacts to a temporary directory (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
         New-Item -Path temp-artifacts -ItemType Directory -Force
-        if (Test-Path build/Debug/sQeeZ-Interpreter-Lib.lib) {
-          Copy-Item build/Debug/sQeeZ-Interpreter-Lib.lib -Destination temp-artifacts/
+        if (Test-Path build-interpreter/Debug/sQeeZ-Interpreter-Lib.lib) {
+          Copy-Item build-interpreter/Debug/sQeeZ-Interpreter-Lib.lib -Destination temp-artifacts/
         }
-        if (Test-Path build/Debug/sQeeZ-Interpreter-Exe.exe) {
-          Copy-Item build/Debug/sQeeZ-Interpreter-Exe.exe -Destination temp-artifacts/
+        if (Test-Path build-interpreter/Debug/sQeeZ-Interpreter-Exe.exe) {
+          Copy-Item build-interpreter/Debug/sQeeZ-Interpreter-Exe.exe -Destination temp-artifacts/
+        }
+        if (Test-Path build/Release/sQeeZ-Interpreter-Node.node) {
+          Copy-Item build/Release/sQeeZ-Interpreter-Node.node -Destination temp-artifacts/
         }
 
     - name: Upload build artifacts
