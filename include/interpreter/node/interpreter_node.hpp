@@ -25,4 +25,4 @@ public:
   static Napi::Function GetClass(Napi::Env);
 };
 
-#endif  // INTERPRETER_NODE_HPP
+#endif // INTERPRETER_NODE_HPP
