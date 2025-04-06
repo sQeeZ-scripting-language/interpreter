@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=1)
 
 # Set the project name
@@ -16,6 +17,7 @@ if(MSVC)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 elseif(APPLE)
   add_definitions(-D_SQEEZ_MAC)
   set(CMAKE_OSX_ARCHITECTURES "arm64")
@@ -36,6 +38,18 @@ message(STATUS "C++ Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
 # Include the header directory
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Include NodeJS
+include(./node_modules/node-cmake/NodeJS.cmake)
+nodejs_init()
+
+# After init, we will have headers required at the following folder:
+# ${CMAKE_CURRENT_BINARY_DIR}/node/${NODEJS_VERSION}/include
+include_directories(
+  ${CMAKE_JS_INC} 
+  "${CMAKE_CURRENT_BINARY_DIR}/node/${NODEJS_VERSION}/include" 
+  "${CMAKE_HOME_DIRECTORY}/node_modules/node-addon-api"
+)
+
 # Include Google Test
 include(FetchContent)
 FetchContent_Declare(
@@ -55,6 +69,7 @@ file(GLOB_RECURSE SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/statements/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/expressions/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/node/*.cpp
 )
 
 # Include the header files
@@ -63,70 +78,60 @@ file(GLOB_RECURSE HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/include/interpreter/*.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/statements/*.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/expressions/*.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/interpreter/node/*.hpp
 )
 
 # Include the Lexer
 if(MSVC)
   set(SQEEZ_LEXER_LIB_PATH ${CMAKE_SOURCE_DIR}/lexer-lib/sQeeZ-Lexer-Lib.lib)
-  add_library(sQeeZ-Lexer-Lib STATIC IMPORTED)
-  set_target_properties(sQeeZ-Lexer-Lib PROPERTIES
-    IMPORTED_LOCATION ${SQEEZ_LEXER_LIB_PATH}
-    IMPORTED_IMPLIB ${SQEEZ_LEXER_LIB_PATH}
-  )
 else()
   set(SQEEZ_LEXER_LIB_PATH ${CMAKE_SOURCE_DIR}/lexer-lib/libsQeeZ-Lexer-Lib.a)
-  add_library(sQeeZ-Lexer-Lib STATIC IMPORTED)
-  set_target_properties(sQeeZ-Lexer-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_LEXER_LIB_PATH})
 endif()
-set(SQEEZ_LEXER_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/lexer)
-include_directories(${SQEEZ_LEXER_INCLUDE_DIR})
+
+add_library(sQeeZ-Lexer-Lib STATIC IMPORTED)
+set_target_properties(sQeeZ-Lexer-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_LEXER_LIB_PATH})
 
 # Include the Parser
 if(MSVC)
   set(SQEEZ_PARSER_LIB_PATH ${CMAKE_SOURCE_DIR}/parser-lib/sQeeZ-Parser-Lib.lib)
-  add_library(sQeeZ-Parser-Lib STATIC IMPORTED)
-  set_target_properties(sQeeZ-Parser-Lib PROPERTIES
-    IMPORTED_LOCATION ${SQEEZ_PARSER_LIB_PATH}
-    IMPORTED_IMPLIB ${SQEEZ_PARSER_LIB_PATH}
-  )
 else()
   set(SQEEZ_PARSER_LIB_PATH ${CMAKE_SOURCE_DIR}/parser-lib/libsQeeZ-Parser-Lib.a)
-  add_library(sQeeZ-Parser-Lib STATIC IMPORTED)
-  set_target_properties(sQeeZ-Parser-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_PARSER_LIB_PATH})
 endif()
-set(SQEEZ_PARSER_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/parser)
-include_directories(${SQEEZ_PARSER_INCLUDE_DIR})
+
+add_library(sQeeZ-Parser-Lib STATIC IMPORTED)
+set_target_properties(sQeeZ-Parser-Lib PROPERTIES IMPORTED_LOCATION ${SQEEZ_PARSER_LIB_PATH})
 
 # Create the Library
-add_library(
-  sQeeZ-Interpreter-Lib 
-  STATIC 
-  ${SOURCES} 
-  ${HEADERS}
-)
+add_library(sQeeZ-Interpreter-Lib STATIC ${SOURCES} ${HEADERS})
+target_compile_options(sQeeZ-Interpreter-Lib PRIVATE -fPIC)
+set_target_properties(sQeeZ-Interpreter-Lib PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # Create the Executable
-add_executable(
-  sQeeZ-Interpreter-Exe
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-)
-target_link_libraries(
-  sQeeZ-Interpreter-Exe 
+add_executable(sQeeZ-Interpreter-Exe ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+target_link_libraries(sQeeZ-Interpreter-Exe
   sQeeZ-Interpreter-Lib
   sQeeZ-Lexer-Lib
   sQeeZ-Parser-Lib
 )
 
 # Interpreter Test
-add_executable(
-  interpreter_test 
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/interpreter_test.cc
-)
-target_link_libraries(
-  interpreter_test
+add_executable(interpreter_test ${CMAKE_CURRENT_SOURCE_DIR}/test/interpreter_test.cc)
+target_link_libraries(interpreter_test
   GTest::gtest_main
   sQeeZ-Interpreter-Lib
   sQeeZ-Lexer-Lib
   sQeeZ-Parser-Lib
 )
 gtest_discover_tests(interpreter_test)
+
+# Create the NodeJS module
+if(${NODE})
+  add_library(sQeeZ-Interpreter-Node SHARED ${SOURCES} ${HEADERS})
+  set_target_properties(sQeeZ-Interpreter-Node PROPERTIES PREFIX "" SUFFIX ".node")
+  target_link_libraries(sQeeZ-Interpreter-Node
+    ${CMAKE_JS_LIB}
+    sQeeZ-Interpreter-Lib
+    sQeeZ-Parser-Lib
+    sQeeZ-Lexer-Lib
+  )
+endif()
