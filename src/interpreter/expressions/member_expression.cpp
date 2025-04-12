@@ -1,12 +1,14 @@
 #include "interpreter/expressions/member_expression.hpp"
 
 MemberExpression::MemberExpression(
-    MemberExpr *expressionNode, std::vector<std::shared_ptr<Storage>> storage)
-    : expressionNode(expressionNode), storage(std::move(storage)) {}
+    MemberExpr *expressionNode, std::vector<std::shared_ptr<Storage>> storage,
+    std::shared_ptr<Logs> logs)
+    : expressionNode(expressionNode), storage(std::move(storage)), logs(logs) {}
 
 Storage::DataWrapper MemberExpression::execute() {
   Storage::DataWrapper object =
-      Expression(dynamic_cast<Expr *>(expressionNode->object.get()), storage)
+      Expression(dynamic_cast<Expr *>(expressionNode->object.get()), storage,
+                 logs)
           .execute();
   if (object.dataType != Storage::DataType::OBJECT) {
     throw std::logic_error("Object expected!");
@@ -15,7 +17,7 @@ Storage::DataWrapper MemberExpression::execute() {
   if (expressionNode->computed) {
     Storage::DataWrapper propertyStr =
         Expression(dynamic_cast<Expr *>(expressionNode->property.get()),
-                   storage)
+                   storage, logs)
             .execute();
     if (propertyStr.dataType != Storage::DataType::STRING) {
       throw std::logic_error("Property name must be a string!");

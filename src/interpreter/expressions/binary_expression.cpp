@@ -1,36 +1,37 @@
 #include "interpreter/expressions/binary_expression.hpp"
 
 BinaryExpression::BinaryExpression(
-    BinaryExpr *expressionNode, std::vector<std::shared_ptr<Storage>> storage)
-    : expressionNode(expressionNode), storage(std::move(storage)) {}
+    BinaryExpr *expressionNode, std::vector<std::shared_ptr<Storage>> storage,
+    std::shared_ptr<Logs> logs)
+    : expressionNode(expressionNode), storage(std::move(storage)), logs(logs) {}
 
 Storage::DataWrapper BinaryExpression::execute() {
   if (expressionNode->operator_.tag == Token::TypeTag::OPERATOR) {
     switch (expressionNode->operator_.type.operatorToken) {
     case OperatorToken::ADDITION:
       return addition(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute());
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute());
     case OperatorToken::SUBTRACTION:
       return subtraction(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute());
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute());
     case OperatorToken::MULTIPLICATION:
       return multiplication(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute());
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute());
     case OperatorToken::DIVISION:
       return division(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute());
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute());
     case OperatorToken::MODULUS:
       return modulus(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute());
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute());
     case OperatorToken::POTENTIATION:
       return potentiation(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute());
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute());
 
     default:
       throw std::runtime_error("Unsupported binary operator.");
@@ -39,51 +40,56 @@ Storage::DataWrapper BinaryExpression::execute() {
     switch (expressionNode->operator_.type.logicalToken) {
     case LogicalToken::EQUAL:
       return _boolean(checkEquality(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute(), true));
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute(),
+          true));
     case LogicalToken::NOT_EQUAL:
       return _boolean(checkEquality(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute(), false));
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute(),
+          false));
     case LogicalToken::GREATER:
       return _boolean(checkGreater(
-          Expression(expressionNode->left.get(), storage).execute(),
-          Expression(expressionNode->right.get(), storage).execute()));
+          Expression(expressionNode->left.get(), storage, logs).execute(),
+          Expression(expressionNode->right.get(), storage, logs).execute()));
     case LogicalToken::GREATER_EQUAL:
       return _boolean(
           checkGreater(
-              Expression(expressionNode->left.get(), storage).execute(),
-              Expression(expressionNode->right.get(), storage).execute()) ||
+              Expression(expressionNode->left.get(), storage, logs).execute(),
+              Expression(expressionNode->right.get(), storage, logs)
+                  .execute()) ||
           checkEquality(
-              Expression(expressionNode->left.get(), storage).execute(),
-              Expression(expressionNode->right.get(), storage).execute(),
+              Expression(expressionNode->left.get(), storage, logs).execute(),
+              Expression(expressionNode->right.get(), storage, logs).execute(),
               true));
     case LogicalToken::LESS:
       return _boolean(
           !checkGreater(
-              Expression(expressionNode->left.get(), storage).execute(),
-              Expression(expressionNode->right.get(), storage).execute()) &&
+              Expression(expressionNode->left.get(), storage, logs).execute(),
+              Expression(expressionNode->right.get(), storage, logs)
+                  .execute()) &&
           !checkEquality(
-              Expression(expressionNode->left.get(), storage).execute(),
-              Expression(expressionNode->right.get(), storage).execute(),
+              Expression(expressionNode->left.get(), storage, logs).execute(),
+              Expression(expressionNode->right.get(), storage, logs).execute(),
               true));
     case LogicalToken::LESS_EQUAL:
       return _boolean(
           !checkGreater(
-              Expression(expressionNode->left.get(), storage).execute(),
-              Expression(expressionNode->right.get(), storage).execute()) ||
+              Expression(expressionNode->left.get(), storage, logs).execute(),
+              Expression(expressionNode->right.get(), storage, logs)
+                  .execute()) ||
           checkEquality(
-              Expression(expressionNode->left.get(), storage).execute(),
-              Expression(expressionNode->right.get(), storage).execute(),
+              Expression(expressionNode->left.get(), storage, logs).execute(),
+              Expression(expressionNode->right.get(), storage, logs).execute(),
               true));
     case LogicalToken::AND:
       return _boolean(
-          checkTrueishnessOfExpression(expressionNode->left, storage) &&
-          checkTrueishnessOfExpression(expressionNode->right, storage));
+          checkTrueishnessOfExpression(expressionNode->left, storage, logs) &&
+          checkTrueishnessOfExpression(expressionNode->right, storage, logs));
     case LogicalToken::OR:
       return _boolean(
-          checkTrueishnessOfExpression(expressionNode->left, storage) ||
-          checkTrueishnessOfExpression(expressionNode->right, storage));
+          checkTrueishnessOfExpression(expressionNode->left, storage, logs) ||
+          checkTrueishnessOfExpression(expressionNode->right, storage, logs));
     default:
       throw std::runtime_error("Unsupported logical operator.");
     }

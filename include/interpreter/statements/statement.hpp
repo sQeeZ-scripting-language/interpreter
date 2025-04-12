@@ -2,6 +2,7 @@
 #define STATEMENT_HPP
 
 #include "interpreter/expressions/expression.hpp"
+#include "interpreter/logs.hpp"
 #include "interpreter/statements/conditional_statement.hpp"
 #include "interpreter/statements/declaration_statement.hpp"
 #include "interpreter/statements/log_statement.hpp"
@@ -12,12 +13,14 @@
 
 class Statement {
 public:
-  Statement(Stmt *stmtNode, std::vector<std::shared_ptr<Storage>> storage);
+  Statement(Stmt *stmtNode, std::vector<std::shared_ptr<Storage>> storage,
+            std::shared_ptr<Logs> logs);
   Storage::DataWrapper execute();
 
 private:
   Stmt *stmtNode;
   std::vector<std::shared_ptr<Storage>> storage;
+  std::shared_ptr<Logs> logs;
 };
 
 #endif // STATEMENT_HPP

@@ -3,48 +3,50 @@
 Storage::DataWrapper
 Object::callMethod(std::string method, Expr *caller,
                    const std::vector<std::unique_ptr<Expr>> args,
-                   std::vector<std::shared_ptr<Storage>> storage) {
-  Storage::DataWrapper callerValue = Expression(caller, storage).execute();
+                   std::vector<std::shared_ptr<Storage>> storage,
+                   std::shared_ptr<Logs> logs) {
+  Storage::DataWrapper callerValue =
+      Expression(caller, storage, logs).execute();
 
   switch (stringToEnumMap.at(method)) {
   case ObjectMethod::HAS_KEY:
-    return hasKey(method, caller, callerValue, args, storage);
+    return hasKey(method, caller, callerValue, args, storage, logs);
   case ObjectMethod::KEYS:
-    return keys(method, caller, callerValue, args, storage);
+    return keys(method, caller, callerValue, args, storage, logs);
   case ObjectMethod::VALUES:
-    return values(method, caller, callerValue, args, storage);
+    return values(method, caller, callerValue, args, storage, logs);
   case ObjectMethod::ENTRIES:
-    return entries(method, caller, callerValue, args, storage);
+    return entries(method, caller, callerValue, args, storage, logs);
   case ObjectMethod::GET:
-    return get(method, caller, callerValue, args, storage);
+    return get(method, caller, callerValue, args, storage, logs);
   default:
     throw std::runtime_error("Invalid object method!");
   }
 }
 
-Storage::DataWrapper
-Object::hasKey(std::string method, Expr *caller,
-               Storage::DataWrapper callerValue,
-               const std::vector<std::unique_ptr<Expr>> &args,
-               std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Object::hasKey(
+    std::string method, Expr *caller, Storage::DataWrapper callerValue,
+    const std::vector<std::unique_ptr<Expr>> &args,
+    std::vector<std::shared_ptr<Storage>> storage, std::shared_ptr<Logs> logs) {
   if (args.size() != 1) {
     throw std::logic_error("Invalid number of arguments!");
   }
-  if (Expression(args[0].get(), storage).execute().dataType !=
+  if (Expression(args[0].get(), storage, logs).execute().dataType !=
       Storage::DataType::STRING) {
     throw std::logic_error("Invalid arguments!");
   }
   return Storage::DataWrapper(
       Storage::WrapperType::VALUE, Storage::DataType::BOOLEAN,
       callerValue.data._object->find(
-          *Expression(args[0].get(), storage).execute().data._string) !=
+          *Expression(args[0].get(), storage, logs).execute().data._string) !=
           callerValue.data._object->end());
 }
 
 Storage::DataWrapper
 Object::keys(std::string method, Expr *caller, Storage::DataWrapper callerValue,
              const std::vector<std::unique_ptr<Expr>> &args,
-             std::vector<std::shared_ptr<Storage>> storage) {
+             std::vector<std::shared_ptr<Storage>> storage,
+             std::shared_ptr<Logs> logs) {
   if (args.size() != 0) {
     throw std::logic_error("Invalid number of arguments!");
   }
@@ -59,11 +61,10 @@ Object::keys(std::string method, Expr *caller, Storage::DataWrapper callerValue,
                               new std::vector<Storage::DataWrapper>(keys));
 }
 
-Storage::DataWrapper
-Object::values(std::string method, Expr *caller,
-               Storage::DataWrapper callerValue,
-               const std::vector<std::unique_ptr<Expr>> &args,
-               std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Object::values(
+    std::string method, Expr *caller, Storage::DataWrapper callerValue,
+    const std::vector<std::unique_ptr<Expr>> &args,
+    std::vector<std::shared_ptr<Storage>> storage, std::shared_ptr<Logs> logs) {
   if (args.size() != 0) {
     throw std::logic_error("Invalid number of arguments!");
   }
@@ -77,11 +78,10 @@ Object::values(std::string method, Expr *caller,
                               new std::vector<Storage::DataWrapper>(keys));
 }
 
-Storage::DataWrapper
-Object::entries(std::string method, Expr *caller,
-                Storage::DataWrapper callerValue,
-                const std::vector<std::unique_ptr<Expr>> &args,
-                std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Object::entries(
+    std::string method, Expr *caller, Storage::DataWrapper callerValue,
+    const std::vector<std::unique_ptr<Expr>> &args,
+    std::vector<std::shared_ptr<Storage>> storage, std::shared_ptr<Logs> logs) {
   if (args.size() != 0) {
     throw std::logic_error("Invalid number of arguments!");
   }
@@ -102,19 +102,20 @@ Object::entries(std::string method, Expr *caller,
                               new std::vector<Storage::DataWrapper>(keys));
 }
 
-Storage::DataWrapper
-Object::get(std::string method, Expr *caller, Storage::DataWrapper callerValue,
-            const std::vector<std::unique_ptr<Expr>> &args,
-            std::vector<std::shared_ptr<Storage>> storage) {
+Storage::DataWrapper Object::get(std::string method, Expr *caller,
+                                 Storage::DataWrapper callerValue,
+                                 const std::vector<std::unique_ptr<Expr>> &args,
+                                 std::vector<std::shared_ptr<Storage>> storage,
+                                 std::shared_ptr<Logs> logs) {
   if (args.size() != 1) {
     throw std::logic_error("Invalid number of arguments!");
   }
-  if (Expression(args[0].get(), storage).execute().dataType !=
+  if (Expression(args[0].get(), storage, logs).execute().dataType !=
       Storage::DataType::STRING) {
     throw std::logic_error("Invalid arguments!");
   }
   auto it = callerValue.data._object->find(
-      *Expression(args[0].get(), storage).execute().data._string);
+      *Expression(args[0].get(), storage, logs).execute().data._string);
   if (it == callerValue.data._object->end()) {
     return Storage::DataWrapper(Storage::WrapperType::VALUE,
                                 Storage::DataType::_NULL, 0);

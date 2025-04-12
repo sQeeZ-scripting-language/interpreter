@@ -13,15 +13,18 @@
 #include "interpreter/expressions/short_operation_expression.hpp"
 #include "interpreter/expressions/ternary_expression.hpp"
 #include "interpreter/expressions/unary_expression.hpp"
+#include "interpreter/logs.hpp"
 
 class Expression {
 public:
-  Expression(Expr *exprNode, std::vector<std::shared_ptr<Storage>> storage);
+  Expression(Expr *exprNode, std::vector<std::shared_ptr<Storage>> storage,
+             std::shared_ptr<Logs> logs);
   Storage::DataWrapper execute();
 
 private:
   Expr *exprNode;
   std::vector<std::shared_ptr<Storage>> storage;
+  std::shared_ptr<Logs> logs;
 };
 
 #endif // EXPRESSION_HPP

@@ -1,8 +1,9 @@
 #include "interpreter/statements/log_statement.hpp"
 
 LogStatement::LogStatement(LogStmt *logNode,
-                           std::vector<std::shared_ptr<Storage>> storage)
-    : logNode(logNode), storage(std::move(storage)) {}
+                           std::vector<std::shared_ptr<Storage>> storage,
+                           std::shared_ptr<Logs> logs)
+    : logNode(logNode), storage(std::move(storage)), logs(logs) {}
 
 void LogStatement::execute() {
   if (logNode->logType.tag != Token::TypeTag::LOG) {
@@ -18,12 +19,14 @@ void LogStatement::execute() {
       printableValue += ", ";
     }
     printableValue += getPrintableValue(
-        Expression(dynamic_cast<Expr *>(logNode->message[i].get()), storage)
+        Expression(dynamic_cast<Expr *>(logNode->message[i].get()), storage,
+                   logs)
             .execute());
   }
 
   switch (logNode->logType.type.logToken) {
   case LogToken::BASIC:
+    logs->add(printableValue, LogType::LOG, "");
     std::cout << printableValue << std::endl;
     break;
 
@@ -31,6 +34,7 @@ void LogStatement::execute() {
     int r, g, b;
     if (auto *hexCode = dynamic_cast<HexCodeLiteral *>(logNode->color.get())) {
       hexToRGB(hexCode->value, r, g, b);
+      logs->add(printableValue, LogType::COLORED, hexCode->value);
       std::cout << "\033[38;2;" << r << ";" << g << ";" << b << "m"
                 << printableValue << "\033[0m" << std::endl;
     } else {
@@ -39,10 +43,12 @@ void LogStatement::execute() {
     break;
 
   case LogToken::WARN:
+    logs->add(printableValue, LogType::WARN, "");
     std::cout << "\033[33m" << printableValue << "\033[0m" << std::endl;
     break;
 
   case LogToken::ERROR:
+    logs->add(printableValue, LogType::ERROR, "");
     std::cout << "\033[31m" << printableValue << "\033[0m" << std::endl;
     break;
 

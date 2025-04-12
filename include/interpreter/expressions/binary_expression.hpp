@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "interpreter/expressions/expression.hpp"
+#include "interpreter/logs.hpp"
 #include "interpreter/storage.hpp"
 #include "interpreter/utils.hpp"
 #include "parser/ast_nodes.hpp"
@@ -11,7 +12,8 @@
 class BinaryExpression {
 public:
   BinaryExpression(BinaryExpr *expressionNode,
-                   std::vector<std::shared_ptr<Storage>>);
+                   std::vector<std::shared_ptr<Storage>> storage,
+                   std::shared_ptr<Logs> logs);
   Storage::DataWrapper execute();
 
   static Storage::DataWrapper addition(Storage::DataWrapper left,
@@ -30,6 +32,7 @@ public:
 private:
   BinaryExpr *expressionNode;
   std::vector<std::shared_ptr<Storage>> storage;
+  std::shared_ptr<Logs> logs;
 
   static Storage::DataWrapper stringAddition(std::string left,
                                              std::string right);

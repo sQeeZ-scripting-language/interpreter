@@ -4,4 +4,4 @@ const interpreter = new addon.InterpreterNode(require);
 console.log(addon.pingInterpreter());
 console.log(interpreter.pingInstance());
 console.log(addon.info());
-interpreter.interpret('log("Hello, World!");', false);
+console.log(interpreter.interpret('log("Hello, World!");', false));
