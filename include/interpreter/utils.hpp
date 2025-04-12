@@ -14,9 +14,9 @@ Storage::DataWrapper _integer(int value);
 Storage::DataWrapper _double(double value);
 Storage::DataWrapper _boolean(bool value);
 
-bool checkTrueishnessOfExpression(
-    const std::unique_ptr<Expr> &expr,
-    std::vector<std::shared_ptr<Storage>> storage);
+bool checkTrueishnessOfExpression(const std::unique_ptr<Expr> &expr,
+                                  std::vector<std::shared_ptr<Storage>> storage,
+                                  std::shared_ptr<Logs> logs);
 bool checkTrueishness(Storage::DataWrapper datawrapper,
                       std::vector<std::shared_ptr<Storage>> storage);
 bool checkEquality(Storage::DataWrapper left, Storage::DataWrapper right,

@@ -1,8 +1,9 @@
 #include "interpreter/expressions/assignment_expression.hpp"
 
 AssignmentExpression::AssignmentExpression(
-    Expr *expressionNode, std::vector<std::shared_ptr<Storage>> storage)
-    : expressionNode(expressionNode), storage(std::move(storage)) {}
+    Expr *expressionNode, std::vector<std::shared_ptr<Storage>> storage,
+    std::shared_ptr<Logs> logs)
+    : expressionNode(expressionNode), storage(std::move(storage)), logs(logs) {}
 
 void AssignmentExpression::execute() {
   if (auto expr = dynamic_cast<AssignmentExpr *>(expressionNode)) {
@@ -14,7 +15,7 @@ void AssignmentExpression::execute() {
         }
         storage[keyIndex]->updateValue(
             assignee->identifier.value,
-            Expression(dynamic_cast<Expr *>(expr->value.get()), storage)
+            Expression(dynamic_cast<Expr *>(expr->value.get()), storage, logs)
                 .execute());
       }
     } else {
@@ -25,7 +26,7 @@ void AssignmentExpression::execute() {
     if (expr->operator_.tag == Token::TypeTag::OPERATOR) {
       if (auto assignee = dynamic_cast<Identifier *>(expr->assignee.get())) {
         Storage::DataWrapper value =
-            Expression(dynamic_cast<Expr *>(expr->value.get()), storage)
+            Expression(dynamic_cast<Expr *>(expr->value.get()), storage, logs)
                 .execute();
         int keyIndex = storageKeyIndex(storage, assignee->identifier.value);
         if (keyIndex == -1) {

@@ -2,13 +2,15 @@
 
 DeclarationStatement::DeclarationStatement(
     FunctionDeclaration *declarationNode,
-    std::vector<std::shared_ptr<Storage>> storage)
-    : declarationNode(declarationNode), storage(std::move(storage)) {}
+    std::vector<std::shared_ptr<Storage>> storage, std::shared_ptr<Logs> logs)
+    : declarationNode(declarationNode), storage(std::move(storage)),
+      logs(logs) {}
 
 DeclarationStatement::DeclarationStatement(
     VarDeclaration *declarationNode,
-    std::vector<std::shared_ptr<Storage>> storage)
-    : declarationNode(declarationNode), storage(std::move(storage)) {}
+    std::vector<std::shared_ptr<Storage>> storage, std::shared_ptr<Logs> logs)
+    : declarationNode(declarationNode), storage(std::move(storage)),
+      logs(logs) {}
 
 void DeclarationStatement::execute() {
   if (std::holds_alternative<VarDeclaration *>(declarationNode)) {
@@ -33,7 +35,8 @@ std::vector<std::string> DeclarationStatement::executeVarDeclaration() {
         declaration.second == nullptr
             ? Storage::DataWrapper(Storage::WrapperType::VALUE,
                                    Storage::DataType::_NULL, 0)
-            : Expression(static_cast<Expr *>(declaration.second.get()), storage)
+            : Expression(static_cast<Expr *>(declaration.second.get()), storage,
+                         logs)
                   .execute();
     storage.back()->setValue(declaration.first.value, value);
     declaredVariables.push_back(declaration.first.value);

@@ -1,8 +1,9 @@
 #include "interpreter/expressions/unary_expression.hpp"
 
 UnaryExpression::UnaryExpression(UnaryExpr *expressionNode,
-                                 std::vector<std::shared_ptr<Storage>> storage)
-    : expressionNode(expressionNode), storage(std::move(storage)) {}
+                                 std::vector<std::shared_ptr<Storage>> storage,
+                                 std::shared_ptr<Logs> logs)
+    : expressionNode(expressionNode), storage(std::move(storage)), logs(logs) {}
 
 Storage::DataWrapper UnaryExpression::execute() {
   if (expressionNode->operator_.tag == Token::TypeTag::OPERATOR) {
@@ -38,7 +39,7 @@ Storage::DataWrapper UnaryExpression::execute() {
   } else if (expressionNode->operator_.tag == Token::TypeTag::LOGICAL &&
              expressionNode->operator_.type.logicalToken == LogicalToken::NOT) {
     return _boolean(
-        !checkTrueishnessOfExpression(expressionNode->operand, storage));
+        !checkTrueishnessOfExpression(expressionNode->operand, storage, logs));
   } else {
     throw std::runtime_error("Unsupported unary expression.");
   }

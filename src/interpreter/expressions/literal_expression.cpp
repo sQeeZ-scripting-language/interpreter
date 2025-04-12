@@ -1,8 +1,9 @@
 #include "interpreter/expressions/literal_expression.hpp"
 
 LiteralExpression::LiteralExpression(
-    Expr *expressionNode, std::vector<std::shared_ptr<Storage>> storage)
-    : expressionNode(expressionNode), storage(std::move(storage)) {}
+    Expr *expressionNode, std::vector<std::shared_ptr<Storage>> storage,
+    std::shared_ptr<Logs> logs)
+    : expressionNode(expressionNode), storage(std::move(storage)), logs(logs) {}
 
 Storage::DataWrapper LiteralExpression::execute() {
   if (auto expr = dynamic_cast<Identifier *>(expressionNode)) {
@@ -14,7 +15,7 @@ Storage::DataWrapper LiteralExpression::execute() {
   } else if (auto expr = dynamic_cast<ArrayLiteral *>(expressionNode)) {
     std::vector<Storage::DataWrapper> elements;
     for (const auto &element : expr->elements) {
-      elements.push_back(Expression(element.get(), storage).execute());
+      elements.push_back(Expression(element.get(), storage, logs).execute());
     }
     return Storage::DataWrapper(
         Storage::WrapperType::VALUE, Storage::DataType::ARRAY,
@@ -23,7 +24,7 @@ Storage::DataWrapper LiteralExpression::execute() {
     std::map<std::string, Storage::DataWrapper> elements;
     for (const auto &property : expr->properties) {
       elements[property.get()->key.value] =
-          Expression(property.get()->value.get(), storage).execute();
+          Expression(property.get()->value.get(), storage, logs).execute();
     }
     return Storage::DataWrapper(
         Storage::WrapperType::VALUE, Storage::DataType::OBJECT,

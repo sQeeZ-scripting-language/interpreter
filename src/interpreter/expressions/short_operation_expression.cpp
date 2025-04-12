@@ -2,8 +2,8 @@
 
 ShortOperationExpression::ShortOperationExpression(
     ShortOperationExpr *expressionNode,
-    std::vector<std::shared_ptr<Storage>> storage)
-    : expressionNode(expressionNode), storage(std::move(storage)) {}
+    std::vector<std::shared_ptr<Storage>> storage, std::shared_ptr<Logs> logs)
+    : expressionNode(expressionNode), storage(std::move(storage)), logs(logs) {}
 
 Storage::DataWrapper ShortOperationExpression::execute() {
   return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -14,7 +14,7 @@ Storage::DataWrapper ShortOperationExpression::execute() {
 Storage::DataWrapper
 ShortOperationExpression::executeExpression(Storage::DataWrapper leftValue) {
   Storage::DataWrapper rightValue =
-      Expression(expressionNode->operand.get(), storage).execute();
+      Expression(expressionNode->operand.get(), storage, logs).execute();
   switch (expressionNode->operation.tag) {
   case Token::TypeTag::LOGICAL:
     if (expressionNode->operation.type.logicalToken == LogicalToken::GREATER) {

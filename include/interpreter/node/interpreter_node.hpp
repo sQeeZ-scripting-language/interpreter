@@ -7,6 +7,7 @@
 #include <regex>
 
 #include "interpreter/interpreter.hpp"
+#include "interpreter/node/node_parser.hpp"
 
 Napi::String pingInterpreter(const Napi::CallbackInfo &args);
 Napi::String info(const Napi::CallbackInfo &args);
@@ -20,7 +21,7 @@ public:
   explicit InterpreterNode(const Napi::CallbackInfo &args);
 
   Napi::String pingInstance(const Napi::CallbackInfo &args);
-  void interpret(const Napi::CallbackInfo &args);
+  Napi::Array interpret(const Napi::CallbackInfo &args);
 
   static Napi::Function GetClass(Napi::Env);
 };

@@ -2,8 +2,8 @@
 
 CallbackFunctionExpression::CallbackFunctionExpression(
     CallbackFunctionExpr *expressionNode,
-    std::vector<std::shared_ptr<Storage>> storage)
-    : expressionNode(expressionNode), storage(std::move(storage)) {}
+    std::vector<std::shared_ptr<Storage>> storage, std::shared_ptr<Logs> logs)
+    : expressionNode(expressionNode), storage(std::move(storage)), logs(logs) {}
 
 Storage::DataWrapper CallbackFunctionExpression::execute() {
   return Storage::DataWrapper(Storage::WrapperType::VALUE,
@@ -18,18 +18,19 @@ Storage::DataWrapper CallbackFunctionExpression::executeBody(
   storage.push_back(parameterStorage);
   storage.push_back(std::make_shared<Storage>());
   if (expressionNode->body.size() == 1) {
-    returnValue = Statement(expressionNode->body[0].get(), storage).execute();
+    returnValue =
+        Statement(expressionNode->body[0].get(), storage, logs).execute();
   } else if (expressionNode->body.size() > 1) {
     try {
       for (const auto &statement : expressionNode->body) {
         if (statement.get()->kind == NodeType::ReturnStmt) {
           returnValue =
               ReturnStatement(dynamic_cast<ReturnStmt *>(statement.get()),
-                              storage)
+                              storage, logs)
                   .execute();
           break;
         } else {
-          Statement(statement.get(), storage).execute();
+          Statement(statement.get(), storage, logs).execute();
         }
       }
     } catch (const std::exception &e) {

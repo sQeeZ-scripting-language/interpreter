@@ -23,7 +23,7 @@ Napi::String InterpreterNode::pingInstance(const Napi::CallbackInfo &args) {
       this->_env, "Node instance of the sQeeZ-Interpreter is working!");
 }
 
-void InterpreterNode::interpret(const Napi::CallbackInfo &args) {
+Napi::Array InterpreterNode::interpret(const Napi::CallbackInfo &args) {
   if (args.Length() < 1 || !args[0].IsString()) {
     Napi::TypeError::New(this->_env, "Code expected!")
         .ThrowAsJavaScriptException();
@@ -43,7 +43,8 @@ void InterpreterNode::interpret(const Napi::CallbackInfo &args) {
         .ThrowAsJavaScriptException();
   }
   Interpreter interpreter(std::move(program));
-  interpreter.interpret(devMode);
+  std::shared_ptr<Logs> logs = interpreter.interpret(devMode);
+  return logsToJSArray(env, logs);
 }
 
 Napi::Function InterpreterNode::GetClass(Napi::Env env) {
